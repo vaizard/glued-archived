@@ -1,5 +1,6 @@
 <?php
-namespace Glued\Middleware;
+namespace Glued\Middleware\Auth;
+use Glued\Middleware\Middleware;
 
 // The "you-have-to-be-authenticated-to-see-this" middleware
 class AuthMiddleware extends Middleware

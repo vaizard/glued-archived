@@ -1,5 +1,7 @@
 <?php
-namespace Glued\Middleware;
+namespace Glued\Middleware\Auth;
+use Glued\Middleware\Middleware;
+
 
 // The "you-have-to-be-NOT-authenticated-to-see-this" middleware
 class GuestMiddleware extends Middleware

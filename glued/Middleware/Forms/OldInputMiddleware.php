@@ -1,5 +1,7 @@
 <?php
-namespace Glued\Middleware;
+namespace Glued\Middleware\Forms;
+use Glued\Middleware\Middleware;
+
 
 class OldInputMiddleware extends Middleware
 {

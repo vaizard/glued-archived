@@ -1,5 +1,7 @@
 <?php
-namespace Glued\Middleware;
+namespace Glued\Middleware\Forms;
+use Glued\Middleware\Middleware;
+
 
 class CsrfViewMiddleware extends Middleware
 {
@@ -11,7 +13,6 @@ class CsrfViewMiddleware extends Middleware
             <input type="hidden" name="'. $this->container->csrf->getTokenNameKey() .'" value="'. $this->container->csrf->getTokenName() .'">
             <input type="hidden" name="'. $this->container->csrf->getTokenValueKey() .'" value="'. $this->container->csrf->getTokenValue() .'">
         ']);
-        //$_SESSION['old'] = $request->getParams();
 
         $response = $next($request, $response);
         return $response;
