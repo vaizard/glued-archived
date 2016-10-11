@@ -26,15 +26,14 @@ require __DIR__ . '/middleware.php';
 require __DIR__ . '/routes.php';
 
 
-/* 
-NOTE: psr-4 autoloading is turend on in composer.json. The psr-4 entry
-"Glued\\": "glued" corresponds to the application name "Glued\" (the additional
-backslash is for escaping) and the relative path to the "glued" directory.
-psr-4 will autload things according to the following key: Glued=glued, 
-Models=glued/Models, User=glued/Models/User.php, hence the following will work:
-
-$user = new \Glued\Models\User;
-print_r($user);
-*/
-
-
+/*
+ * NOTE: psr-4 autoloading is turend on in composer.json. The psr-4 entry
+ * "Glued\\": "glued" corresponds to the application name "Glued\" (the
+ * additional backslash is for escaping) and the relative path to the "glued"
+ * directory. PSR-4 will autload things according to the following key:
+ * Glued=glued, Models=glued/Models, User=glued/Models/User.php, hence the
+ * following will work:
+ *
+ *$user = new \Glued\Models\User;
+ *print_r($user);
+ */

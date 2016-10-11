@@ -1,14 +1,15 @@
 <?php
 namespace Glued\Controllers;
 
-use Slim\Views\Twig as View; // making a name shortcut
+// making a name shortcut for extending controllers
+use Slim\Views\Twig as View;
 
 class Controller
 {
 
     protected $container;
-    public function __construct($container) 
-    // using the shortcutted View and passing 
+
+    public function __construct($container)
     {
         $this->container = $container;
     }

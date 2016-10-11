@@ -1,7 +1,7 @@
 <?php
 
-// we're setting up our own class so that we can use the Respect\Validation
-// more easily.
+// this class is intended to simplify usage and extensibility of
+// Respect\Validation with custom rules
 
 namespace Glued\Classes\Validation;
 
@@ -11,31 +11,35 @@ use Respect\Validation\Exceptions\NestedValidationException;
 class Validator
 {
     protected $errors;
+
+
+    // validates an array, throws exception on failure
     public function validate($request, array $rules)
     {
+        // for each array member we assert the parameter (name uppercase
+        // first letter). if something fails the validation, an exception
+        // is thrown.
         foreach ($rules as $field => $rule) {
-           // for each array member we assert the parameter (name uppercase
-           // first letter). if something fails the validation, an exception
-           // is thrown.
-           try {
-             $rule->setName(ucfirst($field))->assert($request->getParam($field));
-           } catch (NestedValidationException $e) {
-             $this->errors[$field] = $e->getMessages();
-           }
+            try {
+                $rule->setName(ucfirst($field))->assert($request->getParam($field));
+            } catch (NestedValidationException $e) {
+                $this->errors[$field] = $e->getMessages();
+            }
         }
 
         // DEBUG
-        // var_dump($this->errors);
-        // die();
+        // var_dump($this->errors); die();
 
-        // we need to pass the error messages somehow, so we'll user sessions
+        // we pass the error messages via the user's session
         $_SESSION['validationerrors'] = $this->errors;
         return $this;
     }
 
-public function failed()
-{
-    return !empty($this->errors);
-}
+
+    // returns true|false if validation failed|passed
+    public function failed()
+    {
+        return !empty($this->errors);
+    }
 
 }
