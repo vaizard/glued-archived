@@ -1,7 +1,7 @@
 <?php
 
-use \Glued\Middleware\AuthMiddleware;
-use \Glued\Middleware\GuestMiddleware;
+use \Glued\Middleware\Auth\AuthMiddleware;
+use \Glued\Middleware\Auth\GuestMiddleware;
 
 /*
  * The home route [/]
