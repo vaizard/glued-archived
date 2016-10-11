@@ -32,10 +32,10 @@ $app->group('', function () {
   })->setName('upload');
   $this->post('/upload', function ($request, $response, $args) {
       $files = $request->getUploadedFiles();
-      if (empty($files['newfile'])) {
+      if (empty($files['file'])) {
           throw new Exception('Expected a newfile');
       }
-      $newfile = $files['newfile'];
+      $newfile = $files['file'];
       // do something with $newfile
       if ($newfile->getError() === UPLOAD_ERR_OK) {
           $uploadFileName = $newfile->getClientFilename();
