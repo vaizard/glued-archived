@@ -7,10 +7,12 @@
     </head>
     <body>
         <h1>Upload a file</h1>
-        <form method="POST" action="/upload" enctype="multipart/form-data">
+        {% include 'templates/partials/flash.twig' %}
+        <form method="POST" action="{{ path_for('upload') }}" enctype="multipart/form-data">
             <label>Select file to upload:</label>
             <input type="file" name="newfile">
             <button type="submit">Upload</button>
+            {{ csrf.field | raw }}
         </form>
     </body>
 </html>

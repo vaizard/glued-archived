@@ -27,10 +27,10 @@ $app->group('', function () {
   $this->get ('/auth/password/change', 'AuthController:getChangePassword')->setName('auth.password.change');
   $this->post('/auth/password/change', 'AuthController:postChangePassword'); // we only need to set the name once for an uri, hence here not a setName again
   $this->get ('/auth/signout', 'AuthController:getSignOut')->setName('auth.signout');
-  $app->get('/upload', function ($request, $response, $args) {
+  $this->get('/upload', function ($request, $response, $args) {
       return $this->view->render($response, 'up.twig', $args);
   })->setName('upload');
-  $app->post('/upload', function ($request, $response, $args) {
+  $this->post('/upload', function ($request, $response, $args) {
       $files = $request->getUploadedFiles();
       if (empty($files['newfile'])) {
           throw new Exception('Expected a newfile');
@@ -39,8 +39,13 @@ $app->group('', function () {
       // do something with $newfile
       if ($newfile->getError() === UPLOAD_ERR_OK) {
           $uploadFileName = $newfile->getClientFilename();
-          $newfile->moveTo("/var/www/html/glued/logs/$uploadFileName");
+          $newfile->moveTo("/var/www/html/glued/private/stor/$uploadFileName");
+          $this->flash->addMessage('info', 'Your file ' . $UploadFileName . ' was successfully uploaded.');
+          return $response->withRedirect($this->router->pathFor('upload'));
       }
+      $this->flash->addMessage('error', 'Your file upload failed.');
+      return $response->withRedirect($this->router->pathFor('upload'));
+
   });
 
 
