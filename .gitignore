@@ -1,0 +1,4 @@
+!.gitignore
+/logs/*
+!/logs/empty
+/glued/settings.php
