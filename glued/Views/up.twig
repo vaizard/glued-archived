@@ -1,25 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
         <meta charset="utf-8">
         <title>Slim 3</title>
-        <link rel="stylesheet" href="https://raw.githubusercontent.com/enyo/dropzone/master/dist/dropzone.css">
-
     </head>
     <body>
         <h1>Upload a file</h1>
         {% include 'templates/partials/flash.twig' %}
-        <form method="POST" action="{{ path_for('upload') }}" enctype="multipart/form-data">
-            <label>Select file to upload:</label>
-            <input type="file" name="file">
+        <form method="post" action="{{ path_for('upload') }}" enctype="multipart/form-data">
+            <label>Select files to upload:</label>
+            <input type="file" name="files[]" multiple />
             <button type="submit">Upload</button>
             {{ csrf.field | raw }}
         </form>
     <br /><br />JS:<br />
 
-    <form action="{{ path_for('upload') }}" class="dropzone">
+    <form action="{{ path_for('upload') }}" class="dropzone" method="post" enctype="multipart/form-data">
       <div class="fallback">
-        <input name="file" type="file" multiple />
+        <input name="files[]" type="file" multiple />
       </div>
             <button type="submit">Upload</button>
             {{ csrf.field | raw }}
