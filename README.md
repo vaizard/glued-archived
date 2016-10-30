@@ -4,7 +4,7 @@
 
 - clone this repo so that its accessible under https://yourserver.com/glued/
 - example nginx default site conf is provided. handle with care so that you don't break other things on your server
-- database dump is provided, expects mysql 5.7.15 or newer.
+- database dump is provided, expects mysql 8.0 or newer.
 - copy glued/settings.php.example to glued/settings.php, modify the latter.
 - look into https://yourserver.com/glued/public/ 
 
