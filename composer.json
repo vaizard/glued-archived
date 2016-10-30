@@ -7,7 +7,8 @@
         "respect/validation": "^1.1",
         "slim/csrf": "^0.7.0",
         "slim/flash": "^0.1.0",
-        "joshcam/mysqli-database-class": "^2.6"
+        "joshcam/mysqli-database-class": "^2.6",
+        "codeguy/upload": "*"
     },
     "autoload": {
         "psr-4": {

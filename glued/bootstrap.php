@@ -12,7 +12,9 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // Instantiate the app, setup the path to our custom validation rules
 $config = require __DIR__ . '/settings.php';
-$app = new \Slim\App($config);
+$app = new \Slim\App($config); // -this: we're not using plain slim anymore, but extend it with App.php
+//$app = new \Glued\App($config);   // +this
+
 v::with('Glued\\Classes\\Validation\\Rules\\');
 
 

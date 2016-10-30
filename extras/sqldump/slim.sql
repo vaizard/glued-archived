@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 04, 2016 at 10:44 PM
--- Server version: 5.7.15-0ubuntu0.16.04.1
--- PHP Version: 7.0.8-0ubuntu0.16.04.2
+-- Generation Time: Oct 30, 2016 at 11:05 PM
+-- Server version: 8.0.0-dmr
+-- PHP Version: 7.0.8-0ubuntu0.16.04.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -23,21 +23,40 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `book`
+-- Table structure for table `rel_timepixels_users`
 --
 
-CREATE TABLE `book` (
-  `id` mediumint(8) UNSIGNED NOT NULL,
-  `title` varchar(200) NOT NULL,
-  `tags` json DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `rel_timepixels_users` (
+  `timepixel_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `book`
+-- Dumping data for table `rel_timepixels_users`
 --
 
-INSERT INTO `book` (`id`, `title`, `tags`) VALUES
-(1, 'ECMAScript 2015: A SitePoint Anthology', '["JavaScript", "ES2015", "JSON"]');
+INSERT INTO `rel_timepixels_users` (`timepixel_id`, `user_id`) VALUES
+(1, 1),
+(1, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `timepixels`
+--
+
+CREATE TABLE `timepixels` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `json` json DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `timepixels`
+--
+
+INSERT INTO `timepixels` (`id`, `json`) VALUES
+(1, '{"type": "task", "title": "The Timepixel", "dt_end": "2016-01-21 09:10:00", "version": "0.1", "announce": {"url": "https://www.facebook.com/events/1725843737689335/", "oauth2": "key"}, "dt_start": "2016-01-20 13:11:56", "duration": {"counted": "450", "expected": "3d"}, "timezone": "Europe/Prague"}'),
+(2, '{"title": "New event", "dt_end": "2017-02-13 16:00", "dt_start": "2017-02-13 15:00"}');
 
 -- --------------------------------------------------------
 
@@ -60,16 +79,24 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `info`, `created_at`, `updated_at`) VALUES
-(1, 'pavel', 'lala@slim.slim', '', 'null', NULL, NULL);
+(1, 'Slim Shady', 'shady@slim.com', '', 'null', NULL, NULL),
+(2, 'W. A. Mozart', 'wa@mozart.xyz', '$2y$10$U0.NzJymMhI7aWBzkL8dV.PJnR3kMKBmVMNzQjKh6ECC0wlx.pchu', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `book`
+-- Indexes for table `rel_timepixels_users`
 --
-ALTER TABLE `book`
+ALTER TABLE `rel_timepixels_users`
+  ADD KEY `timepixel_id` (`timepixel_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `timepixels`
+--
+ALTER TABLE `timepixels`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -83,15 +110,15 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `book`
+-- AUTO_INCREMENT for table `timepixels`
 --
-ALTER TABLE `book`
-  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `timepixels`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

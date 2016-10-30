@@ -85,31 +85,25 @@ $container['validator'] = function ($container) {
 };
 
 
-// our own controller: the simplest thing
-$container['PlainController'] = function ($container) {
-    return new \Glued\Controllers\PlainController;
-};
-
-
-// our own more sophisticated controller
-$container['UnsplitController'] = function ($container) {
-    return new \Glued\Controllers\UnsplitController($container->view);
-    // passing $container to HomeController is needed if
-    // we want to use dependencies (i.e. TWIG) inside the
-    // HomeController. If we do this, we naturally MUST
-    // have a constructor, that will take the view in.
-};
-
-// our most sophisticated container
+// glued home view
 $container['HomeController'] = function ($container) {
     return new \Glued\Controllers\HomeController($container);
-    // passing $container, not $container->view
 };
 
-// our most sophisticated container
+// glued authentication
 $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
-    // passing $container, not $container->view
+};
+
+// glued file upload
+$container['UploadController'] = function ($container) {
+    return new \Glued\Controllers\UploadController($container);
+};
+
+
+// time controller api
+$container['TimeController'] = function ($container) {
+    return new \Glued\Controllers\Api\v0_1\TimePixelsController($container);
 };
 
 

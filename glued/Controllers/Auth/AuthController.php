@@ -2,7 +2,6 @@
 namespace Glued\Controllers\Auth;
 
 use Glued\Controllers\Controller; // needed because Auth is in a directory below
-use Glued\Models\Mapper;
 use Respect\Validation\Validator as v;
 
 class AuthController extends Controller
