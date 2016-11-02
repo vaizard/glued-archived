@@ -21,8 +21,19 @@ class TimePixelsController extends Controller
         }
 
         $data['data'] = json_decode($timepixel['json'], true);
-        $data['data']['id'] = (string) $timepixel['id']; 
-
+        $data['data']['id'] = (string) $timepixel['id'];
+        
+        // nacteni useru
+        $data['users'] = array();
+        $this->container->db->join("users u", "r.user_id=u.id", "LEFT");
+        $this->container->db->where('r.timepixel_id', $args['id']);
+        $users = $this->container->db->get("rel_timepixels_users r", null, "u.id, u.name");
+        if ($this->container->db->count > 0) {
+            foreach ($users as $user) {
+                $data['users'][] = array('id' => $user['id'], 'name' => $user['name']);
+            }
+        }
+        
         return $this->respond($response,json_encode($data), 200, 'application/json');
     }
 
