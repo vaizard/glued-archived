@@ -17,7 +17,7 @@ class TimePixelsController extends Controller
         $timepixel = $this->container->db->getOne("timepixels");
 
         if (!$timepixel) {
-            return $this->respond(null, 404);
+            return $this->respond($response, null, 404);
         }
 
         $data['data'] = json_decode($timepixel['json'], true);
@@ -56,7 +56,30 @@ class TimePixelsController extends Controller
     }
 
 
-
+    public function delete($request, $response, $args)
+    {
+        // nacteme si idecko
+        $this->container->db->where('id', $args['id']);
+        $timepixel = $this->container->db->getOne("timepixels");
+        
+        // pokud neexistuje, vratime ze to neexistuje
+        if (!$timepixel) {
+            return $this->respond($response, null, 404);
+        }
+        
+        // smazani a priprava vystupu
+        $this->container->db->where('id', $args['id']);
+        if($this->container->db->delete('timepixels')) {
+            $data['message'] = 'id '.$args['id'].' deleted succesfully';
+            $response_code = 200;
+        }
+        else {  // nastane, jen pokud je nejaka chyba v pripojeni k db, protoze neexistenci zaznamu uz podchyti ta podminka vyse
+            $data['message'] = 'error: id '.$args['id'].' cannot be deleted';
+            $response_code = 400;
+        }
+        
+        return $this->respond($response,json_encode($data), $response_code, 'application/json');
+    }
 
     public function respond($response,$content = '', $httpStatus = 200, $contentType = 'application/json')
     {
