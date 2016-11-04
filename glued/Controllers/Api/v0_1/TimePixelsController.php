@@ -46,7 +46,9 @@ class TimePixelsController extends Controller
         // on-insert-umutable data (i.e. the id is autoincremented)
         // this is just a test of the 400 response
         if (!isset($payload['title'], $payload['dt_start'])) {
-            return $this->respond($response, ['message' => 'Title and body required', 'errcode' => '1'], 400);
+            $data['message'] = 'Title and body required';
+            $data['errcode'] = 1;
+            return $this->respond($response, json_encode($data), 400);
         }
 
         $data = [ 'json' => json_encode($payload) ];
