@@ -55,7 +55,7 @@ $app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::g
 // timepixels
 $app->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');
 $app->put('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::put');
-$app->post('/api/0.1/timepixels[/{id}]', 'TimeController:post');
+$app->post('/api/0.1/timepixels[/]', 'TimeController:post');
 
 //$app->delete('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::delete');
 $app->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
