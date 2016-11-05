@@ -17,12 +17,23 @@ class TimePixelsController extends Controller
         $timepixel = $this->container->db->getOne("timepixels");
 
         if (!$timepixel) {
-            return $this->respond(null, 404);
+            return $this->respond($response, null, 404);
         }
 
         $data['data'] = json_decode($timepixel['json'], true);
-        $data['data']['id'] = (string) $timepixel['id']; 
-
+        $data['data']['id'] = (string) $timepixel['id'];
+        
+        // nacteni useru
+        $data['data']['users'] = array();
+        $this->container->db->join("users u", "r.user_id=u.id", "LEFT");
+        $this->container->db->where('r.timepixel_id', $args['id']);
+        $users = $this->container->db->get("rel_timepixels_users r", null, "u.id, u.name");
+        if ($this->container->db->count > 0) {
+            foreach ($users as $user) {
+                $data['data']['users'][] = array('id' => $user['id'], 'name' => $user['name']);
+            }
+        }
+        
         return $this->respond($response,json_encode($data), 200, 'application/json');
     }
 
@@ -35,7 +46,9 @@ class TimePixelsController extends Controller
         // on-insert-umutable data (i.e. the id is autoincremented)
         // this is just a test of the 400 response
         if (!isset($payload['title'], $payload['dt_start'])) {
-            return $this->respond($response, ['message' => 'Title and body required', 'errcode' => '1'], 400);
+            $data['message'] = 'Title and body required';
+            $data['errcode'] = 1;
+            return $this->respond($response, json_encode($data), 400);
         }
 
         $data = [ 'json' => json_encode($payload) ];
@@ -45,7 +58,30 @@ class TimePixelsController extends Controller
     }
 
 
-
+    public function delete($request, $response, $args)
+    {
+        // nacteme si idecko
+        $this->container->db->where('id', $args['id']);
+        $timepixel = $this->container->db->getOne("timepixels");
+        
+        // pokud neexistuje, vratime ze to neexistuje
+        if (!$timepixel) {
+            return $this->respond($response, null, 404);
+        }
+        
+        // smazani a priprava vystupu
+        $this->container->db->where('id', $args['id']);
+        if($this->container->db->delete('timepixels')) {
+            $data['message'] = 'id '.$args['id'].' deleted succesfully';
+            $response_code = 200;
+        }
+        else {  // nastane, jen pokud je nejaka chyba v pripojeni k db, protoze neexistenci zaznamu uz podchyti ta podminka vyse
+            $data['message'] = 'error: id '.$args['id'].' cannot be deleted';
+            $response_code = 400;
+        }
+        
+        return $this->respond($response,json_encode($data), $response_code, 'application/json');
+    }
 
     public function respond($response,$content = '', $httpStatus = 200, $contentType = 'application/json')
     {
