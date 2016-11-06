@@ -2,7 +2,7 @@
 
 // Respect pulled in here because of v::with() below
 use Respect\Validation\Validator as v;
-
+//use Jsv4\Validator as jsonv;
 
 session_start();
 
@@ -12,11 +12,8 @@ require __DIR__ . '/../vendor/autoload.php';
 
 // Instantiate the app, setup the path to our custom validation rules
 $config = require __DIR__ . '/settings.php';
-$app = new \Slim\App($config); // -this: we're not using plain slim anymore, but extend it with App.php
-//$app = new \Glued\App($config);   // +this
-
+$app = new \Slim\App($config);
 v::with('Glued\\Classes\\Validation\\Rules\\');
-
 
 // Set up dependencies
 require __DIR__ . '/dependencies.php';
