@@ -49,8 +49,29 @@ $app->group('', function () {
 
 // APIs
 
+$app->group('', function () {
+  use Jsv4\Validator as jsonv;
+  $this->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
+  $this->get('/jsonvtest', function ($request, $response) {
+    return jsonv::isValid([ 'a' => 'b' ], []);
+  });
+
+  // timepixels
+  $this->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');
+  $this->put('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::put');
+  $this->post('/api/0.1/timepixels[/]', 'TimeController:post');
+  //$app->delete('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::delete');
+  $app->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
+});
+
+/*
 // test
 $app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
+$app->get('/jsonvtest', function ($request, $response) {
+  use Jsv4\Validator as jsonv;
+  return jsonv::isValid([ 'a' => 'b' ], []);
+});
+
 
 // timepixels
 $app->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');
@@ -59,7 +80,7 @@ $app->post('/api/0.1/timepixels[/]', 'TimeController:post');
 
 //$app->delete('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::delete');
 $app->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
-
+*/
 
 
 /**
