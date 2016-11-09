@@ -1,0 +1,23 @@
+JSON SCHEMA
+
+* Implementations: http://json-schema.org/implementations
+* Generate schemas from example data: http://www.jsonschema.net/
+* Validator in use: https://github.com/geraintluff/jsv4-php
+* Online validator: http://jsonschemalint.com/#/version/draft-04/markup/json
+
+DONE
+
+* Selected jsv4-php as the backend validator
+* Enveloped all api paths into a group that has access the jsv4 class.
+* Written the first test schema (see Controllers/Api/v0_1/schemas/timepixels.json)
+* Tested validity of GET glued/public/api/0.1/timepixels/1 against the timepixels.json schema with the Online validator.
+
+TODO
+
+* TODO consider moving jsv4 class loading into an (as of yet nonexistent) API base controller
+* Break up timepixels.json schema into components, test embedding/referencing with jsv4-php. Also see 
+  * https://code.tutsplus.com/tutorials/validating-data-with-json-schema-part-2--cms-25640
+  * https://spacetelescope.github.io/understanding-json-schema/structuring.html
+* Choose/test form generation frontend library to generate sample forms (also capable of schema referencing) and aid with setting the correct combination of "required" rules
+  * Vue implementation https://github.com/icebob/vue-form-generator
+  * Another implementation, online demo http://jeremydorn.com/json-editor/
