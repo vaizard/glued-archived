@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "78ed6ba7ba78b67be1b63de930ff8066",
-    "content-hash": "ca2a6f0f0cf3e6bfde50a48a9529b1da",
+    "hash": "3bf2c9ea44e6b4ca2d8d520def79ae0e",
+    "content-hash": "b931cfef58591133bf8ae29be43166e5",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -33,6 +33,56 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "time": "2014-12-30 15:22:37"
+        },
+        {
+            "name": "geraintluff/jsv4",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geraintluff/jsv4-php.git",
+                "reference": "b0fd384506e3b5c109777e6260523d4f76517537"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geraintluff/jsv4-php/zipball/b0fd384506e3b5c109777e6260523d4f76517537",
+                "reference": "b0fd384506e3b5c109777e6260523d4f76517537",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Jsv4": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Bažík",
+                    "email": "martin@bazo.sk",
+                    "homepage": "http://bazo.sk"
+                },
+                {
+                    "name": "Geraint Luff",
+                    "email": "luffgd@gmail.com"
+                }
+            ],
+            "description": "A (coercive) JSON Schema v4 Validator for PHP",
+            "keywords": [
+                "Geraint Luff",
+                "JSON Schema",
+                "geraintluff",
+                "json",
+                "schema",
+                "v4",
+                "validator"
+            ],
+            "time": "2015-10-08 15:40:29"
         },
         {
             "name": "joshcam/mysqli-database-class",
@@ -795,7 +845,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "geraintluff/jsv4": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
