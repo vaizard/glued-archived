@@ -3,6 +3,7 @@
 namespace Glued\Controllers\Kubatest;
 use Glued\Controllers\Controller;
 use Jsv4\Validator as jsonv;
+use Jsv4\SchemaStore;
 
 class TestController extends Controller
 {
@@ -103,5 +104,74 @@ class TestController extends Controller
         
         //return $this->container->view->render($response, 'full.twig');
     }
-
+    
+    public function schematest($request, $response)
+    {
+        echo '<h1>test na vlozene schema</h1>';
+        
+        $schema = file_get_contents('/var/www/html/glued/glued/Controllers/Api/v0_1/schemas/timepixels_root.json');
+        
+        $payload = '
+        { "data":
+          {
+           "title": "New event",
+           "dt_start": "2017-02-13 15:00",
+           "dt_end": "2017-02-13 16:00",
+           "users": [{
+            "id": "2",
+            "name": "kuba"
+           }]
+          }
+        }
+        ';
+        
+        $jsonvr = jsonv::isValid(json_decode($payload), json_decode($schema));
+        
+        echo '<br /><div>payload2 je: ('.$payload.')</div>';
+        echo '<br /><div>is valid payloadu vraci:</div>';
+        var_dump($jsonvr);
+        
+        
+        /*
+        // hlavni schema
+        $schema_hlavni = '
+            { "$ref": "https://japex.vaizard.xyz/vkladane-schema#/definitions/address" }
+        ';
+        $schema_hlavni_json = json_decode($schema_hlavni);
+        $schema_hlavni_url = 'https://japex.vaizard.xyz/hlavni-schema';
+        echo '<div>Hlavni schema</div>';
+        echo var_dump($schema_hlavni_json);
+        
+        // vkladane schema
+        $schema_vkladane = '
+            {
+              "type": "object",
+              "properties": {
+                "street_address": { "type": "string" },
+                "city":           { "type": "string" },
+                "state":          { "type": "string" }
+              },
+              "required": ["street_address", "city", "state"]
+            }
+        ';
+        $schema_vkladane_json = json_decode($schema_vkladane);
+        $schema_vkladane_url = 'https://japex.vaizard.xyz/vkladane-schema';
+        echo '<div>Vkladane schema</div>';
+        echo var_dump($schema_vkladane_json);
+        
+        // zaciname vkladat
+        $store = new SchemaStore();
+        
+        // vlozime hlavni schema
+        $store->add($schema_hlavni_url, $schema_hlavni_json);
+        
+        // vlozime podradne schema
+        $store->add($schema_vkladane_url, $schema_vkladane_json);
+        
+        $slozene_schema = $store->get($schema_hlavni_url);
+        
+        echo '<div>Vysledne schema</div>';
+        echo var_dump($slozene_schema);
+        */
+    }
 }
