@@ -26,7 +26,11 @@ class TestController extends Controller
           {
            "title": "New event",
            "dt_start": "2017-02-13 15:00",
-           "dt_end": "2017-02-13 16:00"
+           "dt_end": "2017-02-13 16:00",
+           "users": [{
+            "id": 5,
+            "name": "kuba"
+           }]
           }
         }
         ';
@@ -107,71 +111,121 @@ class TestController extends Controller
     
     public function schematest($request, $response)
     {
+        $store = new SchemaStore;
+        $urlBase = "http://example.com/";
+        
         echo '<h1>test na vlozene schema</h1>';
         
-        $schema = file_get_contents('/var/www/html/glued/glued/Controllers/Api/v0_1/schemas/timepixels_root.json');
+        $schema_root = json_decode(file_get_contents('/var/www/html/glued/glued/Controllers/Api/v0_1/schemas/timepixels_root.json'));
+        $schema_user = json_decode(file_get_contents('/var/www/html/glued/glued/Controllers/Api/v0_1/schemas/timepixels_user.json'));
         
+        echo '<br /><div>zakladni schema s ref udajem pro users</div>';
+        
+        echo '<div>'.print_r(json_encode($schema_root), true).'</div>';
+        
+        // priradime to vymyslene adrese http://example.com/test-schema
+        $store->add($urlBase . "test-schema", $schema_root);
+        // dodame druhou vymyslenou adresu http://example.com/timepixels_user
+        $store->add($urlBase . "timepixels_user", $schema_user);
+        // vratime schema spojene s prvni adresou, s uz nahrazenym ref
+        $schema	 = $store->get($urlBase . "test-schema");
+        
+        echo '<br /><div>s chema s doplnenym subschematem</div>';
+        echo '<div>'.print_r(json_encode($schema), true).'</div>';
+        
+        
+        // overeni pres data
+        
+        // nejdriv spatna data, protoze users je povinne
         $payload = '
+        { "data":
+          {
+           "title": "New event",
+           "dt_start": "2017-02-13 15:00",
+           "dt_end": "2017-02-13 16:00"
+          }
+        }
+        ';
+        
+        // pak spravna data (pozor na integer id)
+        $payload2 = '
         { "data":
           {
            "title": "New event",
            "dt_start": "2017-02-13 15:00",
            "dt_end": "2017-02-13 16:00",
            "users": [{
-            "id": "2",
+            "id": 5,
             "name": "kuba"
            }]
           }
         }
         ';
         
-        $jsonvr = jsonv::isValid(json_decode($payload), json_decode($schema));
-        
-        echo '<br /><div>payload2 je: ('.$payload.')</div>';
-        echo '<br /><div>is valid payloadu vraci:</div>';
+        // validace spatnych dat
+        $jsonvr = jsonv::isValid(json_decode($payload), $schema);
+        echo '<br /><br /><div>chybny payload je: ('.$payload.')</div>';
+        echo '<div>is valid payloadu vraci:</div>';
         var_dump($jsonvr);
         
+        // validace spravnych dat
+        $jsonvr2 = jsonv::isValid(json_decode($payload2), $schema);
+        echo '<br /><br /><div>spravny payload2 je: ('.$payload2.')</div>';
+        echo '<div>is valid payloadu2 vraci:</div>';
+        var_dump($jsonvr2);
         
-        /*
-        // hlavni schema
-        $schema_hlavni = '
-            { "$ref": "https://japex.vaizard.xyz/vkladane-schema#/definitions/address" }
-        ';
-        $schema_hlavni_json = json_decode($schema_hlavni);
-        $schema_hlavni_url = 'https://japex.vaizard.xyz/hlavni-schema';
-        echo '<div>Hlavni schema</div>';
-        echo var_dump($schema_hlavni_json);
-        
-        // vkladane schema
-        $schema_vkladane = '
-            {
-              "type": "object",
-              "properties": {
-                "street_address": { "type": "string" },
-                "city":           { "type": "string" },
-                "state":          { "type": "string" }
-              },
-              "required": ["street_address", "city", "state"]
-            }
-        ';
-        $schema_vkladane_json = json_decode($schema_vkladane);
-        $schema_vkladane_url = 'https://japex.vaizard.xyz/vkladane-schema';
-        echo '<div>Vkladane schema</div>';
-        echo var_dump($schema_vkladane_json);
-        
-        // zaciname vkladat
-        $store = new SchemaStore();
-        
-        // vlozime hlavni schema
-        $store->add($schema_hlavni_url, $schema_hlavni_json);
-        
-        // vlozime podradne schema
-        $store->add($schema_vkladane_url, $schema_vkladane_json);
-        
-        $slozene_schema = $store->get($schema_hlavni_url);
-        
-        echo '<div>Vysledne schema</div>';
-        echo var_dump($slozene_schema);
-        */
+    }
+    
+    public function schematest2($request, $response)
+    {
+$store = new SchemaStore;
+$urlBase = "http://example.com/";
+    
+    
+
+// Add external $ref, and don't resolve it
+// While we're at it, use an array, not an object
+$schema	 = array(
+	"title"		 => "Test schema 2",
+	"properties" => array(
+		"foo" => array('$ref' => "somewhere-else")
+	)
+);
+
+$otherSchema = json_decode('{
+	"title": "Somewhere else",
+	"item": {
+        "huuu": { "type": "string" }
+    }
+}');
+
+echo '<br /><div>zakladni</div>';
+var_dump($schema);
+
+$store->add($urlBase . "test-schema-2", $schema);
+$store->add($urlBase . "somewhere-else", $otherSchema);
+$schema	 = $store->get($urlBase . "test-schema-2");
+
+echo '<br /><div>finale</div>';
+var_dump($schema);
+
+/*
+
+
+echo '<br /><div>chybi</div>';
+var_dump($store->missing());
+
+
+echo '<br /><div>mezikrok</div>';
+var_dump($schema);
+
+
+
+
+$store->add($urlBase . "somewhere-else", $otherSchema);
+$schema	 = $store->get($urlBase . "test-schema-2");
+
+*/
+
     }
 }

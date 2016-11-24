@@ -53,6 +53,7 @@ $app->group('', function () {
 $app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
 $app->get('/kubatest/validationtest', '\Glued\Controllers\Kubatest\TestController::validationtest');
 $app->get('/kubatest/schematest', '\Glued\Controllers\Kubatest\TestController::schematest');
+$app->get('/kubatest/schematest2', '\Glued\Controllers\Kubatest\TestController::schematest2');
 
 // timepixels
 $app->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');

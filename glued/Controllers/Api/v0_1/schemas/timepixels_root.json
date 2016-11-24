@@ -54,7 +54,7 @@
         "id": {
           "type": "string"
         },
-        "users": { "$ref": "timepixels_user.json" }
+        "users": { "$ref": "timepixels_user" }
       },
       "required": [
         "title",

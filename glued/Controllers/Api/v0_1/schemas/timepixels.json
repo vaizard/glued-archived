@@ -76,7 +76,8 @@
       },
       "required": [
         "title",
-        "dt_start"
+        "dt_start",
+        "users"
       ]
     }
   },
