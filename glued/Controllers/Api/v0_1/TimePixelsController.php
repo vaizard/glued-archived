@@ -48,7 +48,9 @@ class TimePixelsController extends Controller
         // this is just a test of the 400 response
 
 /*new*/
-         $schema = file_get_contents('/var/www/html/glued/Controllers/Api/v0_1/schemas/timepixels.json');
+         //$schema = file_get_contents('/var/www/html/glued/glued/Controllers/Api/v0_1/schemas/timepixels.json');
+//print_r($schema);
+takze normalne pouzij $jsonvr = jsonv::isValid(json_decode($payload), json_decode($schema));
          $jsonvr = jsonv::isValid($payload, json_decode($schema));
          print_r($jsonvr);
          exit;
