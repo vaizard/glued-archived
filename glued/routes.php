@@ -65,6 +65,16 @@ $app->group('', function () {
   $this->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
 });
 
+// PLAYGROUND
+
+//$app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
+$app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadkar_Jsv4::validationtest');
+$app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4::schematest');
+$app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4::schematest2');
+
+#Playground\Pohadkar_Jsv4
+
+
 /*
 // test
 $app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
