@@ -61,37 +61,22 @@ $app->group('', function () {
   $this->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');
   $this->put('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::put');
   $this->post('/api/0.1/timepixels[/]', 'TimeController:post');
-  //$app->delete('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::delete');
   $this->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
 });
 
 // PLAYGROUND
 
-//$app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
+// Pohadkar_Jsv4
 $app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadkar_Jsv4::validationtest');
 $app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4::schematest');
 $app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4::schematest2');
 
-#Playground\Pohadkar_Jsv4
+// Killua_Jsv4
+$app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4::validationtest');
+$app->get('/playground/killua_jsv4/schematest', '\Glued\Playground\Killua_Jsv4::schematest');
+$app->get('/playground/killua_jsv4/schematest2', '\Glued\Playground\Killua_Jsv4::schematest2');
 
 
-/*
-// test
-$app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
-$app->get('/jsonvtest', function ($request, $response) {
-  use Jsv4\Validator as jsonv;
-  return jsonv::isValid([ 'a' => 'b' ], []);
-});
-
-
-// timepixels
-$app->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');
-$app->put('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::put');
-$app->post('/api/0.1/timepixels[/]', 'TimeController:post');
-
-//$app->delete('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::delete');
-$app->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
-*/
 
 
 /**
