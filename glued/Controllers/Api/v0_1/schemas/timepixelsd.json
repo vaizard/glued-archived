@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "dt_end": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "announce": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "oauth2": {
+              "type": "string"
+            }
+          },
+          "required": ["url"]
+        },
+        "dt_start": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "object",
+          "properties": {
+            "counted": {
+              "type": "string"
+            },
+            "expected": {
+              "type": "string"
+            }
+          },
+          "anyOf": [{
+            "required": ["counted"]
+          }, {
+            "required": ["expected"]
+          }]
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "users": {
+          "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "anyOf": [{
+              "required": ["name"]
+            }, {
+              "required": ["id", "name"]
+            }]
+          }
+        },
+          "required": [ "data" ]
+        }
+      },
+      "required": [
+        "title",
+        "dt_start"
+      ]
+    }
+  },
+  "required": [
+    "data"
+  ]
+}

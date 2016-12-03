@@ -2,6 +2,7 @@
 
 namespace Glued\Controllers\Api\v0_1;
 use Glued\Controllers\Controller;
+use Jsv4\Validator as jsonv;
 
 // TODO presenters for responses and errors
 // TODO consider using fractal
@@ -45,11 +46,25 @@ class TimePixelsController extends Controller
         // TODO do propper filtering, checks on garbage or 
         // on-insert-umutable data (i.e. the id is autoincremented)
         // this is just a test of the 400 response
+
+/*new*/
+         //$schema = file_get_contents('/var/www/html/glued/glued/Controllers/Api/v0_1/schemas/timepixels.json');
+         //print_r($schema);
+         //takze normalne pouzij $jsonvr = jsonv::isValid(json_decode($payload), json_decode($schema));
+         $jsonvr = jsonv::isValid($payload, json_decode($schema));
+         print_r($jsonvr);
+         exit;
+/*newend*/
+
+
+/*old
         if (!isset($payload['title'], $payload['dt_start'])) {
             $data['message'] = 'Title and body required';
             $data['errcode'] = 1;
             return $this->respond($response, json_encode($data), 400);
         }
+oldend*/
+
 
         $data = [ 'json' => json_encode($payload) ];
         $id = $this->container->db->insert('timepixels', $data);

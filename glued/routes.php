@@ -2,6 +2,8 @@
 
 use \Glued\Middleware\Auth\AuthMiddleware;
 use \Glued\Middleware\Auth\GuestMiddleware;
+use Jsv4\Validator as jsonv;
+
 
 // TODO use nesting of groups to split api/nonapi routes
 
@@ -50,7 +52,6 @@ $app->group('', function () {
 // APIs
 
 $app->group('', function () {
-  use Jsv4\Validator as jsonv;
   $this->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
   $this->get('/jsonvtest', function ($request, $response) {
     return jsonv::isValid([ 'a' => 'b' ], []);
@@ -60,27 +61,22 @@ $app->group('', function () {
   $this->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');
   $this->put('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::put');
   $this->post('/api/0.1/timepixels[/]', 'TimeController:post');
-  //$app->delete('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::delete');
-  $app->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
+  $this->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
 });
 
-/*
-// test
-$app->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
-$app->get('/jsonvtest', function ($request, $response) {
-  use Jsv4\Validator as jsonv;
-  return jsonv::isValid([ 'a' => 'b' ], []);
-});
+// PLAYGROUND
+
+// Pohadkar_Jsv4
+$app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadkar_Jsv4::validationtest');
+$app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4::schematest');
+$app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4::schematest2');
+
+// Killua_Jsv4
+$app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4::validationtest');
+$app->get('/playground/killua_jsv4/schematest', '\Glued\Playground\Killua_Jsv4::schematest');
+$app->get('/playground/killua_jsv4/schematest2', '\Glued\Playground\Killua_Jsv4::schematest2');
 
 
-// timepixels
-$app->get('/api/0.1/timepixels[/{id}]', 'TimeController:get');
-$app->put('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::put');
-$app->post('/api/0.1/timepixels[/]', 'TimeController:post');
-
-//$app->delete('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::delete');
-$app->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
-*/
 
 
 /**
