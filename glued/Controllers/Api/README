@@ -19,4 +19,5 @@ TODO
   * https://code.tutsplus.com/tutorials/validating-data-with-json-schema-part-2--cms-25640
   * https://spacetelescope.github.io/understanding-json-schema/structuring.html
 * Choose/test form generation frontend library to generate sample forms (also capable of schema referencing) and aid with setting the correct combination of "required" rules
-  * https://github.com/icebob/vue-form-generator
+  * Vue implementation https://github.com/icebob/vue-form-generator
+  * Another implementation, online demo http://jeremydorn.com/json-editor/
