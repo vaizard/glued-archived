@@ -8,7 +8,8 @@
         "slim/csrf": "^0.7.0",
         "slim/flash": "^0.1.0",
         "joshcam/mysqli-database-class": "^2.6",
-        "geraintluff/jsv4": "dev-master"
+        "geraintluff/jsv4": "dev-master",
+        "league/oauth2-server": "^5.1"
     },
     "autoload": {
         "psr-4": {
