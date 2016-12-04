@@ -864,5 +864,195 @@
             "v4",
             "validator"
         ]
+    },
+    {
+        "name": "lcobucci/jwt",
+        "version": "3.2.1",
+        "version_normalized": "3.2.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/lcobucci/jwt.git",
+            "reference": "ddce703826f9c5229781933b1a39069e38e6a0f3"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/lcobucci/jwt/zipball/ddce703826f9c5229781933b1a39069e38e6a0f3",
+            "reference": "ddce703826f9c5229781933b1a39069e38e6a0f3",
+            "shasum": ""
+        },
+        "require": {
+            "ext-openssl": "*",
+            "php": ">=5.5"
+        },
+        "require-dev": {
+            "mdanter/ecc": "~0.3.1",
+            "mikey179/vfsstream": "~1.5",
+            "phpmd/phpmd": "~2.2",
+            "phpunit/php-invoker": "~1.1",
+            "phpunit/phpunit": "~4.5",
+            "squizlabs/php_codesniffer": "~2.3"
+        },
+        "suggest": {
+            "mdanter/ecc": "Required to use Elliptic Curves based algorithms."
+        },
+        "time": "2016-10-31 20:09:32",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.1-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Lcobucci\\JWT\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Luís Otávio Cobucci Oblonczyk",
+                "email": "lcobucci@gmail.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "A simple library to work with JSON Web Token and JSON Web Signature",
+        "keywords": [
+            "JWS",
+            "jwt"
+        ]
+    },
+    {
+        "name": "league/event",
+        "version": "2.1.2",
+        "version_normalized": "2.1.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/event.git",
+            "reference": "e4bfc88dbcb60c8d8a2939a71f9813e141bbe4cd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/event/zipball/e4bfc88dbcb60c8d8a2939a71f9813e141bbe4cd",
+            "reference": "e4bfc88dbcb60c8d8a2939a71f9813e141bbe4cd",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "require-dev": {
+            "henrikbjorn/phpspec-code-coverage": "~1.0.1",
+            "phpspec/phpspec": "~2.0.0"
+        },
+        "time": "2015-05-21 12:24:47",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.2-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\Event\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Frank de Jonge",
+                "email": "info@frenky.net"
+            }
+        ],
+        "description": "Event package",
+        "keywords": [
+            "emitter",
+            "event",
+            "listener"
+        ]
+    },
+    {
+        "name": "league/oauth2-server",
+        "version": "5.1.3",
+        "version_normalized": "5.1.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-server.git",
+            "reference": "f78dc2eca0774ec3958bbcf9b2a23d5ae61fb5aa"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/f78dc2eca0774ec3958bbcf9b2a23d5ae61fb5aa",
+            "reference": "f78dc2eca0774ec3958bbcf9b2a23d5ae61fb5aa",
+            "shasum": ""
+        },
+        "require": {
+            "ext-openssl": "*",
+            "lcobucci/jwt": "^3.1",
+            "league/event": "^2.1",
+            "paragonie/random_compat": "^1.1 || ^2.0",
+            "php": ">=5.5.9",
+            "psr/http-message": "^1.0"
+        },
+        "replace": {
+            "league/oauth2server": "*",
+            "lncd/oauth2": "*"
+        },
+        "require-dev": {
+            "indigophp/hash-compat": "^1.1",
+            "phpunit/phpunit": "^4.8 || ^5.0",
+            "zendframework/zend-diactoros": "^1.0"
+        },
+        "suggest": {
+            "indigophp/hash-compat": "Polyfill for hash_equals function for PHP 5.5"
+        },
+        "time": "2016-10-12 14:08:15",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-V5-WIP": "5.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Server\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Alex Bilbie",
+                "email": "hello@alexbilbie.com",
+                "homepage": "http://www.alexbilbie.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "A lightweight and powerful OAuth 2.0 authorization and resource server library with support for all the core specification grants. This library will allow you to secure your API with OAuth and allow your applications users to approve apps that want to access their data from your API.",
+        "homepage": "https://oauth2.thephpleague.com/",
+        "keywords": [
+            "Authentication",
+            "api",
+            "auth",
+            "authorisation",
+            "authorization",
+            "oauth",
+            "oauth 2",
+            "oauth 2.0",
+            "oauth2",
+            "protect",
+            "resource",
+            "secure",
+            "server"
+        ]
     }
 ]
