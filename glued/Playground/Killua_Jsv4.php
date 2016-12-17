@@ -29,8 +29,8 @@ class Killua_Jsv4 extends Controller
            "dt_end": "2017-02-13 16:00",
            "users": 
            { "data": [{
-              "id": 5,
-              "name": "kuba"
+              "Xid": 5,
+              "Xname": "kuba"
              }]
            }
           }
