@@ -1,0 +1,19 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+        
+        <br /><br /><br /><br /><h1>test na upload zip souboru s o2 vyuctovanim</h1>
+        
+        <h2>prehled nahranych souboru</h2>
+        {{ vystup | raw }}
+        
+        <h2>formular na nahrani zipu</h2>
+        <form method="post" action="{{ path_for('o2gui') }}" enctype="multipart/form-data">
+            <label>Select files to upload:</label>
+            <input type="file" name="files[]" multiple />
+            <button type="submit">Upload</button>
+            {{ csrf.field | raw }}
+        </form>
+    <br /><br />
+
+{% endblock %}

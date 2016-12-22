@@ -90,6 +90,7 @@ $container['HomeController'] = function ($container) {
     return new \Glued\Controllers\HomeController($container);
 };
 
+
 // glued authentication
 $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
@@ -110,6 +111,7 @@ $container['TimeController'] = function ($container) {
 $container['csrf'] = function ($container) {
     return new \Slim\Csrf\Guard;
 };
+
 
 
 

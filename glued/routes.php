@@ -5,6 +5,7 @@ use \Glued\Middleware\Auth\GuestMiddleware;
 use Jsv4\Validator as jsonv;
 
 
+
 // TODO use nesting of groups to split api/nonapi routes
 
 /*
@@ -35,7 +36,7 @@ $app->group('', function () {
   $this->get ('/auth/signout', 'AuthController:getSignOut')->setName('auth.signout');
   $this->get ('/upload', 'UploadController:get')->setName('upload');
   $this->post('/upload', 'UploadController:post')->setName('upload');
-
+  
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
@@ -70,6 +71,11 @@ $app->group('', function () {
 $app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadkar_Jsv4::validationtest');
 $app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4::schematest');
 $app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4::schematest2');
+
+// pohadkar upload a prehled zipu (POZOR, funkci volam s jednou dvojteckou : aby tam bylo this)
+$app->get('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:uploadgui')->setName('o2gui')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+$app->post('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:savezip')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+
 
 // Killua_Jsv4
 $app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4::validationtest');
