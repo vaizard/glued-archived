@@ -13,7 +13,7 @@ class Pohadkar_o2 extends Controller
         $vystup = '';
         // prehled nahranych zipu
         $array_of_filenames = array();
-        $parent_path = '/var/www/html/glued/private/stor/o2';
+        $parent_path = '/var/www/html/glued/private/import/O2cz';
         if ($dh = opendir($parent_path)) {
             while( false !== ($file = readdir($dh))) {
                 if ($file == '.' or $file == '..') { continue; }
@@ -55,7 +55,7 @@ class Pohadkar_o2 extends Controller
             $f[]['mime'] = $newfile->getClientFilename();
             $f[]['result'] = $newfile->getClientFilename();
             */
-            $newfile->moveTo("/var/www/html/glued/private/stor/o2/".$newfile->getClientFilename());
+            $newfile->moveTo("/var/www/html/glued/private/import/O2cz/".$newfile->getClientFilename());
         } else {
             $this->container->flash->addMessage('error', 'Some or all of your files failed to upload.');
             return $response->withRedirect($this->container->router->pathFor('o2gui'));
