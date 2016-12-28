@@ -1,0 +1,15 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+        
+        <h1>analyza souboru v rozbalenem zipu</h1>
+        
+        <div><a href="{{ path_for('o2gui') }}">jdi zpět</a></div>
+        
+        <h2>název zipu: {{ zipname | raw }}</h2>
+        
+        {{ vystup | raw }}
+        
+        
+
+{% endblock %}

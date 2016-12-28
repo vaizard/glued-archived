@@ -2,11 +2,12 @@
 
 {% block content %}
         
-        <br /><br /><br /><br /><h1>test na upload zip souboru s o2 vyuctovanim</h1>
+        <h1>test na upload zip souboru s o2 vyuctovanim</h1>
         
-        <h2>prehled nahranych souboru</h2>
+        <h2>prehled nahranych a rozbalenych souboru</h2>
         {{ vystup | raw }}
         
+        <br /><br /><br />
         <h2>formular na nahrani zipu</h2>
         <form method="post" action="{{ path_for('o2gui') }}" enctype="multipart/form-data">
             <label>Select files to upload:</label>
