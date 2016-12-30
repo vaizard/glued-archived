@@ -75,6 +75,7 @@ $app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_J
 // pohadkar upload a prehled zipu (POZOR, funkci volam s jednou dvojteckou : aby tam bylo this)
 $app->get('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:uploadgui')->setName('o2gui')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->post('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:savezip')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+$app->get('/playground/pohadkar_o2/faktura[/{dirname}]', '\Glued\Playground\Pohadkar_o2:analyzadiru');
 
 
 // Killua_Jsv4
