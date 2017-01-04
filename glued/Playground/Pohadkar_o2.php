@@ -44,15 +44,15 @@ class Pohadkar_o2 extends Controller
         $vystup = '';
         // prehled souboru v diru
         $array_of_filenames = array();
-        $array_of_xml = array();
+        $pozadovane_xml = '';
         $parent_path = '/var/www/html/glued/private/import/O2cz/'.$args['dirname'];
         if ($dh = opendir($parent_path)) {
             while( false !== ($file = readdir($dh))) {
                 if ($file == '.' or $file == '..') { continue; }
                 if (is_file($parent_path.'/'.$file)) {
                     $array_of_filenames[] = $file;
-                    if (preg_match('|\.xml$|', $file)) {
-                        $array_of_xml[] = $file;
+                    if (preg_match('|-s-mob\.xml$|', $file)) {
+                        $pozadovane_xml = $file;
                     }
                 }
             }
@@ -71,30 +71,112 @@ class Pohadkar_o2 extends Controller
             $vystup .= '</ul>';
         }
         
-        // analyzujem jednotlive soubory
-        if (count($array_of_xml) == 0) {
-            $vystup .= '<p>v adresari nejsou zadne xml</p>';
+        // analyzujem soubor s-mob.xml
+        if ($pozadovane_xml == '') {
+            $vystup .= '<p>v adresari neni soubor koncici s-mob.xml</p>';
         }
         else {
-            foreach ($array_of_xml as $xmlfilename) {
+            $obsah = file_get_contents($parent_path.'/'.$pozadovane_xml);
+            
+            
+            
+            // rozparsuju si to sam
+            
+            preg_match('|<summaryHead.*<\/summaryHead>|Ums', $obsah, $hlavicka);
+            preg_match('|payerRefNum="([^"]*)"|', $hlavicka[0], $referefnum);
+            preg_match('|to="([^"]*)" from="([^"]*)"|', $hlavicka[0], $period);
+            $vystup .= '<h2 style="margin: 30px 0;">Rozpis vyúčtování referera <strong>'.$referefnum[1].'</strong> za období od <strong>'.$period[2].'</strong> do <strong>'.$period[1].'</strong></h2>';
+            
+            // subscriberi
+            preg_match_all('|<subscriber .*<\/subscriber>|Ums', $obsah, $subscribers);
+            
+            foreach ($subscribers[0] as $subscriber) {
+                preg_match('|phoneNumber="([^"]*)"|', $subscriber, $phonenumber);
+                preg_match('|ownerRefNum="([^"]*)"|', $subscriber, $ownernumber);
+                preg_match('|ownerCustCode="([^"]*)"|', $subscriber, $customcode);
+                preg_match('|summaryPrice="([^"]*)"|', $subscriber, $sumprice);
                 
-                $obsah = file_get_contents($parent_path.'/'.$xmlfilename);
+                $vystup .= '
+                <div class="panel panel-primary">
+                  <div class="panel-heading">Phone <strong>'.$phonenumber[1].'</strong></div>
+                  <div class="panel-body">
+                    Owner '.$ownernumber[1].'<br>
+                    code: '.$customcode[1].'<br>
+                    summary: '.$sumprice[1].'
+                  </div>
+                </div>';
                 
-                $p = xml_parser_create();
-                xml_parse_into_struct($p, $obsah, $vals);
-                xml_parser_free($p);
                 
-                $vystup .= '<h3>soubor '.$xmlfilename.' prevedeny na pole</h3>';
                 
-                foreach ($vals as $tag_data) {
-                    if ($tag_data['type'] == 'open' or $tag_data['type'] == 'complete') {
-                        $vystup .= '<div style="margin-left: '.($tag_data['level'] * 20).'px;">';
-                        $vystup .= '<span style="color: grey;">'.$tag_data['tag'].'</span> ';
-                        if (isset($tag_data['attributes'])) { $vystup .= ' <span style="color: grey;" title="atributy: '.print_r($tag_data['attributes'], true).'">[atr]</span> '; }
-                        if (isset($tag_data['value'])) { $vystup .= ' : <span style="color: black; font-weight: bold;">'.$tag_data['value'].'</span> '; }
-                        
-                        $vystup .= '</div>';
+                // regular charges
+                $vystup .= '<table class="table table-bordered">';
+                $vystup .= '<tr class="info"><th>Regular charges</th><th>from</th><th>to</th><th>price without tax</th><th>tax</th></tr>';
+                preg_match('|<regularCharges.*<\/regularCharges>|Ums', $subscriber, $regularblok);
+                preg_match('|rcTotalPrice="([^"]*)"|', $regularblok[0], $rcprice);
+                preg_match_all('|<rcItem [^>]*>|', $regularblok[0], $rcitemy);
+                foreach ($rcitemy[0] as $rcitem) {
+                    $rcdata = simplexml_load_string($rcitem);
+                    $rcattr = $rcdata->attributes();
+                    $vystup .= '<tr><td>'.$rcattr['feeName'].'</td><td>'.$rcattr['validFrom'].'</td><td>'.$rcattr['validTo'].'</td><td>'.$rcattr['priceWithoutTax'].'</td><td>'.$rcattr['tax'].'</td></tr>';
+                }
+                $vystup .= '<tr class="success"><td colspan="5"> total regular charges price: <strong>'.$rcprice[1].'</strong></td></tr>';
+                $vystup .= '</table>';
+                
+                // usage charges
+                $testuj_usage = preg_match('|<usageCharges.*<\/usageCharges>|Ums', $subscriber, $usageblok);
+                if ($testuj_usage) {
+                    $vystup .= '<table class="table table-bordered">';
+                    $vystup .= '<tr class="info"><th>Usage charges</th><td>quantity + uom</td><td>displayedUom</td><td>period</td><td>tax</td><td>priceWithoutTax</td><td>freeUnitsAmount</td></tr>';
+                    preg_match('|<usageCharges.*<\/usageCharges>|Ums', $subscriber, $usageblok);
+                    preg_match('|ucTotalPrice="([^"]*)"|', $usageblok[0], $ucprice);
+                    // ted jednotlive charge
+                    preg_match_all('|<usageCharge.*<\/usageCharge>|Ums', $usageblok[0], $subusagebloky);
+                    foreach ($subusagebloky[0] as $subusage) {
+                        preg_match('|usagePackName="([^"]*)"|', $subusage, $subname);
+                        preg_match('|subtotalPrice="([^"]*)"|', $subusage, $subprice);
+                        $vystup .= '<tr><td colspan="7"><strong>'.$subname[1].', subtotal price: '.$subprice[1].'</strong></td></tr>';
+                        preg_match_all('|<ucItem [^>]*>|', $subusage, $ucitemy);
+                        foreach ($ucitemy[0] as $ucitem) {
+                            $ucdata = simplexml_load_string($ucitem);
+                            $ucattr = $ucdata->attributes();
+                            $vystup .= '<tr><td>'.$ucattr['name'].'</td><td>'.$ucattr['quantity'].' '.$ucattr['uom'].'</td><td>'.$ucattr['displayedUom'].'</td><td>'.$ucattr['periodDescr'].'</td><td>'.$ucattr['tax'].'</td><td>'.$ucattr['priceWithoutTax'].'</td><td>'.$ucattr['freeUnitsAmount'].'</td></tr>';
+                        }
                     }
+                    $vystup .= '<tr class="success"><td colspan="7">total usage charges price: <strong>'.$ucprice[1].'</strong></td></tr>';
+                    $vystup .= '</table>';
+                }
+                
+                /*
+                quantity + uom
+          - displayedUom=min
+          - periodDescr=
+          - name
+          - tax="21.0"
+          - priceWithoutTax="21.0"
+          - freeUnitsAmount="870.0"
+          
+          <ucItem quantity="3840" displayedUom="min" uom="Sec" periodDescr="špička" period="02" tax="21.0" rowID="1" quantityOfConnect="21" priceWithoutTax="49.5" parentRowID="901" name="Do O2" freeUnitsPrice="0.0" freeUnitsAmount="870.0" freeCredits="0"/>
+                */
+                
+                // free units
+                
+                
+            }
+            
+            $p = xml_parser_create();
+            xml_parse_into_struct($p, $obsah, $vals);
+            xml_parser_free($p);
+            
+            $vystup .= '<h3>soubor '.$pozadovane_xml.' prevedeny na pole</h3>';
+            
+            foreach ($vals as $tag_data) {
+                if ($tag_data['type'] == 'open' or $tag_data['type'] == 'complete') {
+                    $vystup .= '<div style="margin-left: '.($tag_data['level'] * 20).'px;">';
+                    $vystup .= '<span style="color: grey;">'.$tag_data['tag'].'</span> ';
+                    if (isset($tag_data['attributes'])) { $vystup .= ' <span style="color: grey;" title="atributy: '.print_r($tag_data['attributes'], true).'">[atr]</span> '; }
+                    if (isset($tag_data['value'])) { $vystup .= ' : <span style="color: black; font-weight: bold;">'.$tag_data['value'].'</span> '; }
+                    
+                    $vystup .= '</div>';
                 }
             }
         }
