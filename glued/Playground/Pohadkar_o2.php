@@ -88,6 +88,10 @@ class Pohadkar_o2 extends Controller
             // subscriberi
             preg_match_all('|<subscriber .*<\/subscriber>|Ums', $obsah, $subscribers);
             
+            $pocet_nesrovnalosti = 0;
+            $celkovy_xml_soucet = (float) 0;
+            $celkovy_summary_soucet = (float) 0;
+            
             foreach ($subscribers[0] as $subscriber) {
                 preg_match('|phoneNumber="([^"]*)"|', $subscriber, $phonenumber);
                 preg_match('|ownerRefNum="([^"]*)"|', $subscriber, $ownernumber);
@@ -97,7 +101,7 @@ class Pohadkar_o2 extends Controller
                 
                 // regular charges
                 $rc_vystup = '';
-                $rc_real_summary = 0;
+                $rc_real_summary = (float) 0;
                 $rc_vystup .= '<table class="table table-bordered">';
                 $rc_vystup .= '<tr class="info"><th>Regular charges</th><th>from</th><th>to</th><th>price without tax</th><th>tax</th></tr>';
                 preg_match('|<regularCharges.*<\/regularCharges>|Ums', $subscriber, $regularblok);
@@ -109,13 +113,43 @@ class Pohadkar_o2 extends Controller
                     $rc_vystup .= '<tr><td>'.$rcattr['feeName'].'</td><td>'.$rcattr['validFrom'].'</td><td>'.$rcattr['validTo'].'</td><td>'.$rcattr['priceWithoutTax'].'</td><td>'.$rcattr['tax'].'</td></tr>';
                     $rc_real_summary += (float) $rcattr['priceWithoutTax'];
                 }
-                $rc_vystup .= '<tr class="active"><td colspan="5"> total regular charges price: <strong>'.$rcprice[1].'</strong> (real summary: '.$rc_real_summary.')</td></tr>';
+                $xml_cena = (float) $rcprice[1];
+                $rc_vystup .= '<tr class="active"><td colspan="5"> total regular charges price: <strong>'.$xml_cena.'</strong> (real summary: '.$rc_real_summary.')</td></tr>';
+                if (abs($xml_cena - $rc_real_summary) > 0.001) {
+                    $pocet_nesrovnalosti++;
+                    $rc_vystup .= '<tr class="danger"><td colspan="5"> WATCH OUT ! PRICES DO NOT MATCH !</td></tr>';
+                }
                 $rc_vystup .= '</table>';
+                
+                
+                // one time charges
+                $otc_vystup = '';
+                $otc_real_summary = (float) 0;
+                $testuj_onetime = preg_match('|<oneTimeCharges.*<\/oneTimeCharges>|Ums', $subscriber, $onetimeblok);
+                if ($testuj_onetime) {
+                    $otc_vystup .= '<table class="table table-bordered">';
+                    $otc_vystup .= '<tr class="info"><th>One time charges</th><th>price without tax</th><th>tax</th></tr>';
+                    preg_match('|otcTotalPrice="([^"]*)"|', $onetimeblok[0], $otcprice);
+                    preg_match_all('|<otcItem [^>]*>|', $onetimeblok[0], $otcitemy);
+                    foreach ($otcitemy[0] as $otcitem) {
+                        $otcdata = simplexml_load_string($otcitem);
+                        $otcattr = $otcdata->attributes();
+                        $otc_vystup .= '<tr><td>'.$otcattr['feeName'].'</td><td>'.$otcattr['priceWithoutTax'].'</td><td>'.$otcattr['tax'].'</td></tr>';
+                        $otc_real_summary += (float) $otcattr['priceWithoutTax'];
+                    }
+                    $xml_cena = (float) $otcprice[1];
+                    $otc_vystup .= '<tr class="active"><td colspan="3"> total one time charges price: <strong>'.$xml_cena.'</strong> (real summary: '.$otc_real_summary.')</td></tr>';
+                    if (abs($xml_cena - $otc_real_summary) > 0.001) {
+                        $pocet_nesrovnalosti++;
+                        $otc_vystup .= '<tr class="danger"><td colspan="3"> WATCH OUT ! PRICES DO NOT MATCH !</td></tr>';
+                    }
+                    $otc_vystup .= '</table>';
+                }
                 
                 
                 // usage charges
                 $uc_vystup = '';
-                $uc_real_summary = 0;
+                $uc_real_summary = (float) 0;
                 $testuj_usage = preg_match('|<usageCharges.*<\/usageCharges>|Ums', $subscriber, $usageblok);
                 if ($testuj_usage) {
                     $uc_vystup .= '<table class="table table-bordered">';
@@ -125,11 +159,10 @@ class Pohadkar_o2 extends Controller
                     // ted jednotlive charge
                     preg_match_all('|<usageCharge.*<\/usageCharge>|Ums', $usageblok[0], $subusagebloky);
                     foreach ($subusagebloky[0] as $subusage) {
-                        $real_items_summary = 0;
                         preg_match('|usagePackName="([^"]*)"|', $subusage, $subname);
                         preg_match('|subtotalPrice="([^"]*)"|', $subusage, $subprice);
                         preg_match_all('|<ucItem [^>]*>|', $subusage, $ucitemy);
-                        $sub_real_sumary = 0;
+                        $sub_real_sumary = (float) 0;
                         $sub_uc_vystup = '';
                         foreach ($ucitemy[0] as $ucitem) {
                             /*
@@ -140,16 +173,32 @@ class Pohadkar_o2 extends Controller
                             $sub_uc_vystup .= '<tr><td>'.$ucattr['name'].'</td><td>'.$ucattr['quantity'].' '.$ucattr['uom'].'</td><td>'.$ucattr['displayedUom'].'</td><td>'.$ucattr['periodDescr'].'</td><td>'.$ucattr['tax'].'</td><td>'.$ucattr['priceWithoutTax'].'</td><td>'.$ucattr['freeUnitsAmount'].'</td></tr>';
                             $sub_real_sumary += (float) $ucattr['priceWithoutTax'];
                         }
-                        $uc_vystup .= '<tr><td colspan="7"><strong>'.$subname[1].', subtotal price: '.$subprice[1].'</strong> (real summary: '.$sub_real_sumary.')</td></tr>';
+                        $xml_cena = (float) $subprice[1];
+                        $uc_vystup .= '<tr><td colspan="7"><strong>'.$subname[1].', subtotal price: '.$xml_cena.'</strong> (real summary: '.$sub_real_sumary.')</td></tr>';
+                        if (abs($xml_cena - $sub_real_sumary) > 0.001) {
+                            $pocet_nesrovnalosti++;
+                            $uc_vystup .= '<tr class="danger"><td colspan="7"> WATCH OUT ! PRICES DO NOT MATCH !</td></tr>';
+                        }
                         $uc_vystup .= $sub_uc_vystup;
                         $uc_real_summary += $sub_real_sumary;
                     }
-                    $uc_vystup .= '<tr class="active"><td colspan="7">total usage charges price: <strong>'.$ucprice[1].'</strong> (real summary: '.$uc_real_summary.')</td></tr>';
+                    $uc_xml_cena = (float) $ucprice[1];
+                    $uc_vystup .= '<tr class="active"><td colspan="7">total usage charges price: <strong>'.$uc_xml_cena.'</strong> (real summary: '.$uc_real_summary.')</td></tr>';
+                    if (abs($uc_xml_cena - $uc_real_summary) > 0.001) {
+                        $pocet_nesrovnalosti++;
+                        $uc_vystup .= '<tr class="danger"><td colspan="7"> WATCH OUT ! PRICES DO NOT MATCH !</td></tr>';
+                    }
                     $uc_vystup .= '</table>';
                 }
                 
                 
-                // free units
+                // free units, asi nic
+                
+                $celkovy_xml_cislo = (float) $sumprice[1];
+                $celkovy_summary_cislo = $rc_real_summary + $uc_real_summary + $otc_real_summary;
+                
+                $celkovy_xml_soucet += $celkovy_xml_cislo;
+                $celkovy_summary_soucet += $celkovy_summary_cislo;
                 
                 // vystup
                 
@@ -159,14 +208,23 @@ class Pohadkar_o2 extends Controller
                   <div class="panel-body">
                     Owner '.$ownernumber[1].'<br>
                     code: '.$customcode[1].'<br>
-                    summary: '.$sumprice[1].' (real summary: '.($rc_real_summary + $uc_real_summary).')
+                    summary: '.$celkovy_xml_cislo.' (real summary: '.$celkovy_summary_cislo.')';
+                if (abs($celkovy_xml_cislo - $celkovy_summary_cislo) > 0.001) {
+                    $pocet_nesrovnalosti++;
+                    $vystup .= ' <span style="background-color: red; font-weight: bold; color: white;">WATCH OUT ! PRICES DO NOT MATCH !</span>';
+                }
+                $vystup .= '
                   </div>
                 </div>';
                 
                 $vystup .= $rc_vystup;
+                $vystup .= $otc_vystup;
                 $vystup .= $uc_vystup;
                 
             }
+            
+            $vystup .= '<div style="border: 2px solid red; padding: 5px;">Total XML summary: '.$celkovy_xml_soucet.' (real summary '.$celkovy_summary_soucet.'), pocet cenovych nesrovnalosti: '.$pocet_nesrovnalosti.'</div>';
+            
             
             /*
             $p = xml_parser_create();
