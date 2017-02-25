@@ -18,8 +18,8 @@ class Auth
     public function user() {
         $user = $_SESSION['user'] ?? false;
         if ($user === false) return false;
-        $this->container->db->where('id',$user);
-        return $this->container->db->getOne("users");
+        $this->container->db->where('c_uid', $user);
+        return $this->container->db->getOne("t_users");
     }
     
 
@@ -38,17 +38,18 @@ class Auth
 
 
     // attempt to sign in user, return true|false on success or failure
-    public function attempt($email,$password)
+    public function attempt($email, $password)
     {
-        $this->container->db->where('email',$email);
-        $user = $this->container->db->getOne("users");
-
+        $this->container->db->where('c_type', 1);
+        $this->container->db->where('c_username', $email);
+        $user = $this->container->db->getOne("t_authentication");
+        
         if (!$user) {
             return false;
         }
-
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user'] = $user['id'];
+        
+        if (password_verify($password, $user['c_pasword'])) {
+            $_SESSION['user'] = $user['c_user_id'];
             return true;
         }
 

@@ -1,0 +1,15 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+        
+        <h1>test na generování plateb</h1>
+        
+        <h2>vygenerovany prikazovy soubor pro banku k jedne platbe</h2>
+        {{ vystup | raw }}
+        
+        <br /><br /><br />
+        <a href="{{ path_for('platbylist') }}">zpet</a>
+        
+    <br /><br />
+
+{% endblock %}

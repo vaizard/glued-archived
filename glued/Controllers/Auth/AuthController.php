@@ -73,35 +73,54 @@ class AuthController extends Controller
             'name'  => v::noWhitespace()->notEmpty()->alpha(),
             'password' => v::noWhitespace()->notEmpty(),
         ]);
-
+        
         // on validation failure redirect back to signup form. the rest of this
         // function won't get exectuted
         if ($validation->failed()) {
             return $response->withRedirect($this->container->router->pathFor('auth.signup'));
         }
-
+        
         // DEBUG
         // var_dump($request->getParams());
-
-        // insert $data into db
-        $data = Array (
-            "email"     => $request->getParam('email'),
-            "name"      => $request->getParam('name'),
-            "password"  => password_hash($request->getParam('password'), PASSWORD_DEFAULT),
+        
+        // insert $data into db with transaction, 2 tables
+        $this->container->db->startTransaction();
+        
+        // do t_users vlozime zakladni zaznam, a funkce nam vraci zalozene id
+        $data1 = Array (
+            "c_screenname"     => $request->getParam('name')
         );
-        $user = $this->container->db->insert ('users', $data);
-
+        $new_user_id = $this->container->db->insert ('t_users', $data1);
+        
         // emit flash message and log result
-        if ($user) {
-            $this->container->logger->info("Auth: user ".$data['email']." created");
-            $this->container->flash->addMessage('info', 'You have been signed up');
-        } else {
-            $this->container->logger->warn("Auth: user creation ".$data['email']." failed");
+        if ($new_user_id) {
+            // dale to vlozime do t_authentication
+            $data2 = Array (
+                "c_user_id"      => $new_user_id,
+                "c_type" => 1,
+                "c_username"     => $request->getParam('email'),
+                "c_pasword"  => password_hash($request->getParam('password'), PASSWORD_DEFAULT),
+            );
+            $new_autentication_id = $this->container->db->insert ('t_authentication', $data2);
+            
+            if ($new_autentication_id) {
+                $this->container->logger->info("Auth: user ".$request->getParam('email')." created");
+                $this->container->flash->addMessage('info', 'You have been signed up');
+                $this->container->db->commit();
+            }
+            else {
+                $this->container->logger->warn("Auth: user creation ".$request->getParam('email')." failed");
+                $this->container->db->rollback();
+            }
         }
-
+        else {
+            $this->container->logger->warn("Auth: user creation ".$request->getParam('email')." failed");
+            $this->container->db->rollback();
+        }
+        
         // user successfully signed up, so we'll sign him in directly, then
         // redirect home
-        $this->container->auth->attempt($data['email'], $request->getParam('password'));
+        $this->container->auth->attempt($request->getParam('email'), $request->getParam('password'));
         return $response->withRedirect($this->container->router->pathFor('home'));
     }
 
