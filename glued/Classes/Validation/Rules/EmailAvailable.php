@@ -18,15 +18,15 @@ class EmailAvailable extends AbstractRule
         $this->container = $container;
     }
 
-
+    // ze input bude ten email zajistuje konstrukce validatoru, protoze je to prirazeno jako pravidlo pro email
     public function validate($input)
     {
         $this->container->db->where('c_type', 1);
         $this->container->db->where('c_username', $input);
         if ($this->container->db->getOne("t_authentication")) {
-            return false;
+            return false;   // pokud tam je, vracime false, jakoze neni available
         } else { 
-            return true; 
+            return true; // pokud tam neni, vracime true, jakoze je available
         }
     }
 

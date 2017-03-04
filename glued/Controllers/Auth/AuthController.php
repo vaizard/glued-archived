@@ -36,6 +36,7 @@ class AuthController extends Controller
         // on validation failure redirect back to signin form. the rest of this
         // function won't get exectuted
         if ($validation->failed()) {
+            $this->container->flash->addMessage('error', 'Could not sign in with those details.');
             return $response->withRedirect($this->container->router->pathFor('auth.signin'));
         }
 
@@ -107,6 +108,8 @@ class AuthController extends Controller
                 $this->container->logger->info("Auth: user ".$request->getParam('email')." created");
                 $this->container->flash->addMessage('info', 'You have been signed up');
                 $this->container->db->commit();
+                // user successfully signed up, so we'll sign him in directly, then
+                $this->container->auth->attempt($request->getParam('email'), $request->getParam('password'));
             }
             else {
                 $this->container->logger->warn("Auth: user creation ".$request->getParam('email')." failed");
@@ -118,9 +121,7 @@ class AuthController extends Controller
             $this->container->db->rollback();
         }
         
-        // user successfully signed up, so we'll sign him in directly, then
         // redirect home
-        $this->container->auth->attempt($request->getParam('email'), $request->getParam('password'));
         return $response->withRedirect($this->container->router->pathFor('home'));
     }
 
@@ -135,32 +136,48 @@ class AuthController extends Controller
     // password, redirects him to different locations based on success|failure.
     public function PostChangePassword($request, $response)
     {
-        // matchesPassword() is a custom validation rule, see Classes/Validation
-        // using $this->container->auth->user() as its parameter is a
-        // preparation for cases when user's password can be reset by an admin
-        // as well (not only the user himselft)
-        $validation = $this->container->validator->validate($request, [
-            'password_old' => v::noWhitespace()->notEmpty()->matchesPassword($this->container, $this->container->auth->user()),
-            'password' => v::noWhitespace()->notEmpty(),
-        ]);
-
-        // on validation failure redirect back to the form. the rest of this
-        // function won't get exectuted
-        if ($validation->failed()) {
-            return $response->withRedirect($this->container->router->pathFor('auth.password.change'));
-        }
-
-        // change the password, emit flash message and redirect
-        // TODO error handling on failed db->update
         $user_id = $_SESSION['user'] ?? false;
+        
         if ($user_id) {
+            
+            // matchesPassword() is a custom validation rule, see Classes/Validation
+            // using $this->container->auth->user() as its parameter is a
+            // preparation for cases when user's password can be reset by an admin
+            // as well (not only the user himselft)
+            
+            // zatim udelame jen nejjednodussi pripad, ze menime heslo prihlaseneho uzivatele
+            $change_user_id = $_SESSION['user'];
+            $change_authentication_id = $_SESSION['authentication_id'];
+            
+            $validation = $this->container->validator->validate($request, [
+                'password_old' => v::noWhitespace()->notEmpty()->matchesPassword($this->container, $change_user_id, $change_authentication_id),
+                'password' => v::noWhitespace()->notEmpty(),
+            ]);
+            
+            // on validation failure redirect back to the form. the rest of this
+            // function won't get exectuted
+            if ($validation->failed()) {
+                $this->container->logger->warn("Password change failed. Validation error.");
+                return $response->withRedirect($this->container->router->pathFor('auth.password.change'));
+            }
+            
+            // change the password, emit flash message and redirect
             $password = $request->getParam('password');
-            $this->container->db->where('id', $user_id);
-            $this->container->db->update('users', Array ( 'password' => password_hash($password, PASSWORD_DEFAULT)  ));
-            $this->container->flash->addMessage('info', 'Your password was changed');
-            return $response->withRedirect($this->container->router->pathFor('home'));
+            $this->container->db->where('c_type', 1);
+            $this->container->db->where('c_uid', $change_authentication_id);
+            $this->container->db->where('c_user_id', $change_user_id);
+            $update = $this->container->db->update('t_authentication', Array ( 'c_pasword' => password_hash($password, PASSWORD_DEFAULT)  ));
+            
+            if (!$update) {
+                $this->container->logger->warn("Password change failed. DB error.");
+                return $response->withRedirect($this->container->router->pathFor('auth.password.change'));
+            }
+            else {
+                $this->container->flash->addMessage('info', 'Your password was changed');
+                return $response->withRedirect($this->container->router->pathFor('home'));
+            }
         }
-
+        
     }
 
 

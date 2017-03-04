@@ -34,6 +34,7 @@ class Auth
     public function signout()
     {
         unset($_SESSION['user']);
+        unset($_SESSION['authentication_id']);
     }
 
 
@@ -50,6 +51,7 @@ class Auth
         
         if (password_verify($password, $user['c_pasword'])) {
             $_SESSION['user'] = $user['c_user_id'];
+            $_SESSION['authentication_id'] = $user['c_uid'];
             return true;
         }
 
