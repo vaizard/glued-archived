@@ -136,18 +136,19 @@ class AuthController extends Controller
     // password, redirects him to different locations based on success|failure.
     public function PostChangePassword($request, $response)
     {
-        $user_id = $_SESSION['user'] ?? false;
+        $user_id = $_SESSION['user_id'] ?? false;
+        $authentication_id = $_SESSION['authentication_id'] ?? false;
         
-        if ($user_id) {
+        if ($user_id and $authentication_id) {
             
             // matchesPassword() is a custom validation rule, see Classes/Validation
             // using $this->container->auth->user() as its parameter is a
             // preparation for cases when user's password can be reset by an admin
             // as well (not only the user himselft)
             
-            // zatim udelame jen nejjednodussi pripad, ze menime heslo prihlaseneho uzivatele
-            $change_user_id = $_SESSION['user'];
-            $change_authentication_id = $_SESSION['authentication_id'];
+            // zatim udelame jen nejjednodussi pripad, ze menime heslo prihlaseneho uzivatele. pozdeji zde bude nejake vetveni
+            $change_user_id = $user_id;
+            $change_authentication_id = $authentication_id;
             
             $validation = $this->container->validator->validate($request, [
                 'password_old' => v::noWhitespace()->notEmpty()->matchesPassword($this->container, $change_user_id, $change_authentication_id),

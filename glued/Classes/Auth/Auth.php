@@ -16,9 +16,9 @@ class Auth
 
     // returns data about user fetched from database
     public function user() {
-        $user = $_SESSION['user'] ?? false;
-        if ($user === false) return false;
-        $this->container->db->where('c_uid', $user);
+        $user_id = $_SESSION['user_id'] ?? false;
+        if ($user_id === false) return false;
+        $this->container->db->where('c_uid', $user_id);
         return $this->container->db->getOne("t_users");
     }
     
@@ -26,14 +26,17 @@ class Auth
     // check if user is logged in, returns true|false
     public function check()
     {
-        return $_SESSION['user'] ?? false;
+        $user_id = $_SESSION['user_id'] ?? false;
+        $authentication_id = $_SESSION['authentication_id'] ?? false;
+        if ($user_id === false or $authentication_id === false) { return false; }
+        else { return true; }
     }
 
 
     // signout user (delete his session)
     public function signout()
     {
-        unset($_SESSION['user']);
+        unset($_SESSION['user_id']);
         unset($_SESSION['authentication_id']);
     }
 
@@ -50,7 +53,7 @@ class Auth
         }
         
         if (password_verify($password, $user['c_pasword'])) {
-            $_SESSION['user'] = $user['c_user_id'];
+            $_SESSION['user_id'] = $user['c_user_id'];
             $_SESSION['authentication_id'] = $user['c_uid'];
             return true;
         }
