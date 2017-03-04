@@ -21,12 +21,13 @@ class EmailAvailable extends AbstractRule
 
     public function validate($input)
     {
-             $this->container->db->where('email',$input);
-             if ($this->container->db->getOne("users")) {
-                 return false;
-             } else { 
-                 return true; 
-             }
+        $this->container->db->where('c_type', 1);
+        $this->container->db->where('c_username', $input);
+        if ($this->container->db->getOne("t_authentication")) {
+            return false;
+        } else { 
+            return true; 
+        }
     }
 
 

@@ -1,0 +1,21 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+        
+        <h1>ruzne testy</h1>
+        
+        <form action="{{ path_for('innodb') }}" method="post">
+        
+            <button type="submit" class="btn btn-default">Vlož</button>
+            {{ csrf.field | raw  }}
+            
+        </form>
+        
+        
+        {{ vystup | raw }}
+        
+        <br /><br /><br />
+        
+    <br /><br />
+
+{% endblock %}

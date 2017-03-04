@@ -67,7 +67,7 @@ $app->group('', function () {
 
 // PLAYGROUND
 
-// Pohadkar_Jsv4
+// Pohadkar_Jsv4 (proc tu jsou ty :: pozor na to, rozdil oproti : , ktere je vsude jinde)
 $app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadkar_Jsv4::validationtest');
 $app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4::schematest');
 $app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4::schematest2');
@@ -76,6 +76,17 @@ $app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_J
 $app->get('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:uploadgui')->setName('o2gui')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->post('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:savezip')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->get('/playground/pohadkar_o2/faktura[/{dirname}]', '\Glued\Playground\Pohadkar_o2:analyzadiru');
+
+// pohadkar, zadavani plateb a generovani prikazu bance
+$app->get('/playground/pohadkar_platby/list', '\Glued\Playground\Pohadkar_platby:list')->setName('platbylist');
+$app->get('/playground/pohadkar_platby/new', '\Glued\Playground\Pohadkar_platby:form')->setName('platbynew')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+$app->post('/playground/pohadkar_platby/new', '\Glued\Playground\Pohadkar_platby:insert')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+$app->get('/playground/pohadkar_platby/prikaz[/{id}]', '\Glued\Playground\Pohadkar_platby:prikaz');
+
+// pohadkar, moje testy
+$app->get('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_testy:form')->setName('innodb')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+$app->post('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_testy:test')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+
 
 
 // Killua_Jsv4
