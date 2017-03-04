@@ -93,6 +93,7 @@ $app->post('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_test
 $app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4::validationtest');
 $app->get('/playground/killua_jsv4/schematest', '\Glued\Playground\Killua_Jsv4::schematest');
 $app->get('/playground/killua_jsv4/schematest2', '\Glued\Playground\Killua_Jsv4::schematest2');
+$app->get('/playground/killua_db/list1', '\Glued\Playground\Killua_db:list1');
 
 
 

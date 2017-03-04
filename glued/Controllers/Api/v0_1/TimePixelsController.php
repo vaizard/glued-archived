@@ -26,12 +26,12 @@ class TimePixelsController extends Controller
         
         // nacteni useru
         $data['data']['users'] = array();
-        $this->container->db->join("users u", "r.user_id=u.id", "LEFT");
+        $this->container->db->join("t_users u", "r.user_id=u.c_uid", "LEFT");
         $this->container->db->where('r.timepixel_id', $args['id']);
-        $users = $this->container->db->get("rel_timepixels_users r", null, "u.id, u.name");
+        $users = $this->container->db->get("rel_timepixels_users r", null, "u.c_uid, u.c_screenname");
         if ($this->container->db->count > 0) {
             foreach ($users as $user) {
-                $data['data']['users'][] = array('id' => $user['id'], 'name' => $user['name']);
+                $data['data']['users'][] = array('id' => $user['c_uid'], 'name' => $user['c_screenname']);
             }
         }
         
