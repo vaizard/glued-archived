@@ -110,19 +110,21 @@ class AuthController extends Controller
                 $this->container->db->commit();
                 // user successfully signed up, so we'll sign him in directly, then
                 $this->container->auth->attempt($request->getParam('email'), $request->getParam('password'));
+                // redirect home
+                return $response->withRedirect($this->container->router->pathFor('home'));
             }
             else {
                 $this->container->logger->warn("Auth: user creation ".$request->getParam('email')." failed");
-                $this->container->db->rollback();
             }
         }
         else {
             $this->container->logger->warn("Auth: user creation ".$request->getParam('email')." failed");
-            $this->container->db->rollback();
         }
         
-        // redirect home
-        return $response->withRedirect($this->container->router->pathFor('home'));
+        // creation error, redirect to form again
+        $this->container->db->rollback();
+        $this->container->flash->addMessage('error', 'User creation failed.');
+        return $response->withRedirect($this->container->router->pathFor('auth.signup'));
     }
 
     // responds to the change password get request (shows signin form)
