@@ -9,7 +9,7 @@ class EmailAvailableException extends ValidationException
 
     public static $defaultTemplates = [
         self::MODE_DEFAULT => [
-            self::STANDARD => 'Email is aldeady taken.',
+            self::STANDARD => 'Email is already taken.',
         ],
     ];
 
