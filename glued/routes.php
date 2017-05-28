@@ -31,11 +31,23 @@ $app->group('', function () {
 
   // $app isn't in scope inside here, we use $this instead
   // we could use $app only if we'd have to call "function () use ($app)"
-  $this->get ('/auth/password/change', 'AuthController:getChangePassword')->setName('auth.password.change');
+  $this->get('/auth/password/change', 'AuthController:getChangePassword')->setName('auth.password.change');
   $this->post('/auth/password/change', 'AuthController:postChangePassword'); // we only need to set the name once for an uri, hence here not a setName again
-  $this->get ('/auth/signout', 'AuthController:getSignOut')->setName('auth.signout');
-  $this->get ('/upload', 'UploadController:get')->setName('upload');
+  $this->get('/auth/signout', 'AuthController:getSignOut')->setName('auth.signout');
+  $this->get('/upload', 'UploadController:get')->setName('upload');
   $this->post('/upload', 'UploadController:post')->setName('upload');
+  
+  $this->get('/acl/crossroad', 'AclController:getAclCrossroad')->setName('acl.crossroad');
+  $this->post('/acl/crossroad', 'AclController:postAddAction');
+  $this->get('/acl/usergroups/{id}', 'AclController:getUserGroups');
+  $this->post('/acl/usergroups', 'AclController:postUserGroups')->setName('acl.update.membership');
+  $this->get('/acl/userunix/{id}', 'AclController:getUserUnix');
+  $this->post('/acl/userunix', 'AclController:postUserUnix')->setName('acl.update.userunix');
+  $this->get('/acl/userprivileges/{id}', 'AclController:getUserPrivileges');    // privilgie uzivatele a form na pridani noveho
+  $this->get('/acl/groupprivileges/{id}', 'AclController:getGroupPrivileges');  // privilegia skupiny a form na pridani noveho
+  $this->get('/acl/tableprivileges/{tablename}', 'AclController:getTablePrivileges');  // privilegia na tabulku a form na pridani noveho
+  $this->post('/acl/newprivilege', 'AclController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
+  
   
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
@@ -67,10 +79,10 @@ $app->group('', function () {
 
 // PLAYGROUND
 
-// Pohadkar_Jsv4 (proc tu jsou ty :: pozor na to, rozdil oproti : , ktere je vsude jinde)
-$app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadkar_Jsv4::validationtest');
-$app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4::schematest');
-$app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4::schematest2');
+// Pohadkar_Jsv4 (proc tu jsou ty :: pozor na to, rozdil oproti : , ktere je vsude jinde. odted davam vsude jen jednu dvojtecku)
+$app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadkar_Jsv4:validationtest');
+$app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4:schematest');
+$app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4:schematest2');
 
 // pohadkar upload a prehled zipu (POZOR, funkci volam s jednou dvojteckou : aby tam bylo this)
 $app->get('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:uploadgui')->setName('o2gui')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
@@ -90,11 +102,11 @@ $app->post('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_test
 
 
 // Killua_Jsv4
-$app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4::validationtest');
-$app->get('/playground/killua_jsv4/schematest', '\Glued\Playground\Killua_Jsv4::schematest');
-$app->get('/playground/killua_jsv4/schematest2', '\Glued\Playground\Killua_Jsv4::schematest2');
+$app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4:validationtest');
+$app->get('/playground/killua_jsv4/schematest', '\Glued\Playground\Killua_Jsv4:schematest');
+$app->get('/playground/killua_jsv4/schematest2', '\Glued\Playground\Killua_Jsv4:schematest2');
 $app->get('/playground/killua_db/list1', '\Glued\Playground\Killua_db:list1');
-
+$app->get('/playground/killua_jsfb/moz', '\Glued\Playground\Killua_JsonSchemaForm:json_moz');
 
 
 

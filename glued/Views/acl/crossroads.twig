@@ -1,0 +1,81 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+  <div class="row">
+
+    <div class="col-md-8 col-md-offset-2">
+      <div class="panel panel-default">
+        <div class="panel-heading">ACL Crossroads</div>
+        <div class="panel-body">
+        
+        <h2>Přehled uživatelů</h2>
+        {{ vystup_users | raw }}
+        
+        <h2>Přehled skupin</h2>
+        {{ vystup_groups | raw }}
+        
+        <h2>Přehled tabulek a kdo na ně má práva</h2>
+        <div>tabulka: platby_mzdy <a href="tableprivileges/platby_mzdy">privileges</a></div>
+        <div>tabulka: timepixels <a href="tableprivileges/timepixels">privileges</a></div>
+        
+        <h3>Editace tabulky t_implemented_action</h3>
+        <p>přiřazení akcí z t_action objektům, TODO</p>
+        
+        <h3>Editace tabulky t_action</h3>
+        <p>přehled dostupných akcí v gluedu</p>
+        
+        {{ vystup_actions | raw }}
+        
+        <h4>add new action</h4>
+        
+          <form action="{{ path_for('acl.crossroad') }}" method="post">
+            
+            <div class="row">
+            
+              <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Name of Action</label>
+                    <input type="text" name="title">
+                  </div>
+              </div>
+            
+              <div class="col-md-4">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="apply_object" id="optionsRadios1" value="1" checked>
+                    Apply on object
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="apply_object" id="optionsRadios2" value="0">
+                    Apply on table
+                  </label>
+                </div>
+              </div>
+            
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-default">Add</button>
+                </div>
+            
+            </div>
+            
+            {{ csrf.field | raw  }}
+          </form>
+        
+        <h3>Přehled permissions a groups (hardcodované)</h3>
+        <div class="row">
+            <div class="col-md-6">
+                {{ vystup_hardcoded_permissions | raw }}
+            </div>
+            <div class="col-md-6">
+                {{ vystup_hardcoded_groups | raw }}
+            </div>
+        </div>
+        
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

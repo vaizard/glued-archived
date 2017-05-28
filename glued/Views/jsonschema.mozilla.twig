@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+
+    <script type="text/javascript" src="https://fiddle.jshell.net/js/babel/babel.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+    <script type="text/javascript" src="https://npmcdn.com/react-jsonschema-form/dist/react-jsonschema-form.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <style type="text/css">
+  </style>
+
+  <title>react-jsonschema-form demo by kaihendry</title>
+
+<script type="text/babel">
+const Form = JSONSchemaForm.default;
+
+const uiSchema = { "needG": { "ui:widget": "radio" } };
+
+const schema = {
+    "title": "Consent form",
+    "type": "object",
+  "required" : [ "needG", "name" ],
+    "properties":{
+     "name": {
+          "type": "string",
+          "title": "Name"
+        },
+     "needG": {
+          "type": "boolean",
+          "title": "Do you need a guardian?"
+        }
+    }
+};
+
+function onSubmit(formData) {
+    console.log("Finally", formData.formData);
+    React.render(<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>, 
+             document.getElementById("main"));
+ }
+
+function onChange(formData) {
+  console.log("here");
+  if (formData.formData.needG) {
+       schema.required.push("gname");
+       schema.properties.gname = {
+          "type": "string",
+          "title": "Guardian name"
+        };
+       console.log(schema);
+       console.log("Show the guardian form");
+       React.render(<Form schema={schema} uiSchema={uiSchema} formData={formData.formData} onSubmit={onSubmit} />, 
+             document.getElementById("main"));
+}
+}
+
+React.render(<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema}>
+<input type="hidden" name="lala" value="abc"></input>
+<div>
+      <button type="submit">Submit</button>
+      <button type="button">Cancel</button>
+    </div>
+</Form>, 
+             document.getElementById("main"));
+
+//fed
+</script>
+
+  
+</head>
+
+<body>
+  <div class="container">
+  <div id="main"></div>
+</div>
+
+</body>
+
+</html>
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta charset="utf-8">
+  <title>Demo of react-jsonschema-form</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+</head>
+
+<body>
+
+
+<script>
+
+const Form = JSONSchemaForm.default;
+
+import React, { Component } from "react";
+import { render } from "react-dom";
+
+import Form from "react-jsonschema-form";
+
+const schema = {
+  title: "Todo",
+  type: "object",
+  required: ["title"],
+  properties: {
+    title: {type: "string", title: "Title", default: "A new task"},
+    done: {type: "boolean", title: "Done?", default: false}
+  }
+};
+
+const log = (type) => console.log.bind(console, type);
+
+render((
+  <Form schema={schema}
+        onChange={log("changed")}
+        onSubmit={log("submitted")}
+        onError={log("errors")} />
+), document.getElementById("app"));
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js" integrity="sha256-iHJxral3dKeWuIA++6qfaB/GObc/x/4gKNquSrSVs2A=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.min.js" integrity="sha256-uzKwYuH50DHzDYr3h/Bnpv7C5QJNUjHEpVmT3Xuq3ww=" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-jsonschema-form/dist/react-jsonschema-form.js"></script>
+</body>
+</html>
+-->
