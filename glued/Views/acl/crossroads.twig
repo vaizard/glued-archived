@@ -8,23 +8,34 @@
         <div class="panel-heading">ACL Crossroads</div>
         <div class="panel-body">
         
-        <h2>Přehled uživatelů</h2>
+        <h2>Přehled uživatelů (role user)</h2>
         {{ vystup_users | raw }}
         
-        <h2>Přehled skupin</h2>
+        <h2>Přehled skupin (role group)</h2>
         {{ vystup_groups | raw }}
         
+        <h2>Privilegia pro ostatní role (self, creator, ...)</h2>
+        <p><a href="{{ path_for('acl.roleprivileges') }}">role privileges</a></p>
+        
         <h2>Přehled tabulek a kdo na ně má práva</h2>
-        <div>tabulka: platby_mzdy <a href="tableprivileges/platby_mzdy">privileges</a></div>
-        <div>tabulka: timepixels <a href="tableprivileges/timepixels">privileges</a></div>
+        <div>tabulka: platby_mzdy <a href="tableprivileges/platby_mzdy">table privileges</a> | <a href="globalprivileges/platby_mzdy">global privileges</a></div>
+        <div>tabulka: timepixels <a href="tableprivileges/timepixels">table privileges</a> | <a href="globalprivileges/timepixels">global privileges</a></div>
         
         <h3>Editace tabulky t_implemented_action</h3>
-        <p>přiřazení akcí z t_action objektům, TODO</p>
+        <p>přiřazení akcí z t_action objektům (ma smysl jen az pouzijeme statusy), TODO</p>
         
         <h3>Editace tabulky t_action</h3>
         <p>přehled dostupných akcí v gluedu</p>
-        
-        {{ vystup_actions | raw }}
+        <div class="row">
+        <div class="col-md-6">
+        <h4>object and global actions</h4>
+        {{ vystup_actions.object | raw }}
+        </div>
+        <div class="col-md-6">
+        <h4>table actions</h4>
+        {{ vystup_actions.table | raw }}
+        </div>
+        </div>
         
         <h4>add new action</h4>
         

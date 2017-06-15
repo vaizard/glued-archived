@@ -17,6 +17,7 @@
             <div class="panel-heading">New Privilege of group {{ group_name }}</div>
             <div class="panel-body">
                 <form action="{{ path_for('acl.new.privilege') }}" method="post">
+                    <input type="hidden" name="formpage" value="group" />
                     <input type="hidden" name="group_id" value="{{ group_id }}" />
                     
                     <input type="hidden" name="role" value="group" />
@@ -25,9 +26,7 @@
                   <div class="form-group">
                     <label for="polozka1">Action</label>
                     <select name="action" class="form-control" id="polozka1">
-                        <option value="1" selected>akce 1</option>
-                        <option value="2">akce 2</option>
-                        <option value="3">akce 3</option>
+                        {{ action_options | raw }}
                     </select>
                   </div>
                     

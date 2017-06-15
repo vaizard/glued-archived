@@ -6,7 +6,7 @@
 
     <div class="col-md-8 col-md-offset-2">
         <div class="panel panel-default">
-          <div class="panel-heading">Who has privileges on table {{ table_name }} [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
+          <div class="panel-heading">Who has {{ privileges_type }} privileges on table {{ table_name }} [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
           <div class="panel-body">
             {{ privileges_output | raw }}
           </div>

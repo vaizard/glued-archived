@@ -22,15 +22,27 @@ class AclController extends Controller
             $vystup_groups .= '<div>ID: '.$group_id.', name: '.$group_name.' <a href="groupprivileges/'.$group_id.'">group privileges</a></div>';
         }
         
-        $vystup_actions = '';
+        $vystup_actions['object'] = '';
+        $vystup_actions['table'] = '';
+        $this->container->db->where("c_apply_object", 1);
         $akce = $this->container->db->get('t_action');
         if (count($akce) > 0) {
             foreach ($akce as $akce1) {
-                $vystup_actions .= '<div><strong>'.$akce1['c_title'].'</strong> (apply on '.($akce1['c_apply_object'] == 1?'objects':'tables').')</div>';
+                $vystup_actions['object'] .= '<div><strong>'.$akce1['c_title'].'</strong></div>';
             }
         }
         else {
-            $vystup_actions .= '<div>no actions are defined</div>';
+            $vystup_actions['object'] .= '<div>no object actions are defined</div>';
+        }
+        $this->container->db->where("c_apply_object", 0);
+        $akce = $this->container->db->get('t_action');
+        if (count($akce) > 0) {
+            foreach ($akce as $akce1) {
+                $vystup_actions['table'] .= '<div><strong>'.$akce1['c_title'].'</strong></div>';
+            }
+        }
+        else {
+            $vystup_actions['table'] .= '<div>no table actions are defined</div>';
         }
         
         $vystup_hardcoded_permissions = '<div>Permissions: <br />'.print_r($this->container->acl->show_permissions(), true).'</div>';
@@ -191,14 +203,24 @@ class AclController extends Controller
         $privileges = $this->container->db->get('t_privileges');
         if ($this->container->db->count > 0) {
             foreach ($privileges as $privilege) {
-                $vystup_privileg .= '<div>'.$privilege['c_action'].', '.$privilege['c_type'].', '.$privilege['c_related_table'].' edit, delete</div>';
+                $vystup_privileg .= '<div>'.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
             }
         }
         else {
             $vystup_privileg .= 'no privileges at the moment';
         }
         
-        return $this->container->view->render($response, 'acl/userprivileges.twig', array('user' => $user, 'privileges_output' => $vystup_privileg));
+        // nacteme si mozne akce
+        $action_options = '';
+        $akce = $this->container->db->get('t_action');
+        if ($this->container->db->count > 0) {
+            foreach ($akce as $akce1) {
+                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+            }
+        }
+        
+        
+        return $this->container->view->render($response, 'acl/userprivileges.twig', array('user' => $user, 'privileges_output' => $vystup_privileg, 'action_options' => $action_options));
     }
     
     // shows edit page for module acl of one group - table t_privileges
@@ -215,14 +237,23 @@ class AclController extends Controller
             $privileges = $this->container->db->get('t_privileges');
             if ($this->container->db->count > 0) {
                 foreach ($privileges as $privilege) {
-                    $vystup_privileg .= '<div>'.$privilege['c_action'].', '.$privilege['c_type'].', '.$privilege['c_related_table'].' edit, delete</div>';
+                    $vystup_privileg .= '<div>'.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
                 }
             }
             else {
                 $vystup_privileg .= 'no privileges at the moment';
             }
             
-            return $this->container->view->render($response, 'acl/groupprivileges.twig', array('group_name' => $group_name, 'group_id' => $group_id, 'privileges_output' => $vystup_privileg));
+            // nacteme si mozne akce
+            $action_options = '';
+            $akce = $this->container->db->get('t_action');
+            if ($this->container->db->count > 0) {
+                foreach ($akce as $akce1) {
+                    $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+                }
+            }
+            
+            return $this->container->view->render($response, 'acl/groupprivileges.twig', array('group_name' => $group_name, 'group_id' => $group_id, 'privileges_output' => $vystup_privileg, 'action_options' => $action_options));
         }
         else {
             $this->container->flash->addMessage('info', 'bad group id');
@@ -230,11 +261,44 @@ class AclController extends Controller
         }
     }
     
-    // shows edit page who has the privileges for one table - table t_privileges
-    public function getTablePrivileges($request, $response, $args)
+    // shows edit page for role privileges of other roles as self or creator
+    public function getRolePrivileges($request, $response)
+    {
+        $this->container->db->where("c_uid", $args['id']);
+        $user = $this->container->db->getOne('t_users');
+        
+        $vystup_privileg = '';
+        $this->container->db->where("c_role", 'self');
+        $this->container->db->orWhere("c_role", 'creator'); // OR
+        $privileges = $this->container->db->get('t_privileges');
+        if ($this->container->db->count > 0) {
+            foreach ($privileges as $privilege) {
+                $vystup_privileg .= '<div>role <strong>'.$privilege['c_role'].'</strong> '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
+            }
+        }
+        else {
+            $vystup_privileg .= 'no privileges at the moment';
+        }
+        
+        // nacteme si mozne akce
+        $action_options = '';
+        $akce = $this->container->db->get('t_action');
+        if ($this->container->db->count > 0) {
+            foreach ($akce as $akce1) {
+                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+            }
+        }
+        
+        
+        return $this->container->view->render($response, 'acl/roleprivileges.twig', array('user' => $user, 'privileges_output' => $vystup_privileg, 'action_options' => $action_options));
+    }
+    
+    // shows edit page who has table privileges for one table - table t_privileges
+    public function getTableTablePrivileges($request, $response, $args)
     {
         $allowed_tables_array = array('platby_mzdy', 'timepixels');
         $table_name = $args['tablename'];
+        $privileges_type = 'table';
         
         if (in_array($table_name, $allowed_tables_array)) {
             $vystup_privileg = '';
@@ -244,14 +308,44 @@ class AclController extends Controller
             $privileges = $this->container->db->get('t_privileges');
             if ($this->container->db->count > 0) {
                 foreach ($privileges as $privilege) {
-                    $vystup_privileg .= '<div>'.$privilege['c_role'].' (id: '.$privilege['c_who'].'), action: '.$privilege['c_action'].($privilege['c_neg'] == 1?', negative':'').'</div>';
+                    $vystup_privileg .= '<div>role <strong>'.$privilege['c_role'].'</strong> '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
                 }
             }
             else {
                 $vystup_privileg .= 'no privileges at the moment';
             }
             
-            return $this->container->view->render($response, 'acl/tableprivileges.twig', array('table_name' => $table_name, 'privileges_output' => $vystup_privileg));
+            return $this->container->view->render($response, 'acl/tableprivileges.twig', array('table_name' => $table_name, 'privileges_output' => $vystup_privileg, 'privileges_type' => $privileges_type));
+        }
+        else {
+            $this->container->flash->addMessage('info', 'bad table name');
+            return $response->withRedirect($this->container->router->pathFor('acl.crossroad'));
+        }
+    }
+    
+    // shows edit page who has global privileges for one table - table t_privileges
+    public function getGlobalTablePrivileges($request, $response, $args)
+    {
+        $allowed_tables_array = array('platby_mzdy', 'timepixels');
+        $table_name = $args['tablename'];
+        $privileges_type = 'global';
+        
+        if (in_array($table_name, $allowed_tables_array)) {
+            $vystup_privileg = '';
+            
+            $this->container->db->where("c_type", 'global');
+            $this->container->db->where("c_related_table", $table_name);
+            $privileges = $this->container->db->get('t_privileges');
+            if ($this->container->db->count > 0) {
+                foreach ($privileges as $privilege) {
+                    $vystup_privileg .= '<div>role <strong>'.$privilege['c_role'].'</strong> '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
+                }
+            }
+            else {
+                $vystup_privileg .= 'no privileges at the moment';
+            }
+            
+            return $this->container->view->render($response, 'acl/tableprivileges.twig', array('table_name' => $table_name, 'privileges_output' => $vystup_privileg, 'privileges_type' => $privileges_type));
         }
         else {
             $this->container->flash->addMessage('info', 'bad table name');
@@ -282,10 +376,25 @@ class AclController extends Controller
         
         if (!$insert) {
             $this->container->logger->warn("Action was not added. DB error.");
-            return $response->withRedirect($this->container->router->pathFor('acl.crossroad'));
         }
         else {
             $this->container->flash->addMessage('info', 'New privilege was added');
+        }
+        
+        // presmerovani podle toho ve kterem formu jsme byli
+        $formpage = $request->getParam('formpage');
+        if ($formpage == 'user') {
+            $user_id = $request->getParam('user_id');
+            return $response->withRedirect('/glued/public/acl/userprivileges/'.$user_id);
+        }
+        else if ($formpage == 'group') {
+            $group_id = $request->getParam('group_id');
+            return $response->withRedirect('/glued/public/acl/groupprivileges/'.$group_id);
+        }
+        else if ($formpage == 'role') {
+            return $response->withRedirect('/glued/public/acl/roleprivileges');
+        }
+        else {
             return $response->withRedirect($this->container->router->pathFor('acl.crossroad'));
         }
     }

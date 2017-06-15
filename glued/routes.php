@@ -45,7 +45,9 @@ $app->group('', function () {
   $this->post('/acl/userunix', 'AclController:postUserUnix')->setName('acl.update.userunix');
   $this->get('/acl/userprivileges/{id}', 'AclController:getUserPrivileges');    // privilgie uzivatele a form na pridani noveho
   $this->get('/acl/groupprivileges/{id}', 'AclController:getGroupPrivileges');  // privilegia skupiny a form na pridani noveho
-  $this->get('/acl/tableprivileges/{tablename}', 'AclController:getTablePrivileges');  // privilegia na tabulku a form na pridani noveho
+  $this->get('/acl/roleprivileges', 'AclController:getRolePrivileges')->setName('acl.roleprivileges');  // privilegia dalsich roli a form na pridani noveho
+  $this->get('/acl/tableprivileges/{tablename}', 'AclController:getTableTablePrivileges');  // table privilegia na tabulku a form na pridani noveho
+  $this->get('/acl/globalprivileges/{tablename}', 'AclController:getGlobalTablePrivileges');  // global privilegia na tabulku a form na pridani noveho
   $this->post('/acl/newprivilege', 'AclController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
   
   

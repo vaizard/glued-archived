@@ -6,7 +6,7 @@
 
     <div class="col-md-8 col-md-offset-2">
         <div class="panel panel-default">
-          <div class="panel-heading">Existing Privileges of user {{ user.c_screenname }} (id: {{ user.c_uid }}) [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
+          <div class="panel-heading">Existing Privileges of roles self and creator [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
           <div class="panel-body">
             {{ privileges_output | raw }}
           </div>
@@ -14,16 +14,21 @@
       
       
         <div class="panel panel-default">
-            <div class="panel-heading">New Privilege of user {{ user.c_screenname }}</div>
+            <div class="panel-heading">New Privilege of role</div>
             <div class="panel-body">
                 <form action="{{ path_for('acl.new.privilege') }}" method="post">
-                    <input type="hidden" name="formpage" value="user" />
-                    <input type="hidden" name="user_id" value="{{ user.c_uid }}" />
+                    <input type="hidden" name="formpage" value="role" />
                     
-                    
-                    <input type="hidden" name="role" value="user" />
-                    <input type="hidden" name="who" value="{{ user.c_uid }}" />
-                    
+                    <input type="hidden" name="who" value="0" />
+                  
+                  <div class="form-group">
+                    <label for="polozka0">Role</label>
+                    <select name="role" class="form-control" id="polozka0">
+                        <option value="self" selected>self</option>
+                        <option value="creator">creator</option>
+                    </select>
+                  </div>
+                  
                   <div class="form-group">
                     <label for="polozka1">Action</label>
                     <select name="action" class="form-control" id="polozka1">

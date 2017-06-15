@@ -3,6 +3,7 @@
 namespace Glued\Playground;
 use Glued\Controllers\Controller;
 
+
 class Pohadkar_platby extends Controller
 {
     
@@ -10,34 +11,47 @@ class Pohadkar_platby extends Controller
     public function list($request, $response)
     {
         $vystup = '';
+        $odkaz_create = false;
         
         // user id vezmu z auth funkce user()
         $user_data = $this->container->auth->user();
         $user_id = $user_data['id'];
         
-        // prehled plateb z db
-        
-        $this->container->db->where("id_creator", $user_id);
-        $platby = $this->container->db->get('platby_mzdy');
-        if ($this->container->db->count > 0) {
-            foreach ($platby as $platba) {
-                $vystup .= '<div>amount: '.$platba['amount'].', from '.$platba['sender_account'].'/'.$platba['sender_bank'].' to '.$platba['recipient_account'].'/'.$platba['recipient_bank'].' <a href="prikaz/'.$platba['id'].'">soubor</a></div>';
+        // prehled tvych zadanych plateb z db (overuju creator read privilegium na tabulku)
+        if ($this->container->acl->have_creator_action('platby_mzdy', 'read')) {
+            $this->container->db->where("id_creator", $user_id);
+            $platby = $this->container->db->get('platby_mzdy');
+            if ($this->container->db->count > 0) {
+                foreach ($platby as $platba) {
+                    $vystup .= '<div>amount: '.$platba['amount'].', from '.$platba['sender_account'].'/'.$platba['sender_bank'].' to '.$platba['recipient_account'].'/'.$platba['recipient_bank'].' <a href="prikaz/'.$platba['id'].'">soubor</a></div>';
+                }
+            }
+            else {
+                $vystup .= '<p>žádné platby nejsou vložené</p>';
             }
         }
         else {
-            $vystup .= '<p>žádné platby nejsou vložené</p>';
+            $vystup .= '<p>na tuto tabulku nemáš odovídající privilegium</p>';
         }
         
+        // zjistim jestli mam create pravo na tabulku a podle toho se ukaze nebo neukaze odkaz
+        if ($this->container->acl->have_table_action('platby_mzdy', 'create')) {
+            $odkaz_create = true;
+        }
         
-        
-        return $this->container->view->render($response, 'platby.twig', array('vystup' => $vystup));
+        return $this->container->view->render($response, 'platby.twig', array('vystup' => $vystup, 'odkaz_create' => $odkaz_create));
     }
     
     
-    // funkce ktera vypise formular na vlozeni nove platby
+    // funkce ktera vypise formular na vlozeni nove platby. pokud tam prijdu bez privilegia, posle me to na forbidden stranku
     public function form($request, $response)
     {
-        return $this->container->view->render($response, 'platby-new.twig');
+        if ($this->container->acl->have_table_action('platby_mzdy', 'create')) {
+            return $this->container->view->render($response, 'platby-new.twig');
+        }
+        else {
+            return $this->container->view->render($response, 'forbidden.twig');
+        }
     }
     
     
@@ -65,35 +79,44 @@ class Pohadkar_platby extends Controller
     */
     public function insert($request, $response)
     {
-        // validaci zatim preskocime , TODO
-        
-        // user id vezmu z auth funkce user()
-        $user_data = $this->container->auth->user();
-        $user_id = $user_data['id'];
-        
-        // priprava pole na insert do db, TODO casy zatim vlozim aktualni
-        $data = Array (
-            "id_creator"     => $user_id,
-            "dt_created"      => time(),
-            "sender_account"      => $request->getParam('sender_account'),
-            "sender_bank"      => $request->getParam('sender_bank'),
-            "recipient_account"      => $request->getParam('recipient_account'),
-            "recipient_bank"      => $request->getParam('recipient_bank'),
-            "amount"      => $request->getParam('amount'),
-            "symbol_variable"      => $request->getParam('symbol_variable'),
-            "symbol_constant"      => $request->getParam('symbol_constant'),
-            "symbol_specific"      => $request->getParam('symbol_specific'),
-            "message"      => $request->getParam('message'),
-            "note"      => $request->getParam('note'),
-            "date_due"  => time()
-        );
-        $vlozena_platba = $this->container->db->insert('platby_mzdy', $data);
-        
-        // flash a presmerovani na list stranku
-        if ($vlozena_platba) {
-            $this->container->flash->addMessage('info', 'Nová platba byla vložena do databáze.');
-        } else {
-            $this->container->flash->addMessage('error', 'Novou platbu se nepodařilo vložit do databáze. Chyba: '.$this->container->db->getLastError());
+        // mam pravo vkladat?
+        if ($this->container->acl->have_table_action('platby_mzdy', 'create')) {
+            
+            
+            // validaci zatim preskocime , TODO
+            
+            // user id vezmu z auth funkce user()
+            $user_data = $this->container->auth->user();
+            $user_id = $user_data['id'];
+            
+            // priprava pole na insert do db, TODO casy zatim vlozim aktualni
+            $data = Array (
+                "id_creator"     => $user_id,
+                "dt_created"      => time(),
+                "sender_account"      => $request->getParam('sender_account'),
+                "sender_bank"      => $request->getParam('sender_bank'),
+                "recipient_account"      => $request->getParam('recipient_account'),
+                "recipient_bank"      => $request->getParam('recipient_bank'),
+                "amount"      => $request->getParam('amount'),
+                "symbol_variable"      => $request->getParam('symbol_variable'),
+                "symbol_constant"      => $request->getParam('symbol_constant'),
+                "symbol_specific"      => $request->getParam('symbol_specific'),
+                "message"      => $request->getParam('message'),
+                "note"      => $request->getParam('note'),
+                "date_due"  => time()
+            );
+            $vlozena_platba = $this->container->db->insert('platby_mzdy', $data);
+            
+            // flash a presmerovani na list stranku
+            if ($vlozena_platba) {
+                $this->container->flash->addMessage('info', 'Nová platba byla vložena do databáze.');
+            } else {
+                $this->container->flash->addMessage('error', 'Novou platbu se nepodařilo vložit do databáze. Chyba: '.$this->container->db->getLastError());
+            }
+        }
+        else {
+            // dame mu tam nejakou hnusnou hlasku, protoze obesel vsecky zabrany. nebo na forbidden stranku? ;-)
+            $this->container->flash->addMessage('error', 'No to si snad děláš prdel ! Na to nemáš právo.');
         }
         
         // presmerovani
@@ -101,7 +124,7 @@ class Pohadkar_platby extends Controller
     }
     
     
-    // funkce, ktera vypise prikazovy soubor, pro jednu platbu
+    // funkce, ktera vypise prikazovy soubor, pro jednu platbu, tady zatim neni acl
     public function prikaz($request, $response, $args)
     {
         $vystup = '';
