@@ -1,0 +1,83 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+  <div class="row">
+
+    <div class="col-md-8 col-md-offset-2">
+      <div class="panel panel-default">
+        <div class="panel-heading">Change Unixperms column of user {{ user.c_screenname }} (id: {{ user.c_uid }}) [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
+        <div class="panel-body">
+
+          <form action="{{ path_for('acl.update.userunix') }}" method="post">
+            
+            <input type="hidden" name="user_id" value="{{ user.c_uid }}" />
+            
+            <div class="form-group row">
+              
+              <div class="col-md-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="owner_read" value="256" {{ permissions.owner_read? 'checked':'' }}> Owner read
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="owner_write" value="128" {{ permissions.owner_write? 'checked':'' }}> Owner write
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="owner_delete" value="64" {{ permissions.owner_delete? 'checked':'' }}> Owner delete
+                    </label>
+                  </div>
+              </div>
+              
+              <div class="col-md-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="group_read" value="32" {{ permissions.group_read? 'checked':'' }}> Group read
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="group_write" value="16" {{ permissions.group_write? 'checked':'' }}> Group write
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="group_delete" value="8" {{ permissions.group_delete? 'checked':'' }}> Group delete
+                    </label>
+                  </div>
+              </div>
+              
+              <div class="col-md-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="other_read" value="4" {{ permissions.other_read? 'checked':'' }}> Other read
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="other_write" value="2" {{ permissions.other_write? 'checked':'' }}> Other write
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="other_delete" value="1" {{ permissions.other_delete? 'checked':'' }}> Other delete
+                    </label>
+                  </div>
+              </div>
+              
+            </div>
+
+            <button type="submit" class="btn btn-default">Set this Unixperms</button>
+            {{ csrf.field | raw  }}
+          </form>
+
+         </div>
+        </div>
+      </div>
+   </div>
+
+{% endblock %}

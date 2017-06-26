@@ -11,6 +11,11 @@ $container['auth'] = function ($container) {
     return new \Glued\Classes\Auth\Auth($container);
 };
 
+// glued acl class
+$container['acl'] = function ($container) {
+    return new \Glued\Classes\Acl\Acl($container);
+};
+
 
 // view renderer using the twig template engine
 $container['view'] = function ($container) {
@@ -94,6 +99,11 @@ $container['HomeController'] = function ($container) {
 // glued authentication
 $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
+};
+
+// glued ACL
+$container['AclController'] = function ($container) {
+    return new \Glued\Controllers\Acl\AclController($container);
 };
 
 // glued file upload
