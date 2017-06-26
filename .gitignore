@@ -2,3 +2,5 @@
 /logs/*
 !/logs/empty
 /glued/settings.php
+/private/oauth/public.key
+private/oauth/private.key
