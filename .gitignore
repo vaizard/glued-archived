@@ -4,3 +4,6 @@
 /glued/settings.php
 /private/oauth/public.key
 private/oauth/private.key
+
+/private/import/O2cz/*
+!/private/import/O2cz/README
