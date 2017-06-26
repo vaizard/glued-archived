@@ -27,4 +27,4 @@ printf "Restricting access to private.key (chmod 600) ... " && chmod 600 ./priva
 printf "Restricting access to private.key (chown ${pkeyowner}) ... " && chown ${pkeyowner}:${pkeyowner} ./private/oauth/private.key && echo "[done] 6" || eexit "[fail] 6"
 
 echo ""
-echo "GLUED successfully configured."
+echo "GLUED SUCCESSFULLY CONFIGURED."
