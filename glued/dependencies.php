@@ -122,6 +122,9 @@ $container['csrf'] = function ($container) {
     return new \Slim\Csrf\Guard;
 };
 
-
+// glued accounting module
+$container['AccountingCostsController'] = function ($container) {
+    return new \Glued\Controllers\Accounting\AccountingCostsController($container);
+};
 
 

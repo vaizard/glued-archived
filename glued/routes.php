@@ -54,6 +54,19 @@ $app->group('', function () {
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
+// another group of routes, where user have to be signed in, but no csrf check
+$app->group('', function () {
+  
+  $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
+  $this->get('/accounting/addcost', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
+  $this->post('/accounting/costapi', 'AccountingCostsController:insertCostApi')->setName('accounting.costapi');
+  
+  $this->get('/accounting/editcost/{id}', 'AccountingCostsController:editCostForm');
+  $this->put('/accounting/editcost/{id}', 'AccountingCostsController:editCostApi');
+
+})->add(new AuthMiddleware($container));
+
+
 // group of routes where user must not be signed in to see them
 $app->group('', function () {
 
