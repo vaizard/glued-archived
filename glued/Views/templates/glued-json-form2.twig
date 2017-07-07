@@ -38,7 +38,7 @@ function onSubmit(formData) {
       data: 'billdata=' + JSON.stringify(formData.formData),
       success: function(data) {
         
-        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+        ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
                  document.getElementById("main"));
         
       },
