@@ -5,7 +5,7 @@ use Glued\Controllers\Controller;
 
 class AccountingCostsController extends Controller
 {
-
+    
     // shows basic page with all costs
     public function getCosts($request, $response)
     {
@@ -15,14 +15,35 @@ class AccountingCostsController extends Controller
         if (count($bills) > 0) {
             foreach ($bills as $data) {
                 $billdata = json_decode($data['c_data'], true);
-                $costs_output .= '<div>ID: '.$data['c_uid'].', bill number: '.$billdata['bill-nr'].' <a href="editcost/'.$data['c_uid'].'">edit</a></div>';
+                $costs_output .= '<div id="cost_row_'.$data['c_uid'].'">ID: '.$data['c_uid'].', bill number: '.$billdata['bill-nr'].' <a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'">edit</a> | <span style="cursor: pointer; color: red;" onclick="delete_cost('.$data['c_uid'].');">delete</span></div>';
             }
         }
         else {
             $costs_output = 'zatim zadne nejsou vlozeny';
         }
         
-        return $this->container->view->render($response, 'accounting/costs.twig', array('costs_output' => $costs_output));
+        $additional_javascript = '
+    <script>
+    function delete_cost(cost_id) {
+        if (confirm("do you really want to delete this cost?")) {
+            $.ajax({
+              url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('accounting.api.delete').'" + cost_id,
+              dataType: "text",
+              type: "DELETE",
+              data: "voiddata=1",
+              success: function(data) {
+                $("#cost_row_" + cost_id).remove();
+              },
+              error: function(xhr, status, err) {
+                alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+              }
+            });
+        }
+    }
+    </script>
+        ';
+        
+        return $this->container->view->render($response, 'accounting/costs.twig', array('costs_output' => $costs_output, 'additional_javascript' => $additional_javascript));
     }
     
     // show form for add new cost
@@ -142,13 +163,36 @@ class AccountingCostsController extends Controller
   ]
 }
         ';
+        //$this->container['settings']['glued']['hostname']
+        //$this->container->settings->glued->hostname
+        // vnitrek onsubmit funkce
+        //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
+        $json_onsubmit_output = '
+    $.ajax({
+      url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('accounting.api.new').'",
+      dataType: "text",
+      type: "POST",
+      data: "billdata=" + JSON.stringify(formData.formData),
+      success: function(data) {
         
+        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+        
+      },
+      error: function(xhr, status, err) {
+        
+        ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+      }
+    });
+        ';
         
         return $this->container->view->render($response, 'accounting/addcost.twig', array(
             'form_output' => $form_output,
             'json_schema_output' => $json_schema_output,
             'json_uischema_output' => $json_uischema_output,
-            'json_formdata_output' => $json_formdata_output
+            'json_formdata_output' => $json_formdata_output,
+            'json_onsubmit_output' => $json_onsubmit_output
         ));
     }
     
@@ -265,48 +309,37 @@ class AccountingCostsController extends Controller
         // zakladni data, jedna prazdna polozka arraye "prirazeni"
         $json_formdata_output = $data['c_data'];
         
+        // vnitrek onsubmit funkce
+        //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
+        $json_onsubmit_output = '
+    $.ajax({
+      url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('accounting.api.edit').$args['id'].'",
+      dataType: "text",
+      type: "PUT",
+      data: "billdata=" + JSON.stringify(formData.formData),
+      success: function(data) {
+        
+        ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+        
+      },
+      error: function(xhr, status, err) {
+        
+        ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+      }
+    });
+        ';
+        
         
         return $this->container->view->render($response, 'accounting/editcost.twig', array(
             'form_output' => $form_output,
             'json_schema_output' => $json_schema_output,
             'json_uischema_output' => $json_uischema_output,
             'json_formdata_output' => $json_formdata_output,
+            'json_onsubmit_output' => $json_onsubmit_output,
             'cost_id' => $args['id']
         ));
-    }
-    
-    
-    // api for add new cost (parametr args neni potreba, post promenna bude v request)
-    public function insertCostApi($request, $response)
-    {
-        
-        $senddata = $request->getParam('billdata');
-        
-        $data = Array ("c_owner" => 1, "c_group" => 1, "c_unixperms" => 500,
-                       "c_data" => $senddata
-        );
-        
-        $insert = $this->container->db->insert('accounting_accepted', $data);
-        
-        // vratime prosty text
-       $response->getBody()->write('ok');
-       return $response;
-        
-    }
-    
-    // api for edit (parametr args ma, jedeme putem)
-    public function editCostApi($request, $response, $args)
-    {
-        
-        $senddata = $request->getParam('billdata');
-        
-        $this->container->db->where('c_uid', $args['id']);
-        $update = $this->container->db->update('accounting_accepted', Array ( 'c_data' => $senddata ));
-        
-        // vratime prosty text
-       $response->getBody()->write('ok');
-       return $response;
-        
     }
     
 }

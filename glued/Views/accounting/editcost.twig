@@ -1,4 +1,4 @@
-{% extends 'templates/glued-json-form2.twig' %}
+{% extends 'templates/glued-json-form.twig' %}
 
 {% block content %}
 
@@ -6,7 +6,7 @@
 
     <div class="col-md-8 col-md-offset-2">
         <div class="panel panel-default">
-          <div class="panel-heading">edit cost form<a href="{{ path_for('accounting.costs') }}" class="pull-right">back</a></div>
+          <div class="panel-heading">edit cost form (id: {{ cost_id | raw }})<a href="{{ path_for('accounting.costs') }}" class="pull-right">back</a></div>
           <div class="panel-body">
             {{ form_output | raw }}
             <div id="main"></div>

@@ -30,26 +30,7 @@ const formData = {{ json_formdata_output | raw }};
 
 
 function onSubmit(formData) {
-    
-    $.ajax({
-      url: 'https://japex.vaizard.xyz{{ path_for('accounting.costapi') }}',
-      dataType: 'text',
-      type: 'POST',
-      data: 'billdata=' + JSON.stringify(formData.formData),
-      success: function(data) {
-        
-        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
-                 document.getElementById("main"));
-        
-      },
-      error: function(xhr, status, err) {
-        
-        ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
-                 document.getElementById("main"));
-        alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
-      }
-    });
-    
+    {{ json_onsubmit_output | raw }}
 }
 
 function onChange(formData) { }

@@ -57,13 +57,22 @@ $app->group('', function () {
 // another group of routes, where user have to be signed in, but no csrf check
 $app->group('', function () {
   
+  // strankove veci (vraci html)
   $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
-  $this->get('/accounting/addcost', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
-  $this->post('/accounting/costapi', 'AccountingCostsController:insertCostApi')->setName('accounting.costapi');
+  $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
+  $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
   
-  $this->get('/accounting/editcost/{id}', 'AccountingCostsController:editCostForm');
-  $this->put('/accounting/editcost/{id}', 'AccountingCostsController:editCostApi');
-
+  
+  // api veci (vraci json)
+  $this->post('/api/v1/accounting/costs', 'AccountingCostsControllerApiV1:insertCostApi')->setName('accounting.api.new');
+  $this->put('/api/v1/accounting/costs/[{id}]', 'AccountingCostsControllerApiV1:editCostApi')->setName('accounting.api.edit');
+  $this->delete('/api/v1/accounting/costs/[{id}]', 'AccountingCostsControllerApiV1:deleteCostApi')->setName('accounting.api.delete');
+  
+  
+  
+  
+  
+  
 })->add(new AuthMiddleware($container));
 
 

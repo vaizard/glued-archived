@@ -122,9 +122,14 @@ $container['csrf'] = function ($container) {
     return new \Slim\Csrf\Guard;
 };
 
-// glued accounting module
+// glued accounting module, html output controler
 $container['AccountingCostsController'] = function ($container) {
     return new \Glued\Controllers\Accounting\AccountingCostsController($container);
+};
+
+// glued accounting module, api version controler
+$container['AccountingCostsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Accounting\AccountingCostsControllerApiV1($container);
 };
 
 
