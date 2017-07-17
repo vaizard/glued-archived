@@ -23,7 +23,7 @@ return [
         
         // glued globals
         'glued' => [
-            'hostname' => 'japex.vaizard.xyz'
+            'hostname' => 'glued.example.com'
         ],
         
     ],
