@@ -20,6 +20,12 @@ return [
             'path' => __DIR__ . '/../logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
         ],
+        
+        // glued globals
+        'glued' => [
+            'hostname' => 'japex.vaizard.xyz'
+        ],
+        
     ],
 ];
 
