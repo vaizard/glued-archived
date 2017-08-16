@@ -69,8 +69,8 @@ $app->group('', function () {
   $this->delete('/api/v1/accounting/costs/[{id}]', 'AccountingCostsControllerApiV1:deleteCostApi')->setName('accounting.api.delete');
   
   
-  
-  
+  // api acl
+  $this->delete('/api/v1/acl/privileges/[{id}]', 'AclControllerApiV1:deletePrivilegeApi')->setName('acl.api.privilege.delete');
   
   
 })->add(new AuthMiddleware($container));
@@ -100,6 +100,10 @@ $app->group('', function () {
   $this->post('/api/0.1/timepixels[/]', 'TimeController:post');
   $this->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
 });
+
+
+
+
 
 // PLAYGROUND
 

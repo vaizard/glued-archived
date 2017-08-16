@@ -203,12 +203,36 @@ class AclController extends Controller
         $privileges = $this->container->db->get('t_privileges');
         if ($this->container->db->count > 0) {
             foreach ($privileges as $privilege) {
-                $vystup_privileg .= '<div>'.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
+                $vystup_privileg .= '<div id="privilege_row_'.$privilege['c_id'].'">'.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong>
+                <span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_privilege('.$privilege['c_id'].');">delete</span>
+                <span class="pull-right">[edit]</span>
+                </div>';
             }
         }
         else {
             $vystup_privileg .= 'no privileges at the moment';
         }
+        
+        $additional_javascript = '
+    <script>
+    function delete_privilege(item_id) {
+        if (confirm("do you really want to delete this privilege?")) {
+            $.ajax({
+              url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('acl.api.privilege.delete').'" + item_id,
+              dataType: "text",
+              type: "DELETE",
+              data: "voiddata=1",
+              success: function(data) {
+                $("#privilege_row_" + item_id).remove();
+              },
+              error: function(xhr, status, err) {
+                alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+              }
+            });
+        }
+    }
+    </script>
+        ';
         
         // nacteme si mozne akce
         $action_options = '';
@@ -220,7 +244,7 @@ class AclController extends Controller
         }
         
         
-        return $this->container->view->render($response, 'acl/userprivileges.twig', array('user' => $user, 'privileges_output' => $vystup_privileg, 'action_options' => $action_options));
+        return $this->container->view->render($response, 'acl/userprivileges.twig', array('user' => $user, 'privileges_output' => $vystup_privileg, 'action_options' => $action_options, 'additional_javascript' => $additional_javascript));
     }
     
     // shows edit page for module acl of one group - table t_privileges

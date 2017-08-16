@@ -6,12 +6,13 @@
 
     <div class="col-md-8 col-md-offset-2">
         <div class="panel panel-default">
-          <div class="panel-heading">Existing Privileges of user {{ user.c_screenname }} (id: {{ user.c_uid }}) [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
+          <div class="panel-heading">Existing Privileges of user {{ user.c_screenname }} (id: {{ user.c_uid }}) <a class="pull-right" href="{{ path_for('acl.crossroad') }}">back</a></div>
           <div class="panel-body">
             {{ privileges_output | raw }}
           </div>
         </div>
       
+      {{ additional_javascript | raw }}
       
         <div class="panel panel-default">
             <div class="panel-heading">New Privilege of user {{ user.c_screenname }}</div>

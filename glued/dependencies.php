@@ -101,9 +101,14 @@ $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
 };
 
-// glued ACL
+// glued ACL controler, html output
 $container['AclController'] = function ($container) {
     return new \Glued\Controllers\Acl\AclController($container);
+};
+
+// glued ACL controler, api
+$container['AclControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Acl\AclControllerApiV1($container);
 };
 
 // glued file upload
