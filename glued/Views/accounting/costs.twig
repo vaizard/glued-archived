@@ -1,0 +1,22 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+{{ additional_javascript | raw }}
+
+<div class="row">
+
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+          <div class="panel-heading">existing costs<a href="{{ path_for('accounting.addcostform') }}" class="pull-right">add new cost</a></div>
+          <div class="panel-body">
+            {{ costs_output | raw }}
+          </div>
+        </div>
+      
+    
+    </div>
+
+</div>
+
+{% endblock %}

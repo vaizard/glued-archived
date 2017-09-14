@@ -1,0 +1,15 @@
+{
+    "date-plneni": {
+      "ui:widget": "alt-date"
+    },
+    "poznamka": {
+      "ui:widget": "textarea"
+    },
+    "prirazeni": {
+        "items": {
+          "poznamka": {
+            "ui:widget": "textarea"
+          }
+        }
+    }
+}

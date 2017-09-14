@@ -101,9 +101,14 @@ $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
 };
 
-// glued ACL
+// glued ACL controler, html output
 $container['AclController'] = function ($container) {
     return new \Glued\Controllers\Acl\AclController($container);
+};
+
+// glued ACL controler, api
+$container['AclControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Acl\AclControllerApiV1($container);
 };
 
 // glued file upload
@@ -122,6 +127,14 @@ $container['csrf'] = function ($container) {
     return new \Slim\Csrf\Guard;
 };
 
+// glued accounting module, html output controler
+$container['AccountingCostsController'] = function ($container) {
+    return new \Glued\Controllers\Accounting\AccountingCostsController($container);
+};
 
+// glued accounting module, api version controler
+$container['AccountingCostsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Accounting\AccountingCostsControllerApiV1($container);
+};
 
 
