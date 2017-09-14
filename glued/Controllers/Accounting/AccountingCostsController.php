@@ -50,108 +50,15 @@ class AccountingCostsController extends Controller
     public function addCostForm($request, $response)
     {
         $form_output = 'zde je formular';
-        $json_uischema_output = '
-{
-    "date-plneni": {
-      "ui:widget": "alt-date"
-    },
-    "poznamka": {
-      "ui:widget": "textarea"
-    },
-    "prirazeni": {
-        "items": {
-          "poznamka": {
-            "ui:widget": "textarea"
-          }
-        }
-    }
-}
-        ';
-        //     "required" : [ "wovat", "vat" ],
         
-        $json_schema_output = '
-{
-    "title": "New bill form",
-    "type": "object",
-    "properties":{
-        "files": {
-          "type": "array",
-          "title": "Multiple files",
-          "items": {
-            "type": "string",
-            "format": "data-url"
-          }
-        },
-        "dodavatel": {
-            "title": "Dodavatel",
-            "type": "object",
-            "properties": {
-                "nazev": {
-                    "type": "string",
-                    "title": "Název",
-                },
-                "ico": {
-                    "type": "string",
-                    "title": "IČ",
-                },
-                "adresa": {
-                    "type": "string",
-                    "title": "Adresa",
-                }
-            }
-        },
-        "date-plneni": {
-          "type": "string",
-          "format": "date",
-          "title": "Datum zdanitelného plnění",
-        },
-        "bill-nr": {
-          "type": "string",
-          "title": "Číslo účtenky"
-        },
-        "generated-nr": {
-          "type": "string",
-          "title": "Generované číslo"
-        },
-        "prirazeni": {
-          "type": "array",
-          "title": "Přiřazení k zakázkám",
-          "items": {
-            "type": "object",
-            "properties": {
-                "zakazka-nr": {
-                    "type": "string",
-                    "title": "Číslo zakázky",
-                },
-                "sum": {
-                    "type": "string",
-                    "title": "Částka k zakázce",
-                },
-                "poznamka": {
-                    "type": "string",
-                    "title": "Poznámka k zakázce",
-                }
-            }
-          }
-        },
-        "poznamka": {
-          "type": "string",
-          "title": "Poznámka"
-        },
-        "wovat": {
-          "type": "string",
-          "title": "Cena bez DPH"
-        },
-        "vat": {
-          "type": "string",
-          "title": "Cena s DPH"
-        }
+        // zvlastni pravidla pro vygenerovani jednotlivych prvku
+        // odebrano   "required" : [ "wovat", "vat" ],
+        $json_uischema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonuischemas/bill_form_ui.json');
         
-    }
-}
-        ';
+        // schema celeho formulare
+        $json_schema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonschemas/new_bill_form.json');
         
-        // zakladni data, jedna prazdna polozka arraye "prirazeni"
+        // zakladni data, jedna prazdna polozka arraye "prirazeni", aby se tam vykreslil prvni prazdny prvek formulare
         $json_formdata_output = '
 {
   "prirazeni": [
@@ -205,108 +112,15 @@ class AccountingCostsController extends Controller
         
         
         $form_output = 'zde je formular';
-        $json_uischema_output = '
-{
-    "date-plneni": {
-      "ui:widget": "alt-date"
-    },
-    "poznamka": {
-      "ui:widget": "textarea"
-    },
-    "prirazeni": {
-        "items": {
-          "poznamka": {
-            "ui:widget": "textarea"
-          }
-        }
-    }
-}
-        ';
-        //     "required" : [ "wovat", "vat" ],
         
-        $json_schema_output = '
-{
-    "title": "Edit bill form",
-    "type": "object",
-    "properties":{
-        "files": {
-          "type": "array",
-          "title": "Multiple files",
-          "items": {
-            "type": "string",
-            "format": "data-url"
-          }
-        },
-        "dodavatel": {
-            "title": "Dodavatel",
-            "type": "object",
-            "properties": {
-                "nazev": {
-                    "type": "string",
-                    "title": "Název",
-                },
-                "ico": {
-                    "type": "string",
-                    "title": "IČ",
-                },
-                "adresa": {
-                    "type": "string",
-                    "title": "Adresa",
-                }
-            }
-        },
-        "date-plneni": {
-          "type": "string",
-          "format": "date",
-          "title": "Datum zdanitelného plnění",
-        },
-        "bill-nr": {
-          "type": "string",
-          "title": "Číslo účtenky"
-        },
-        "generated-nr": {
-          "type": "string",
-          "title": "Generované číslo"
-        },
-        "prirazeni": {
-          "type": "array",
-          "title": "Přiřazení k zakázkám",
-          "items": {
-            "type": "object",
-            "properties": {
-                "zakazka-nr": {
-                    "type": "string",
-                    "title": "Číslo zakázky",
-                },
-                "sum": {
-                    "type": "string",
-                    "title": "Částka k zakázce",
-                },
-                "poznamka": {
-                    "type": "string",
-                    "title": "Poznámka k zakázce",
-                }
-            }
-          }
-        },
-        "poznamka": {
-          "type": "string",
-          "title": "Poznámka"
-        },
-        "wovat": {
-          "type": "string",
-          "title": "Cena bez DPH"
-        },
-        "vat": {
-          "type": "string",
-          "title": "Cena s DPH"
-        }
+        // zvlastni pravidla pro vygenerovani jednotlivych prvku
+        // odebrano   "required" : [ "wovat", "vat" ],
+        $json_uischema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonuischemas/bill_form_ui.json');
         
-    }
-}
-        ';
+        // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
+        $json_schema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonschemas/edit_bill_form.json');
         
-        // zakladni data, jedna prazdna polozka arraye "prirazeni"
+        // zakladni data pro editaci
         $json_formdata_output = $data['c_data'];
         
         // vnitrek onsubmit funkce
