@@ -1,6 +1,6 @@
 
 
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar fixed-top navbar-light bg-light">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -9,11 +9,32 @@
       </button>
       <a class="navbar-brand" href="{{ path_for('home') }}">Glued/next</a>
     </div>
+    
+<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Dropdown button
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+  {% if auth.check %}
+                <a class="dropdown-item" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ auth.user.c_screenname }} <span class="caret"></span></a>
+                <a class="dropdown-item" href="{{ path_for('o2gui') }}">Analýza faktur</a>
+                <a class="dropdown-item" href="{{ path_for('platbylist') }}">Generování plateb</a>
+                <a class="dropdown-item" href="{{ path_for('acl.crossroad') }}">ACL</a>
+                <a class="dropdown-item" href="{{ path_for('accounting.costs') }}">Účtenky</a>
+                <a class="dropdown-item" href="{{ path_for('auth.password.change') }}">Change password</a>
+                <a class="dropdown-item" href="{{ path_for('auth.signout') }}">Sign out</a>
+  {% else %}
+           <a class="dropdown-item" href="{{ path_for('auth.signup') }}">Sign up</a>
+           <a class="dropdown-item" href="{{ path_for('auth.signin') }}">Sign in</a>
+  {% endif %}
+  </div>
+</div>
+    
     <div id="navbar" class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
          <li><a href="{{ path_for('home') }}">Home</a></li>
       </ul>
-
+      
       <ul class="nav navbar-nav navbar-right">
          {% if auth.check %}
            <li class="dropdown">
