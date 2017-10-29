@@ -31,8 +31,9 @@ $app->group('', function () {
 
   // $app isn't in scope inside here, we use $this instead
   // we could use $app only if we'd have to call "function () use ($app)"
-  $this->get('/auth/password/change', 'AuthController:getChangePassword')->setName('auth.password.change');
-  $this->post('/auth/password/change', 'AuthController:postChangePassword'); // we only need to set the name once for an uri, hence here not a setName again
+  $this->get('/auth/settings', 'AuthController:getSettings')->setName('auth.settings');
+  $this->post('/auth/password/change', 'AuthController:postChangePassword')->setName('auth.password.change');
+  $this->post('/auth/identification/change', 'AuthController:postChangeIdentification')->setName('auth.identification.change');
   $this->get('/auth/signout', 'AuthController:getSignOut')->setName('auth.signout');
   $this->get('/upload', 'UploadController:get')->setName('upload');
   $this->post('/upload', 'UploadController:post')->setName('upload');

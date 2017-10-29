@@ -2,38 +2,85 @@
 
 {% block content %}
 
-  <div class="row">
+<div class="title-block">
+    <h3 class="title"> Settings </h3>
+    <p class="title-description"> Change your Password, E-mail or Screenname </p>
+</div>
 
-    <div class="col-md-6 col-md-offset-3">
-      <div class="panel panel-default">
-        <div class="panel-heading">Change Password</div>
-        <div class="panel-body">
-
-          <form action="{{ path_for('auth.password.change') }}" method="post">
-
-            <div class="form-group{{ validationerrors.password_old ? ' has-error' : ''}}">
-              <label for="password_old">Current password</label>
-              <input type="password" name="password_old" id="password_old" class="form-control">
-              {% if validationerrors.password_old %}
-                <span class="help-block">{{ validationerrors.password_old | first }}</span>
-              {% endif %}
+<section class="section">
+    <div class="row sameheight-container">
+        
+        <div class="col-md-6">
+            
+            <div class="card card-block sameheight-item">
+                <div class="title-block">
+                    <h3 class="title"> Change Password </h3>
+                </div>
+                
+                  <form action="{{ path_for('auth.password.change') }}" method="post">
+                    
+                    <div class="form-group{{ validationerrors.password_old ? ' has-error' : ''}}">
+                      <label for="password_old" class="control-label">Current password</label>
+                      <input type="password" name="password_old" id="password_old" class="form-control">
+                      {% if validationerrors.password_old %}
+                        <span class="help-block">{{ validationerrors.password_old | first }}</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="form-group{{ validationerrors.password ? ' has-error' : ''}}">
+                      <label for="password" class="control-label">New Password</label>
+                      <input type="password" name="password" id="password" class="form-control">
+                      {% if validationerrors.password %}
+                        <span class="help-block">{{ validationerrors.password | first }}</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Change password</button>
+                    </div>
+                    {{ csrf.field | raw  }}
+                  </form>
+                
             </div>
-
-            <div class="form-group{{ validationerrors.password ? ' has-error' : ''}}">
-              <label for="password">Password</label>
-              <input type="password" name="password" id="password" class="form-control">
-              {% if validationerrors.password %}
-                <span class="help-block">{{ validationerrors.password | first }}</span>
-              {% endif %}
-            </div>
-
-            <button type="submit" class="btn btn-default">Change password</button>
-            {{ csrf.field | raw  }}
-          </form>
-
-         </div>
+            
         </div>
-      </div>
-   </div>
+        <div class="col-md-6">
+            
+            <div class="card card-block sameheight-item">
+                <div class="title-block">
+                    <h3 class="title"> Change Screenname or E-mail </h3>
+                </div>
+                
+                  <form action="{{ path_for('auth.identification.change') }}" method="post">
+                    
+                    <div class="form-group{{ validationerrors.name ? ' has-error' : ''}}">
+                      <label for="name" class="control-label">Screen Name</label>
+                      <input type="text" name="name" id="name" class="form-control" value="{{ auth.user.c_screenname }}">
+                      {% if validationerrors.name %}
+                        <span class="help-block">{{ validationerrors.name | first }}</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="form-group{{ validationerrors.email ? ' has-error' : ''}}">
+                      <label for="email" class="control-label">E-mail</label>
+                      <input type="text" name="email" id="email" class="form-control" value="{{ auth.email }}">
+                      {% if validationerrors.email %}
+                        <span class="help-block">{{ validationerrors.email | first }}</span>
+                      {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Change</button>
+                    </div>
+                    {{ csrf.field | raw  }}
+                  </form>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+</section>
+
 
 {% endblock %}

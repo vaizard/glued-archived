@@ -70,7 +70,7 @@ class AuthController extends Controller
         // Classes/Validation/Rules. Needs $this->container passed as a param
         // to get to DIC database connection
         $validation = $this->container->validator->validate($request, [
-            'email' => v::noWhitespace()->notEmpty()->email()->emailAvailable($this->container),
+            'email' => v::noWhitespace()->notEmpty()->email()->emailAvailable($this->container, false),
             'name'  => v::noWhitespace()->notEmpty()->alpha(),
             'password' => v::noWhitespace()->notEmpty(),
         ]);
@@ -127,10 +127,10 @@ class AuthController extends Controller
         return $response->withRedirect($this->container->router->pathFor('auth.signup'));
     }
 
-    // responds to the change password get request (shows signin form)
-    public function getChangePassword($request, $response)
+    // responds to the settings (with forms for change password, screenname and email)
+    public function getSettings($request, $response)
     {
-        return $this->container->view->render($response, 'auth/changepassword.twig');
+        return $this->container->view->render($response, 'auth/settings.twig');
     }
 
 
@@ -161,7 +161,7 @@ class AuthController extends Controller
             // function won't get exectuted
             if ($validation->failed()) {
                 $this->container->logger->warn("Password change failed. Validation error.");
-                return $response->withRedirect($this->container->router->pathFor('auth.password.change'));
+                return $response->withRedirect($this->container->router->pathFor('auth.settings'));
             }
             
             // change the password, emit flash message and redirect
@@ -173,7 +173,7 @@ class AuthController extends Controller
             
             if (!$update) {
                 $this->container->logger->warn("Password change failed. DB error.");
-                return $response->withRedirect($this->container->router->pathFor('auth.password.change'));
+                return $response->withRedirect($this->container->router->pathFor('auth.settings'));
             }
             else {
                 $this->container->flash->addMessage('info', 'Your password was changed');
@@ -183,6 +183,56 @@ class AuthController extends Controller
         
     }
 
-
+    // zmeni screenname a login email ze settings stranky
+    public function postChangeIdentification($request, $response)
+    {
+        $user_id = $_SESSION['user_id'] ?? false;   // urcuje id v tabulce se screenname a user id v tabulce s login mailem
+        $authentication_id = $_SESSION['authentication_id'] ?? false;   // urcuje id radku v tabulce s login emailem
+        
+        if ($user_id and $authentication_id) {
+            
+            // emailAvailable overi ze takovy email nema nekdo jiny
+            
+            $change_user_id = $user_id;
+            $change_authentication_id = $authentication_id;
+            
+            $validation = $this->container->validator->validate($request, [
+                'email' => v::noWhitespace()->notEmpty()->email()->emailAvailable($this->container, $change_authentication_id),
+                'name'  => v::noWhitespace()->notEmpty()->alpha()
+            ]);
+            
+            // on validation failure redirect back to the form. the rest of this
+            // function won't get exectuted
+            if ($validation->failed()) {
+                $this->container->logger->warn("Identification change failed. Validation error.");
+                return $response->withRedirect($this->container->router->pathFor('auth.settings'));
+            }
+            
+            // TODO, menime dve veci ve dvou ruznych tabulkach, meli bychom udelat transaction a commit, pripadne rollback
+            
+            // change the email, emit flash message and redirect
+            $email = $request->getParam('email');
+            $this->container->db->where('c_type', 1);
+            $this->container->db->where('c_uid', $change_authentication_id);
+            $this->container->db->where('c_user_id', $change_user_id);
+            $update = $this->container->db->update('t_authentication', Array ( 'c_username' => $email ));
+            
+            $name = $request->getParam('name');
+            $this->container->db->where('c_uid', $change_user_id);
+            $update2 = $this->container->db->update('t_users', Array ( 'c_screenname' => $name ));
+            
+            if (!$update) {
+                $this->container->logger->warn("Email and Name change failed. DB error.");
+                return $response->withRedirect($this->container->router->pathFor('auth.settings'));
+            }
+            else {
+                $this->container->flash->addMessage('info', 'Your email and name were changed');
+                return $response->withRedirect($this->container->router->pathFor('home'));
+            }
+        }
+        
+    }
+    
+    
 
 }
