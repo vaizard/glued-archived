@@ -16,6 +16,15 @@ $container['acl'] = function ($container) {
     return new \Glued\Classes\Acl\Acl($container);
 };
 
+// tags class
+$container['tags'] = function ($container) {
+    return new \Glued\Classes\Tags\Tags($container);
+};
+
+// stor class
+$container['stor'] = function ($container) {
+    return new \Glued\Classes\Stor\Stor($container);
+};
 
 // view renderer using the twig template engine
 $container['view'] = function ($container) {
@@ -137,4 +146,7 @@ $container['AccountingCostsControllerApiV1'] = function ($container) {
     return new \Glued\Controllers\Accounting\AccountingCostsControllerApiV1($container);
 };
 
-
+// stor controler
+$container['StorController'] = function ($container) {
+    return new \Glued\Controllers\Stor\StorController($container);
+};

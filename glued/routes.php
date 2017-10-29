@@ -26,7 +26,7 @@ $app->group('', function () {
 
 
 
-// group of routes where user has to be signed in
+// group of routes where user has to be signed in, plus global csrf check
 $app->group('', function () {
 
   // $app isn't in scope inside here, we use $this instead
@@ -50,6 +50,10 @@ $app->group('', function () {
   $this->get('/acl/globalprivileges/{tablename}', 'AclController:getGlobalTablePrivileges');  // global privilegia na tabulku a form na pridani noveho
   $this->post('/acl/newprivilege', 'AclController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
   
+  // stor
+  $this->get('/stor/uploader', 'StorController:storUploadGui')->setName('stor.uploader');
+  $this->post('/stor/uploader', 'StorController:uploaderSave');
+  
   
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
@@ -62,6 +66,8 @@ $app->group('', function () {
   $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
   $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
   
+  // testovaci mazaci stor, bez csrf, protoze form se pise v controleru a ne ve twigu
+  $this->post('/stor/uploader/delete', 'StorController:uploaderDelete')->setName('stor.uploader.delete');
   
   // api veci (vraci json)
   $this->post('/api/v1/accounting/costs', 'AccountingCostsControllerApiV1:insertCostApi')->setName('accounting.api.new');

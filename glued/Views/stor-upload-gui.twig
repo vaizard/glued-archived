@@ -1,0 +1,22 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+        
+        <h1>Upload souboru do storu</h1>
+        
+        <h2>formular na nahrani noveho souboru</h2>
+        <form method="post" action="{{ path_for('stor.uploader') }}" enctype="multipart/form-data">
+            <label>Select file to upload:</label>
+            <input type="file" name="file" />
+            <button type="submit">Upload</button>
+            {{ csrf.field | raw }}
+        </form>
+        
+        <br /><br /><br />
+        
+        <h2>prehled nahranych souboru v modulu stor, typu public</h2>
+        {{ vystup | raw }}
+        
+    <br /><br />
+
+{% endblock %}

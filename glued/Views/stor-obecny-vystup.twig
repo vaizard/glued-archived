@@ -1,0 +1,11 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+        
+        {{ vystup | raw }}
+        
+        <p><a href="{{ path_for('stor.uploader') }}">stor upload gui</a></p>
+        
+    <br /><br />
+
+{% endblock %}
