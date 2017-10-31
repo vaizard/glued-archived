@@ -1,0 +1,70 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> Stored Files </h3>
+    <p class="title-description"> Upload and list of files in stor module. </p>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-md-12">
+            
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Upload new file </h3>
+                </div>
+                
+                <form method="post" action="{{ path_for('stor.uploader') }}" enctype="multipart/form-data">
+                    <label>Select file to upload:</label>
+                    <input type="file" name="file" />
+                    <button type="submit">Upload</button>
+                    {{ csrf.field | raw }}
+                </form>
+                
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="row">
+        <div class="col-md-12">
+            
+            {{ vystup | raw }}
+            
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="confirm-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa fa-warning"></i> Alert</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete this file?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="$('#stor_delete_file_form').submit();">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<form id="stor_delete_file_form" method="post" action="{{ path_for('stor.uploader.delete') }}" style="display: none;">
+    <input type="hidden" id="file_uid" name="file_uid" value="" />
+</form>
+
+{% endblock %}

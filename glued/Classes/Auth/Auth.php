@@ -17,10 +17,24 @@ class Auth
     // returns data about user fetched from database
     public function user() {
         $user_id = $_SESSION['user_id'] ?? false;
+        $authentication_id = $_SESSION['authentication_id'] ?? false;
         if ($user_id === false) return false;
         $this->container->db->where('c_uid', $user_id);
         return $this->container->db->getOne("t_users");
     }
+    
+    // returns logged email of user
+    public function email() {
+        $user_id = $_SESSION['user_id'] ?? false;
+        $authentication_id = $_SESSION['authentication_id'] ?? false;
+        if ($user_id === false or $authentication_id === false) return false;
+        $this->container->db->where('c_type', 1);
+        $this->container->db->where('c_uid', $authentication_id);
+        $this->container->db->where('c_user_id', $user_id);
+        $data = $this->container->db->getOne("t_authentication");
+        return $data['c_username'];
+    }
+    
     
 
     // check if user is logged in, returns true|false

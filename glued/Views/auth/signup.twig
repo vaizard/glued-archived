@@ -1,46 +1,70 @@
 {% extends 'templates/glued.twig' %}
 
 {% block content %}
-  <div class="row">
 
-    <div class="col-md-6 col-md-offset-3">
-      <div class="panel panel-default">
-        <div class="panel-heading">Sign up</div>
-        <div class="panel-body">
-
-          <form action="{{ path_for('auth.signup') }}" method="post">
-
-            <div class="form-group{{ validationerrors.email ? ' has-error' : ''}}">
-              <label for="email">Email</label>
-              <input type="email" name="email" id="email" placeholder="you@domain.com" class="form-control" value="{{ old.email }}">
-              {% if validationerrors.email %}
-                <span class="help-block">{{ validationerrors.email | first }}</span>
-              {% endif %}
+<section class="section">
+    <div class="row sameheight-container justify-content-md-center">
+        <div class="col col-12 col-sm-12 col-md-6 col-xl-6 stats-col">
+            <div class="card">
+                <div class="card-block">
+                    <header class="auth-header">
+                        <h1 class="auth-title">
+                            <div class="logo">
+                                <span class="l l1"></span>
+                                <span class="l l2"></span>
+                                <span class="l l3"></span>
+                                <span class="l l4"></span>
+                                <span class="l l5"></span>
+                            </div> ModularAdmin </h1>
+                    </header>
+                    
+                    <div class="auth-content">
+                        <p class="text-center">SIGNUP TO GET INSTANT ACCESS</p>
+                        <form id="signup-form" action="{{ path_for('auth.signup') }}" method="post" novalidate="">
+                            <div class="form-group{{ validationerrors.name ? ' has-error' : ''}}">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control underlined" name="name" id="name" placeholder="Enter name" value="{{ old.name }}" required="">
+                                  {% if validationerrors.name %}
+                                    <span class="help-block">{{ validationerrors.name | first }}</span>
+                                  {% endif %}
+                            </div>
+                            <div class="form-group{{ validationerrors.email ? ' has-error' : ''}}">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control underlined" name="email" id="email" placeholder="Enter email address" value="{{ old.email }}" required="">
+                                  {% if validationerrors.email %}
+                                    <span class="help-block">{{ validationerrors.email | first }}</span>
+                                  {% endif %}
+                            </div>
+                            <div class="form-group{{ validationerrors.password ? ' has-error' : ''}}">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control underlined" name="password" id="password" placeholder="Enter password" required="">
+                                  {% if validationerrors.password %}
+                                    <span class="help-block">{{ validationerrors.password | first }}</span>
+                                  {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="agree">
+                                    <input class="checkbox" name="agree" id="agree" type="checkbox" required="">
+                                    <span>Agree the terms and
+                                        <a href="#">policy</a>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-block btn-primary">Sign Up</button>
+                            </div>
+                            <div class="form-group">
+                                <p class="text-muted text-center">Already have an account?
+                                    <a href="{{ path_for('auth.signin') }}">Login!</a>
+                                </p>
+                            </div>
+                            {{ csrf.field | raw  }}
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group{{ validationerrors.name ? ' has-error' : ''}}">
-              <label for="name">Name</label>
-              <input type="name" name="name" id="name" class="form-control" value="{{ old.name }}">
-              {% if validationerrors.name %}
-                <span class="help-block">{{ validationerrors.name | first }}</span>
-              {% endif %}
-            </div>
-
-            <div class="form-group{{ validationerrors.password ? ' has-error' : ''}}">
-              <label for="password">Password</label>
-              <input type="password" name="password" id="password" class="form-control">
-              {% if validationerrors.password %}
-                <span class="help-block">{{ validationerrors.password | first }}</span>
-              {% endif %}
-            </div>
-
-            <button type="submit" class="btn btn-default">Sign up</button>
-            {{ csrf.field | raw  }}
-
-          </form>
         </div>
-      </div>
     </div>
-  </div>
+</section>
 
 {% endblock %}
