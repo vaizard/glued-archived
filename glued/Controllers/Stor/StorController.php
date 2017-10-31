@@ -19,14 +19,178 @@ class StorController extends Controller
         $this->container->db->where("c_path", 'stor/p');
         $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
         if (count($files) > 0) {
-            $vystup .= '<ul>';
+            $vystup .= '<div class="card items">';
+            $vystup .= '<ul class="item-list striped">';
+            $vystup .= '
+                            <li class="item item-list-header">
+                                <div class="item-row">
+                                    <div class="item-col item-col-header fixed item-col-img md">
+                                        <div>
+                                            <span>Media</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-header item-col-title">
+                                        <div>
+                                            <span>Name</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-header item-col-sales">
+                                        <div>
+                                            <span>Size</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-header item-col-category">
+                                        <div class="no-overflow">
+                                            <span>Category</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-header item-col-author">
+                                        <div class="no-overflow">
+                                            <span>Owner</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-header item-col-date">
+                                        <div>
+                                            <span>Published</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-header fixed item-col-actions-dropdown"> </div>
+                                </div>
+                            </li>
+            ';
             foreach ($files as $data) {
-                $vystup .= '<li>'.$data['c_filename'].' ('.$data['size'].' byte, '.$data['mime'].') <form method="post" action="'.$this->container->router->pathFor('stor.uploader.delete').'" style="display: inline;"><input type="hidden" name="file_uid" value="'.$data['c_uid'].'" /><input type="submit" value="delete" onclick="return confirm(\'do you really want to delete this file?\');" /></form></li>';
+                $vystup .= '
+                            <li class="item">
+                                <div class="item-row">
+                                    <div class="item-col fixed item-col-img md">
+                                        <a href="item-editor.html">
+                                            <div class="item-img rounded" style="background-image: url(https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg)"></div>
+                                        </a>
+                                    </div>
+                                    <div class="item-col fixed pull-left item-col-title">
+                                        <div class="item-heading">Name</div>
+                                        <div>
+                                            <a href="item-editor.html" class="">
+                                                <h4 class="item-title"> '.$data['c_filename'].' </h4>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-sales">
+                                        <div class="item-heading">Sales</div>
+                                        <div> '.$data['size'].' B </div>
+                                    </div>
+                                    <div class="item-col item-col-category no-overflow">
+                                        <div class="item-heading">Category</div>
+                                        <div class="no-overflow">
+                                            <a href="">Stor</a>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-author">
+                                        <div class="item-heading">Author</div>
+                                        <div class="no-overflow">
+                                            <a href="">Meadow Katheryne</a>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-date">
+                                        <div class="item-heading">Published</div>
+                                        <div class="no-overflow"> 21 SEP 10:45 </div>
+                                    </div>
+                                    <div class="item-col fixed item-col-actions-dropdown">
+                                        <div class="item-actions-dropdown">
+                                            <a class="item-actions-toggle-btn">
+                                                <span class="inactive">
+                                                    <i class="fa fa-cog"></i>
+                                                </span>
+                                                <span class="active">
+                                                    <i class="fa fa-chevron-circle-right"></i>
+                                                </span>
+                                            </a>
+                                            <div class="item-actions-block">
+                                                <ul class="item-actions-list">
+                                                    <li>
+                                                        <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#file_uid\').val('.$data['c_uid'].');">
+                                                            <i class="fa fa-trash-o "></i>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="edit" href="item-editor.html">
+                                                            <i class="fa fa-pencil"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                ';
+                /*
+                $vystup .= '
+                <li class="item">
+                    <div class="item-row">
+                        <div class="item-col fixed item-col-img md">
+                            <a href="item-editor.html">
+                                <div class="item-img rounded" style="background-image: url(https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg)"></div>
+                            </a>
+                        </div>
+                        <div class="item-col fixed pull-left item-col-title">
+                            <div class="item-heading">Name</div>
+                            <div>
+                                <a href="item-editor.html" class="">
+                                    <h4 class="item-title"> '.$data['c_filename'].' </h4>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-sales">
+                            <div class="item-heading">Sales</div>
+                            <div> '.$data['size'].' byte </div>
+                        </div>
+                        <div class="item-col item-col-category no-overflow">
+                            <div class="item-heading">Category</div>
+                            <div class="no-overflow">
+                                <a href="">'.$data['mime'].'</a>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-date">
+                            <div class="item-heading">Published</div>
+                            <div class="no-overflow"> 21 SEP 10:45 </div>
+                        </div>
+                        <div class="item-col fixed item-col-actions-dropdown">
+                            <div class="item-actions-dropdown">
+                                <a class="item-actions-toggle-btn">
+                                    <span class="inactive">
+                                        <i class="fa fa-cog"></i>
+                                    </span>
+                                    <span class="active">
+                                        <i class="fa fa-chevron-circle-right"></i>
+                                    </span>
+                                </a>
+                                <div class="item-actions-block">
+                                    <ul class="item-actions-list">
+                                        <li>
+                                            <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal">
+                                                <i class="fa fa-trash-o "></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="edit" href="item-editor.html">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>';
+                */
+                // 
             }
             $vystup .= '</ul>';
+            $vystup .= '</div>';
         }
         else {
-            $vystup .= '<p>v modulu stor nejsou zadne public soubory</p>';
+            $vystup .= '<div class="card card-block"><p>v modulu stor nejsou zadne public soubory</p></div>';
         }
         
         // test json dotazu
@@ -47,7 +211,7 @@ class StorController extends Controller
         }
         */
         
-        return $this->container->view->render($response, 'stor-upload-gui.twig', array('vystup' => $vystup));
+        return $this->container->view->render($response, 'stor-upload-gui.twig', array('vystup' => $vystup, 'article_class' => 'items-list-page'));
     }
     
     
