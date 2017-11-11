@@ -2,19 +2,24 @@
 
 {% block content %}
 
-<div class="row">
-
-    <div class="col-md-8 col-md-offset-2">
-        <div class="panel panel-default">
-          <div class="panel-heading">Who has {{ privileges_type }} privileges on table {{ table_name }} [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
-          <div class="panel-body">
-            {{ privileges_output | raw }}
-          </div>
-        </div>
-      
-    
-    </div>
-
+<div class="title-block">
+    <h3 class="title"> Privileges over Table </h3>
+    <p class="title-description"> Who has {{ privileges_type }} privileges on table {{ table_name }} <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
 </div>
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Existing privileges </h3>
+                </div>
+                {{ privileges_output | raw }}
+            </div>
+        </div>
+        
+    </div>
+</section>
 
 {% endblock %}

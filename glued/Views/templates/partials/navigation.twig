@@ -3,14 +3,14 @@
     <ul class="sidebar-menu metismenu" id="sidebar-menu">
         <li><a href="{{ path_for('home') }}"><i class="fa fa-home"></i> Home</a></li>
   {% if auth.check %}
-                <li><a href="{{ path_for('o2gui') }}"><i class="fa fa-home"></i> Analýza faktur</a></li>
-                <li><a href="{{ path_for('platbylist') }}"><i class="fa fa-home"></i> Generování plateb</a></li>
-                <li><a href="{{ path_for('acl.crossroad') }}"><i class="fa fa-home"></i> ACL</a></li>
-                <li><a href="{{ path_for('accounting.costs') }}"><i class="fa fa-home"></i> Účtenky</a></li>
-                <li><a href="{{ path_for('stor.uploader') }}"><i class="fa fa-home"></i> Stor Uploader</a></li>
+                <li><a href="{{ path_for('o2gui') }}"><i class="fa fa-bar-chart-o"></i> Analýza faktur</a></li>
+                <li><a href="{{ path_for('platbylist') }}"><i class="fa fa-money"></i> Generování plateb</a></li>
+                <li><a href="{{ path_for('acl.crossroad') }}"><i class="fa fa-lock"></i> ACL</a></li>
+                <li><a href="{{ path_for('accounting.costs') }}"><i class="fa fa-book"></i> Účtenky</a></li>
+                <li><a href="{{ path_for('stor.uploader') }}"><i class="fa fa-upload"></i> Stor Uploader</a></li>
   {% else %}
-           <li><a href="{{ path_for('auth.signup') }}"><i class="fa fa-home"></i> Sign up</a></li>
-           <li><a href="{{ path_for('auth.signin') }}"><i class="fa fa-home"></i> Sign in</a></li>
+           <li><a href="{{ path_for('auth.signup') }}"><i class="fa fa-pencil-square-o"></i> Sign up</a></li>
+           <li><a href="{{ path_for('auth.signin') }}"><i class="fa fa-sign-in"></i> Sign in</a></li>
   {% endif %}
     </ul>
 </nav>

@@ -65,6 +65,7 @@
 
 <form id="stor_delete_file_form" method="post" action="{{ path_for('stor.uploader.delete') }}" style="display: none;">
     <input type="hidden" id="file_uid" name="file_uid" value="" />
+    {{ csrf.field | raw }}
 </form>
 
 {% endblock %}

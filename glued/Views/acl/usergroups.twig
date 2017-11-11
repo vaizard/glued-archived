@@ -2,52 +2,61 @@
 
 {% block content %}
 
-  <div class="row">
+<div class="title-block">
+    <h3 class="title"> Groups Membership </h3>
+    <p class="title-description"> Change Groups Membership of user {{ user.c_screenname }} (id: {{ user.c_uid }}) <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
+</div>
 
-    <div class="col-md-8 col-md-offset-2">
-      <div class="panel panel-default">
-        <div class="panel-heading">Change Groups Membership of user {{ user.c_screenname }} (id: {{ user.c_uid }}) [<a href="{{ path_for('acl.crossroad') }}">go back</a>]</div>
-        <div class="panel-body">
-
-          <form action="{{ path_for('acl.update.membership') }}" method="post">
-            
-            <input type="hidden" name="user_id" value="{{ user.c_uid }}" />
-            
-            <div class="form-group">
-              
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="chb_root" value="1" {{ membership.root? 'checked':'' }}> Root (top level human)
-                </label>
-              </div>
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> In Groups </h3>
+                </div>
                 
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="chb_officer" value="2" {{ membership.officer? 'checked':'' }}> Officer (mid level human)
-                </label>
-              </div>
-                
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="chb_user" value="4" {{ membership.user? 'checked':'' }}> User (low level human)
-                </label>
-              </div>
-                
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="chb_wheel" value="8" {{ membership.wheel? 'checked':'' }}> Bot (api, program)
-                </label>
-              </div>
+                <form role="form" action="{{ path_for('acl.update.membership') }}" method="post">
+                    <input type="hidden" name="user_id" value="{{ user.c_uid }}" />
+                    
+                    <div class="form-group">
+                                            <div>
+                                                <label>
+                                                    <input class="checkbox" type="checkbox" name="chb_root" value="1" {{ membership.root? 'checked="checked"':'' }}>
+                                                    <span>Root (top level human)</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label>
+                                                    <input class="checkbox" type="checkbox" name="chb_officer" value="2" {{ membership.officer? 'checked="checked"':'' }}>
+                                                    <span>Officer (mid level human)</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label>
+                                                    <input class="checkbox" type="checkbox" name="chb_user" value="4" {{ membership.user? 'checked="checked"':'' }}>
+                                                    <span>User (low level human)</span>
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <label>
+                                                    <input class="checkbox" type="checkbox" name="chb_wheel" value="8" {{ membership.wheel? 'checked="checked"':'' }}>
+                                                    <span>Bot (api, program)</span>
+                                                </label>
+                                            </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Set this membership</button>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
                 
             </div>
-
-            <button type="submit" class="btn btn-default">Set this membership</button>
-            {{ csrf.field | raw  }}
-          </form>
-
-         </div>
         </div>
-      </div>
-   </div>
+        
+    </div>
+</section>
 
 {% endblock %}

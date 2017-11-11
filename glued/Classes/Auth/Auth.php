@@ -23,6 +23,13 @@ class Auth
         return $this->container->db->getOne("t_users");
     }
     
+    // vrati screenname usera zadaneho pomoci id
+    public function user_screenname($user_id) {
+        $this->container->db->where('c_uid', $user_id);
+        return $this->container->db->getValue("t_users", "c_screenname");
+    }
+    
+    
     // returns logged email of user
     public function email() {
         $user_id = $_SESSION['user_id'] ?? false;
