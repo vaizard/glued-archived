@@ -9,18 +9,60 @@ class AclController extends Controller
     // shows basic page with acl options
     public function getAclCrossroad($request, $response)
     {
-        $vystup_users = '';
         $this->container->db->orderBy("c_uid","asc");
         $uzivatele = $this->container->db->get('t_users');
+        $vystup_users = '
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Group membership</th>
+            <th>Unix acl</th>
+            <th>User privileges</th>
+        </tr>
+    </thead>
+    <tbody>
+        ';
         foreach ($uzivatele as $data) {
-            $vystup_users .= '<div>ID: '.$data['c_uid'].', name: '.$data['c_screenname'].' <a href="usergroups/'.$data['c_uid'].'">group membership</a> | <a href="userunix/'.$data['c_uid'].'">unix acl</a> | <a href="userprivileges/'.$data['c_uid'].'">user privileges</a></div>';
+            $vystup_users .= '
+        <tr>
+            <th scope="row">'.$data['c_uid'].'</th>
+            <td>'.$data['c_screenname'].'</td>
+            <td><a href="usergroups/'.$data['c_uid'].'">set</a></td>
+            <td><a href="userunix/'.$data['c_uid'].'">set</a></td>
+            <td><a href="userprivileges/'.$data['c_uid'].'">edit</a></td>
+        </tr>';
         }
+        $vystup_users .= '
+    </tbody>
+</table>
+        ';
         
         $groups_array = $this->container->acl->show_groups();
-        $vystup_groups = '';
+        $vystup_groups = '
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>group privileges</th>
+        </tr>
+    </thead>
+    <tbody>
+        ';
         foreach ($groups_array as $group_name => $group_id) {
-            $vystup_groups .= '<div>ID: '.$group_id.', name: '.$group_name.' <a href="groupprivileges/'.$group_id.'">group privileges</a></div>';
+            $vystup_groups .= '
+        <tr>
+            <th scope="row">'.$group_id.'</th>
+            <td>'.$group_name.'</td>
+            <td><a href="groupprivileges/'.$group_id.'">edit</a></td>
+        </tr>';
         }
+        $vystup_groups .= '
+    </tbody>
+</table>
+        ';
         
         $vystup_actions['object'] = '';
         $vystup_actions['table'] = '';

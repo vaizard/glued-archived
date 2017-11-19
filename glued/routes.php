@@ -59,7 +59,7 @@ $app->group('', function () {
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
-// another group of routes, where user have to be signed in, but no csrf check
+// another group of routes, where user have to be signed in, but no csrf check. typical - api (ajax) scripts
 $app->group('', function () {
   
   // strankove veci (vraci html)
@@ -78,6 +78,10 @@ $app->group('', function () {
   
   // api acl
   $this->delete('/api/v1/acl/privileges/[{id}]', 'AclControllerApiV1:deletePrivilegeApi')->setName('acl.api.privilege.delete');
+  
+  
+  // show stor file (or force download)
+  $this->get('/stor/get/{id:[0-9]+}[/{filename}]', 'StorController:serveFile')->setName('stor.serve.file');
   
   
 })->add(new AuthMiddleware($container));

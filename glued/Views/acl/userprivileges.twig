@@ -2,21 +2,31 @@
 
 {% block content %}
 
-<div class="row">
+<div class="title-block">
+    <h3 class="title"> User Privileges </h3>
+    <p class="title-description"> Existing Privileges of user {{ user.c_screenname }} (id: {{ user.c_uid }}) <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
+</div>
 
-    <div class="col-md-8 col-md-offset-2">
-        <div class="panel panel-default">
-          <div class="panel-heading">Existing Privileges of user {{ user.c_screenname }} (id: {{ user.c_uid }}) <a class="pull-right" href="{{ path_for('acl.crossroad') }}">back</a></div>
-          <div class="panel-body">
-            {{ privileges_output | raw }}
-          </div>
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Existing privileges </h3>
+                </div>
+                {{ privileges_output | raw }}
+            </div>
         </div>
-      
-      {{ additional_javascript | raw }}
-      
-        <div class="panel panel-default">
-            <div class="panel-heading">New Privilege of user {{ user.c_screenname }}</div>
-            <div class="panel-body">
+        
+        {{ additional_javascript | raw }}
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> New Privilege </h3>
+                </div>
+                
                 <form action="{{ path_for('acl.new.privilege') }}" method="post">
                     <input type="hidden" name="formpage" value="user" />
                     <input type="hidden" name="user_id" value="{{ user.c_uid }}" />
@@ -62,14 +72,16 @@
                       </div>
                   </div>
                     
-                    <button type="submit" class="btn btn-default">create privilege</button>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Create privilege</button>
+                    </div>
+                    
                     {{ csrf.field | raw  }}
                 </form>
             </div>
         </div>
-    
+        
     </div>
-
-</div>
+</section>
 
 {% endblock %}

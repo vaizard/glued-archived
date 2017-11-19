@@ -3,18 +3,18 @@
 namespace Glued\Controllers\Stor;
 use Glued\Controllers\Controller;
 use Glued\Classes\Stor;
+use Glued\Classes\Auth;
 
 class StorController extends Controller
 {
     
     // fukce co vypise prehled nahranych a formular pro nahrani dalsiho
-    
     public function storUploadGui($request, $response)
     {
         $vystup = '';
         
         // prehled nahranych souborů pro modul stor
-        $sloupce = array("lin.c_uid", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime");
+        $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
         $this->container->db->join("stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
         $this->container->db->where("c_path", 'stor/p');
         $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
@@ -51,7 +51,7 @@ class StorController extends Controller
                                     </div>
                                     <div class="item-col item-col-header item-col-date">
                                         <div>
-                                            <span>Published</span>
+                                            <span>Uploaded</span>
                                         </div>
                                     </div>
                                     <div class="item-col item-col-header fixed item-col-actions-dropdown"> </div>
@@ -70,7 +70,7 @@ class StorController extends Controller
                                     <div class="item-col fixed pull-left item-col-title">
                                         <div class="item-heading">Name</div>
                                         <div>
-                                            <a href="item-editor.html" class="">
+                                            <a href="'.$this->container->router->pathFor('stor.serve.file', ['id' => $data['c_uid'], 'filename' => $data['c_filename']]).'" class="">
                                                 <h4 class="item-title"> '.$data['c_filename'].' </h4>
                                             </a>
                                         </div>
@@ -86,14 +86,14 @@ class StorController extends Controller
                                         </div>
                                     </div>
                                     <div class="item-col item-col-author">
-                                        <div class="item-heading">Author</div>
+                                        <div class="item-heading">Owner</div>
                                         <div class="no-overflow">
-                                            <a href="">Meadow Katheryne</a>
+                                            <a href="">'.$this->container->auth->user_screenname($data['c_owner']).'</a>
                                         </div>
                                     </div>
                                     <div class="item-col item-col-date">
-                                        <div class="item-heading">Published</div>
-                                        <div class="no-overflow"> 21 SEP 10:45 </div>
+                                        <div class="item-heading">Uploaded</div>
+                                        <div class="no-overflow"> '.date("j.n. Y H:i", $data['ts_created']).' </div>
                                     </div>
                                     <div class="item-col fixed item-col-actions-dropdown">
                                         <div class="item-actions-dropdown">
@@ -356,6 +356,12 @@ class StorController extends Controller
         }
         
         return $response->withRedirect($this->container->router->pathFor('stor.uploader'));
+    }
+    
+    // zobrazovac nebo vynucovac stazeni
+    public function serveFile($request, $response)
+    {
+        
     }
     
 }
