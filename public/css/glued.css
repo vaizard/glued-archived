@@ -1,7 +1,18 @@
-body {
 
-padding-top: 80px;
-padding-bottom: 40px;
 
+.span-to-link {
+    cursor: pointer;
+    color: blue;
 }
 
+.span-to-link:hover {
+    text-decoration: underline;
+}
+
+
+/* OPRAVY DASHBOARDU */
+
+/* protoze dashboard (app.css) z neznameho duvodu skryva vse co ma tridu checkbox a js schema form dela checkbox v divu zrovna s touto tridou */
+div.checkbox {
+    display: block;
+}

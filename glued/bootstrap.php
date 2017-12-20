@@ -24,7 +24,6 @@ require __DIR__ . '/middleware.php';
 // Register routes
 require __DIR__ . '/routes.php';
 
-
 /*
  * NOTE: psr-4 autoloading is turend on in composer.json. The psr-4 entry
  * "Glued\\": "glued" corresponds to the application name "Glued\" (the

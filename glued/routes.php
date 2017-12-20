@@ -52,20 +52,36 @@ $app->group('', function () {
   $this->post('/acl/newprivilege', 'AclController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
   
   // stor
-  $this->get('/stor/uploader', 'StorController:storUploadGui')->setName('stor.uploader');
+  $this->get('/stor/uploader[/~/{dir}]', 'StorController:storUploadGui')->setName('stor.uploader');
   $this->post('/stor/uploader', 'StorController:uploaderSave');
   
+  // GUI for assets, consumables a pod
+  $this->get('/assets', 'StockController:stockGui')->setName('assets.gui');
+  $this->get('/consumables', 'ConsumablesController:consumablesGui')->setName('consumables.gui');
+  $this->get('/parts', 'PartsController:gui')->setName('parts.gui');
   
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
 // another group of routes, where user have to be signed in, but no csrf check. typical - api (ajax) scripts
+// or pages with js generated forms
 $app->group('', function () {
   
   // strankove veci (vraci html)
   $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
   $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
   $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
+  
+  // generovane formulare pro assets, cosumables a pod
+  $this->get('/assets/new', 'StockController:addStockForm')->setName('assets.addform');
+  $this->get('/assets/quicknew', 'StockController:addQuickForm')->setName('assets.addquickform');
+  $this->get('/assets/edit/{id:[0-9]+}', 'StockController:editStockForm')->setName('assets.editform');
+  $this->get('/consumables/new', 'ConsumablesController:addStockForm')->setName('consumables.addform');
+  $this->get('/consumables/quicknew', 'ConsumablesController:addQuickForm')->setName('consumables.addquickform');
+  $this->get('/consumables/edit/{id:[0-9]+}', 'ConsumablesController:editStockForm')->setName('consumables.editform');
+  $this->get('/parts/new', 'PartsController:addForm')->setName('parts.addform');
+  $this->get('/parts/quicknew', 'PartsController:addQuickForm')->setName('parts.addquickform');
+  $this->get('/parts/edit/{id:[0-9]+}', 'PartsController:editForm')->setName('parts.editform');
   
   // testovaci mazaci stor, bez csrf, protoze form se pise v controleru a ne ve twigu
   $this->post('/stor/uploader/delete', 'StorController:uploaderDelete')->setName('stor.uploader.delete');
@@ -75,14 +91,30 @@ $app->group('', function () {
   $this->put('/api/v1/accounting/costs/[{id}]', 'AccountingCostsControllerApiV1:editCostApi')->setName('accounting.api.edit');
   $this->delete('/api/v1/accounting/costs/[{id}]', 'AccountingCostsControllerApiV1:deleteCostApi')->setName('accounting.api.delete');
   
+  // api k ukladani formularu pro assets, consumables a pod
+  $this->post('/api/v1/assets', 'StockControllerApiV1:insertStockApi')->setName('assets.api.new');
+  $this->put('/api/v1/assets/{id:[0-9]+}', 'StockControllerApiV1:editStockApi')->setName('assets.api.edit');
+  $this->post('/api/v1/consumables', 'ConsumablesControllerApiV1:insertStockApi')->setName('consumables.api.new');
+  $this->put('/api/v1/consumables/{id:[0-9]+}', 'ConsumablesControllerApiV1:editStockApi')->setName('consumables.api.edit');
+  $this->post('/api/v1/parts', 'PartsControllerApiV1:insertApi')->setName('parts.api.new');
+  $this->put('/api/v1/parts/{id:[0-9]+}', 'PartsControllerApiV1:editApi')->setName('parts.api.edit');
+  
+  // upload captured foto z modulu assets, consumables a pod, jako uploaded file, i z formu jako normalni soubor
+  $this->post('/assets/upload/{id:[0-9]+}[/{name}]', 'StockController:uploaderSave')->setName('assets.upload');
+  $this->post('/consumables/upload/{id:[0-9]+}[/{name}]', 'ConsumablesController:uploaderSave')->setName('consumables.upload');
+  $this->post('/parts/upload/{id:[0-9]+}[/{name}]', 'PartsController:uploaderSave')->setName('parts.upload');
   
   // api acl
   $this->delete('/api/v1/acl/privileges/[{id}]', 'AclControllerApiV1:deletePrivilegeApi')->setName('acl.api.privilege.delete');
   
-  
   // show stor file (or force download)
   $this->get('/stor/get/{id:[0-9]+}[/{filename}]', 'StorController:serveFile')->setName('stor.serve.file');
   
+  // ajax ktery vypise soubory v adresari, protoze vypisujeme, dame tam get metodu
+  $this->get('/api/v1/stor/files', 'StorControllerApiV1:showFiles')->setName('stor.api.files');
+  
+  // barcode
+  $this->get('/app/barcode/get-parametry', 'BarcodeController:barCode')->setName('barcode.code');
   
 })->add(new AuthMiddleware($container));
 
@@ -113,7 +145,12 @@ $app->group('', function () {
 });
 
 
-
+// doesnt matter if signed or not
+$app->group('', function () {
+    
+    $this->get('/development/tools', 'HomeController:showTools')->setName('development.tools');
+    
+});
 
 
 // PLAYGROUND

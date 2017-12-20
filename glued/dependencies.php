@@ -151,3 +151,44 @@ $container['AccountingCostsControllerApiV1'] = function ($container) {
 $container['StorController'] = function ($container) {
     return new \Glued\Controllers\Stor\StorController($container);
 };
+
+// stor controler api
+$container['StorControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Stor\StorControllerApiV1($container);
+};
+
+// stock controler
+$container['StockController'] = function ($container) {
+    return new \Glued\Controllers\Assets\StockController($container);
+};
+
+// stock controler api
+$container['StockControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Assets\StockControllerApiV1($container);
+};
+
+// barcode controler
+$container['BarcodeController'] = function ($container) {
+    return new \Glued\Controllers\Barcode\BarcodeController($container);
+};
+
+// consumables controler
+$container['ConsumablesController'] = function ($container) {
+    return new \Glued\Controllers\Consumables\ConsumablesController($container);
+};
+
+// consumables controler api
+$container['ConsumablesControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Consumables\ConsumablesControllerApiV1($container);
+};
+
+
+// parts controler
+$container['PartsController'] = function ($container) {
+    return new \Glued\Controllers\Parts\PartsController($container);
+};
+
+// parts controler api
+$container['PartsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Parts\PartsControllerApiV1($container);
+};

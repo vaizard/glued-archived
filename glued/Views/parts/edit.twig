@@ -1,0 +1,174 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<script type="text/javascript" src="{{ base_url() }}/webcamjs/webcam.min.js"></script>
+
+<style>
+#my_camera{
+ width: 300px;
+ height: 367px;
+ border: 1px solid black;
+}
+</style>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">editing id: {{ cost_id | raw }}
+            <a href="{{ path_for('parts.gui') }}" class="pull-right">back</a>
+            <a href="{{ path_for('assets.addquickform') }}" class="pull-right" style="margin-right: 10px;">+assets</a>
+            <a href="{{ path_for('consumables.addquickform') }}" class="pull-right" style="margin-right: 10px;">+consumables</a>
+            <a href="{{ path_for('parts.addquickform') }}" class="pull-right" style="margin-right: 10px;">+parts</a>
+          </div>
+          <div class="panel-body">
+            <div id="main"></div>
+          </div>
+        </div>
+    
+    
+    </div>
+    
+    <div class="col-md-6">
+    
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title-block">
+                    <h3 class="title"> Additional Files </h3>
+                </div>
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a href="" class="nav-link active" data-target="#home-pills" aria-controls="home-pills" data-toggle="tab" role="tab" aria-expanded="true">Uploaded images</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link" data-target="#profile-pills" aria-controls="profile-pills" data-toggle="tab" role="tab" aria-expanded="false">New snapshot</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link" data-target="#form-pills" aria-controls="form-pills" data-toggle="tab" role="tab" aria-expanded="false">New file</a>
+                    </li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="tab-pane fade in active show" id="home-pills" aria-expanded="true">
+                        {{ vystup_obrazku | raw }}
+                    </div>
+                    <div class="tab-pane fade" id="profile-pills" aria-expanded="false">
+                        <div id="my_camera"></div>
+                        <input type=button value="Take Snapshot" onClick="take_snapshot()">
+                        
+                        <div id="snapshot_block" style="display: none;">
+                            <div id="results" ></div>
+                            
+                            
+                            <div style="margin-top: 25px;"><button type="button" class="btn btn-secondary" onClick="saveSnap('photo');">Save as Photo</button></div>
+                            <div style="margin-top: 10px;"><button type="button" class="btn btn-secondary" onClick="saveSnap('storage');">Save as Storage</button></div>
+                            <div style="margin-top: 25px;"><button type="button" class="btn btn-secondary" onClick="saveSnap('warranty_card');">Save as Warranty card</button></div>
+                            <div style="margin-top: 25px;"><button type="button" class="btn btn-secondary" onClick="saveSnap('service_protocol');">Save as Service protocol</button></div>
+                            <div style="margin-top: 25px;"><button type="button" class="btn btn-secondary" onClick="saveSnap('invoice');">Save as Invoice</button></div>
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="tab-pane fade" id="form-pills" aria-expanded="false">
+                        <form method="post" action="{{ upload_adresa | raw }}" enctype="multipart/form-data">
+                            
+                            <label>Select file to upload:</label>
+                            <input type="file" name="webcam" />
+                            <input type="hidden" name="upload_formularem" value="1" />
+                            
+                            <button type="submit">Upload</button>
+                            {{ csrf.field | raw }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-block -->
+        </div>
+    
+    </div>
+    
+</div>
+
+
+<div class="modal fade" id="confirm-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa fa-warning"></i> Alert</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete this file?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="$('#stor_delete_file_form').submit();">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<form id="stor_delete_file_form" method="post" action="{{ path_for('stor.uploader.delete') }}" style="display: none;">
+    <input type="hidden" id="file_uid" name="file_uid" value="" />
+    <input type="hidden" id="actual_delete_dir" name="actual_delete_dir" value="" />
+    <input type="hidden" name="return_uri" value="{{ reload_adresa | raw }}" />
+    {{ csrf.field | raw }}
+</form>
+
+
+
+<!-- Configure a few settings and attach camera -->
+<script language="JavaScript">
+
+
+/*
+    width: 320,
+    height: 240,
+    dest_width: 320,
+    dest_height: 240,
+    constraints: { width: 250, height: 444 },
+*/
+ Webcam.set({
+    width: 300,
+    height: 367,
+    dest_width: 1200,
+    dest_height: 1468,
+    image_format: 'jpeg',
+    jpeg_quality: 85
+ });
+ Webcam.attach( '#my_camera' );
+
+<!-- Code to handle taking the snapshot and displaying it locally -->
+function take_snapshot() {
+ $("#snapshot_block").show();
+ // take snapshot and get image data
+ Webcam.snap( function(data_uri) {
+  // display results in page
+  document.getElementById('results').innerHTML = 
+  '<img id="imageprev" src="'+data_uri+'" width="300" />';
+  } );
+}
+
+function saveSnap(name){
+ // Get base64 value from <img id='imageprev'> source
+ var base64image = document.getElementById("imageprev").src;
+
+ Webcam.upload( base64image, '{{ upload_adresa | raw }}/' + name, function(code, text) {
+  location.reload();
+ });
+
+}
+
+
+</script>
+
+
+{% endblock %}

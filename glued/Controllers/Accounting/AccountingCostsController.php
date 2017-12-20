@@ -53,10 +53,10 @@ class AccountingCostsController extends Controller
         
         // zvlastni pravidla pro vygenerovani jednotlivych prvku
         // odebrano   "required" : [ "wovat", "vat" ],
-        $json_uischema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonuischemas/bill_form_ui.json');
+        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
         // schema celeho formulare
-        $json_schema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonschemas/new_bill_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_bill_form.json');
         
         // zakladni data, jedna prazdna polozka arraye "prirazeni", aby se tam vykreslil prvni prazdny prvek formulare
         $json_formdata_output = '
@@ -115,10 +115,10 @@ class AccountingCostsController extends Controller
         
         // zvlastni pravidla pro vygenerovani jednotlivych prvku
         // odebrano   "required" : [ "wovat", "vat" ],
-        $json_uischema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonuischemas/bill_form_ui.json');
+        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
         // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
-        $json_schema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonschemas/edit_bill_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/edit_bill_form.json');
         
         // zakladni data pro editaci
         $json_formdata_output = $data['c_data'];

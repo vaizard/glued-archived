@@ -7,10 +7,15 @@
                 <li><a href="{{ path_for('platbylist') }}"><i class="fa fa-money"></i> Generování plateb</a></li>
                 <li><a href="{{ path_for('acl.crossroad') }}"><i class="fa fa-lock"></i> ACL</a></li>
                 <li><a href="{{ path_for('accounting.costs') }}"><i class="fa fa-book"></i> Účtenky</a></li>
-                <li><a href="{{ path_for('stor.uploader') }}"><i class="fa fa-upload"></i> Stor Uploader</a></li>
+                <li><a href="{{ path_for('assets.gui') }}"><i class="fa fa-qrcode"></i> Assets</a></li>
+                <li><a href="{{ path_for('consumables.gui') }}"><i class="fa fa-qrcode"></i> Consumables</a></li>
+                <li><a href="{{ path_for('parts.gui') }}"><i class="fa fa-qrcode"></i> Parts</a></li>
+                <li><a href="{{ path_for('barcode.code') }}"><i class="fa fa-qrcode"></i> Barcode</a></li>
+                <li><a href="{{ path_for('stor.uploader') }}"><i class="fa fa-cloud"></i> Stor</a></li>
   {% else %}
            <li><a href="{{ path_for('auth.signup') }}"><i class="fa fa-pencil-square-o"></i> Sign up</a></li>
            <li><a href="{{ path_for('auth.signin') }}"><i class="fa fa-sign-in"></i> Sign in</a></li>
   {% endif %}
+        <li><a href="{{ path_for('development.tools') }}"><i class="fa fa-gears"></i> Development Tools</a></li>
     </ul>
 </nav>
