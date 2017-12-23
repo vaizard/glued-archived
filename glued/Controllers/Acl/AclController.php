@@ -460,6 +460,10 @@ class AclController extends Controller
         else if ($formpage == 'role') {
             return $response->withRedirect('/glued/public/acl/roleprivileges');
         }
+        else if ($formpage == 'modal') {
+            $return_modal_form_uri = $request->getParam('return_modal_form_uri');
+            return $response->withRedirect($return_modal_form_uri);
+        }
         else {
             return $response->withRedirect($this->container->router->pathFor('acl.crossroad'));
         }

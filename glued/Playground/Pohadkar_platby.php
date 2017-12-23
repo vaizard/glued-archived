@@ -17,6 +17,19 @@ class Pohadkar_platby extends Controller
         $user_data = $this->container->auth->user();
         $user_id = $user_data['id'];
         
+        // pripravim obsah modalu pro tabulku platby_mzdy
+        $modal_acl_table = $this->container->acl->modal_output_rights('platby_mzdy', 'table');
+        $modal_acl_global = $this->container->acl->modal_output_rights('platby_mzdy', 'global');
+        
+        // nacteme si mozne akce, TODO spis dat do ajaxu primo do formu
+        $action_options = '';
+        $akce = $this->container->db->get('t_action');
+        if ($this->container->db->count > 0) {
+            foreach ($akce as $akce1) {
+                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+            }
+        }
+        
         // prehled tvych zadanych plateb z db (overuju creator read privilegium na tabulku)
         if ($this->container->acl->have_creator_action('platby_mzdy', 'read')) {
             $this->container->db->where("id_creator", $user_id);
@@ -39,7 +52,14 @@ class Pohadkar_platby extends Controller
             $odkaz_create = true;
         }
         
-        return $this->container->view->render($response, 'platby.twig', array('vystup' => $vystup, 'odkaz_create' => $odkaz_create));
+        return $this->container->view->render($response, 'platby.twig', array(
+            'related_table' => 'platby_mzdy',
+            'return_modal_form_uri' => $this->container->router->pathFor('platbylist'),
+            'action_options' => $action_options,
+            'modal_acl_table' => $modal_acl_table,
+            'modal_acl_global' => $modal_acl_global,
+            'vystup' => $vystup,
+            'odkaz_create' => $odkaz_create));
     }
     
     

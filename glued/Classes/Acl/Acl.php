@@ -214,5 +214,59 @@ class Acl
         else { return false; }
     }
     
+    // fukce ktera naplni modal pro danou tabulku (kdo ma na co pravo)
+    public function modal_output_rights($tbl, $type) {
+        $vystup_privileg = '';
+        
+        if ($type == 'table') {
+            $this->container->db->where("c_type", 'table');
+            $this->container->db->where("c_related_table", $tbl);
+            $privileges = $this->container->db->get('t_privileges');
+            if ($this->container->db->count > 0) {
+                foreach ($privileges as $privilege) {
+                    // pokud je role user, nacteme jeho id a jmeno
+                    if ($privilege['c_role'] == 'user') {
+                        $kdo = 'User <strong>'.$this->container->auth->user_screenname($privilege['c_who']).'</strong>';
+                    }
+                    else if ($privilege['c_role'] == 'group') {
+                        $kdo = 'Group <strong>'.$privilege['c_who'].'</strong>';
+                    }
+                    else if ($privilege['c_role'] == 'creator') {
+                        $kdo = '<strong>Creator</strong>';
+                    }
+                    $vystup_privileg .= '<div>'.$kdo.' '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong></div>';
+                }
+            }
+            else {
+                $vystup_privileg .= '<div>no privileges at the moment</div>';
+            }
+        }
+        else if ($type == 'global') {
+            $this->container->db->where("c_type", 'global');
+            $this->container->db->where("c_related_table", $tbl);
+            $privileges = $this->container->db->get('t_privileges');
+            if ($this->container->db->count > 0) {
+                foreach ($privileges as $privilege) {
+                    // pokud je role user, nacteme jeho id a jmeno
+                    if ($privilege['c_role'] == 'user') {
+                        $kdo = 'User <strong>'.$this->container->auth->user_screenname($privilege['c_who']).'</strong>';
+                    }
+                    else if ($privilege['c_role'] == 'group') {
+                        $kdo = 'Group <strong>'.$privilege['c_who'].'</strong>';
+                    }
+                    else if ($privilege['c_role'] == 'creator') {
+                        $kdo = '<strong>Creator</strong>';
+                    }
+                    $vystup_privileg .= '<div>'.$kdo.' '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong></div>';
+                }
+            }
+            else {
+                $vystup_privileg .= '<div>no privileges at the moment</div>';
+            }
+        }
+        
+        return $vystup_privileg;
+    }
+    
     
 }

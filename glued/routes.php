@@ -37,6 +37,7 @@ $app->group('', function () {
   $this->get('/auth/signout', 'AuthController:getSignOut')->setName('auth.signout');
   $this->get('/upload', 'UploadController:get')->setName('upload');
   $this->post('/upload', 'UploadController:post')->setName('upload');
+  $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
   
   $this->get('/acl/crossroad', 'AclController:getAclCrossroad')->setName('acl.crossroad');
   $this->post('/acl/crossroad', 'AclController:postAddAction');
@@ -68,7 +69,6 @@ $app->group('', function () {
 $app->group('', function () {
   
   // strankove veci (vraci html)
-  $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
   $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
   $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
   
@@ -166,7 +166,7 @@ $app->post('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:savezip
 $app->get('/playground/pohadkar_o2/faktura[/{dirname}]', '\Glued\Playground\Pohadkar_o2:analyzadiru');
 
 // pohadkar, zadavani plateb a generovani prikazu bance
-$app->get('/playground/pohadkar_platby/list', '\Glued\Playground\Pohadkar_platby:list')->setName('platbylist');
+$app->get('/playground/pohadkar_platby/list', '\Glued\Playground\Pohadkar_platby:list')->setName('platbylist')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->get('/playground/pohadkar_platby/new', '\Glued\Playground\Pohadkar_platby:form')->setName('platbynew')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->post('/playground/pohadkar_platby/new', '\Glued\Playground\Pohadkar_platby:insert')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->get('/playground/pohadkar_platby/prikaz[/{id}]', '\Glued\Playground\Pohadkar_platby:prikaz');

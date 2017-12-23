@@ -43,7 +43,27 @@ class AccountingCostsController extends Controller
     </script>
         ';
         
-        return $this->container->view->render($response, 'accounting/costs.twig', array('costs_output' => $costs_output, 'additional_javascript' => $additional_javascript));
+        // pripravim obsah modalu pro tabulku platby_mzdy
+        $modal_acl_table = $this->container->acl->modal_output_rights('accounting_accepted', 'table');
+        $modal_acl_global = $this->container->acl->modal_output_rights('accounting_accepted', 'global');
+        
+        // nacteme si mozne akce, TODO spis dat do ajaxu primo do formu
+        $action_options = '';
+        $akce = $this->container->db->get('t_action');
+        if ($this->container->db->count > 0) {
+            foreach ($akce as $akce1) {
+                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+            }
+        }
+        
+        return $this->container->view->render($response, 'accounting/costs.twig', array(
+            'related_table' => 'accounting_accepted',
+            'return_modal_form_uri' => $this->container->router->pathFor('accounting.costs'),
+            'action_options' => $action_options,
+            'modal_acl_table' => $modal_acl_table,
+            'modal_acl_global' => $modal_acl_global,
+            'costs_output' => $costs_output,
+            'additional_javascript' => $additional_javascript));
     }
     
     // show form for add new cost

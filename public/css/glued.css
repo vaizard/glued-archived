@@ -16,3 +16,9 @@
 div.checkbox {
     display: block;
 }
+
+/* do modalu potrebujeme nejak hezky nastylovat vnitrek tabu */
+
+.modal-tab-content {
+    padding: 10px 20px;
+}
