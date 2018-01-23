@@ -44,8 +44,8 @@ class AccountingCostsController extends Controller
         ';
         
         // pripravim obsah modalu pro tabulku platby_mzdy
-        $modal_acl_table = $this->container->acl->modal_output_rights('accounting_accepted', 'table');
-        $modal_acl_global = $this->container->acl->modal_output_rights('accounting_accepted', 'global');
+        $modal_acl_table = $this->container->permissions->modal_output_rights('accounting_accepted', 'table');
+        $modal_acl_global = $this->container->permissions->modal_output_rights('accounting_accepted', 'global');
         
         // nacteme si mozne akce, TODO spis dat do ajaxu primo do formu
         $action_options = '';

@@ -137,7 +137,7 @@ class StorControllerApiV1 extends Controller
             if (isset($this->container->stor->app_dirs[$dirname])) {
                 // prehled nahranych souborů pro modul stor
                 $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
-                $this->container->db->join("stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
+                $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
                 $this->container->db->where("c_path", $dirname.'/%', 'like');   // TODO dodat mozna LIKE %
                 $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
                 if (count($files) > 0) {

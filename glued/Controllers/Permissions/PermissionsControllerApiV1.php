@@ -1,9 +1,9 @@
 <?php
-namespace Glued\Controllers\Acl;
+namespace Glued\Controllers\Permissions;
 
-use Glued\Controllers\Controller; // needed because Auth is in a directory below
+use Glued\Controllers\Controller;   // kvuli extends
 
-class AclControllerApiV1 extends Controller
+class PermissionsControllerApiV1 extends Controller
 {
     // api for delete (parametr args ma, jedeme pres delete, takze id bude v nem)
     public function deletePrivilegeApi($request, $response, $args)

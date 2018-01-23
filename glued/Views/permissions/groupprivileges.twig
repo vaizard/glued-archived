@@ -51,8 +51,7 @@
                   <div class="form-group">
                     <label for="polozka3">Table name</label>
                     <select name="related_table" class="form-control" id="polozka3">
-                        <option value="timepixels" selected>timepixels</option>
-                        <option value="platby_mzdy">platby_mzdy</option>
+                        {{ table_options | raw }}
                     </select>
                   </div>
                     

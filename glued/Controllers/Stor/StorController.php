@@ -97,7 +97,7 @@ class StorController extends Controller
                 
                 // zjistime jestli soubor se stejnym hashem uz mame
                 $this->container->db->where("sha512", $sha512);
-                $this->container->db->getOne('stor_objects');
+                $this->container->db->getOne('t_stor_objects');
                 if ($this->container->db->count == 0) {
                     
                     // vytvorime tomu adresar
@@ -133,7 +133,7 @@ class StorController extends Controller
                     
                     // vlozime do objects
                     $data = Array ("doc" => $json_string);
-                    $this->container->db->insert ('stor_objects', $data);
+                    $this->container->db->insert ('t_stor_objects', $data);
                     
                     // vlozime do links
                     $data = Array (
@@ -204,13 +204,13 @@ class StorController extends Controller
                     // nacteme si z object cestu ke smazani souboru, i kdz, sla by odvodit, ale muze tam byt prave jiny driver a pak cesta neni dana hashem, TODO
                     // zatim predpokladame driver fs, [0] znamena prvni prvek pole storage, coz je objekt takze za tim zase zaciname teckou
                     // rawQuery v joshcam vraci vzdy pole, i kdyz je vysledek jen jeden
-                    $objects = $this->container->db->rawQuery(" SELECT `doc`->>'$.data.storage[0].path' AS path FROM stor_objects WHERE sha512 = ? ", Array ($hash));
+                    $objects = $this->container->db->rawQuery(" SELECT `doc`->>'$.data.storage[0].path' AS path FROM t_stor_objects WHERE sha512 = ? ", Array ($hash));
                     // TODO, kontrola jestli je jeden vysledek a jestli neni path prazdna
                     $file_to_delete = $objects[0]['path'].'/'.$hash;
                     unlink($file_to_delete);
                     // mazani z objects
                     $this->container->db->where("sha512", $hash);
-                    if ($this->container->db->delete('stor_objects')) {
+                    if ($this->container->db->delete('t_stor_objects')) {
                         $this->container->flash->addMessage('info', 'soubor '.$file_to_delete.' byl komplet smazan z links i object.');
                     }
                     else {
@@ -261,7 +261,7 @@ class StorController extends Controller
         // nacteme mime
         $sloupce = array("doc->>'$.data.mime' as mime", "doc->>'$.data.storage[0].path' as path");
         $this->container->db->where("sha512", $file_link['c_sha512']);
-        $file_data = $this->container->db->getOne("stor_objects", $sloupce);
+        $file_data = $this->container->db->getOne("t_stor_objects", $sloupce);
         
         // path mame v takovem nejakem tvaru
         // ../private/stor/0/2/8/0

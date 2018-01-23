@@ -2,6 +2,7 @@
 
 use \Glued\Middleware\Auth\AuthMiddleware;
 use \Glued\Middleware\Auth\GuestMiddleware;
+use \Glued\Middleware\Permissions\RootMiddleware;
 use Jsv4\Validator as jsonv;
 
 
@@ -39,18 +40,8 @@ $app->group('', function () {
   $this->post('/upload', 'UploadController:post')->setName('upload');
   $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
   
-  $this->get('/acl/crossroad', 'AclController:getAclCrossroad')->setName('acl.crossroad');
-  $this->post('/acl/crossroad', 'AclController:postAddAction');
-  $this->get('/acl/usergroups/{id}', 'AclController:getUserGroups');
-  $this->post('/acl/usergroups', 'AclController:postUserGroups')->setName('acl.update.membership');
-  $this->get('/acl/userunix/{id}', 'AclController:getUserUnix');
-  $this->post('/acl/userunix', 'AclController:postUserUnix')->setName('acl.update.userunix');
-  $this->get('/acl/userprivileges/{id}', 'AclController:getUserPrivileges');    // privilgie uzivatele a form na pridani noveho
-  $this->get('/acl/groupprivileges/{id}', 'AclController:getGroupPrivileges');  // privilegia skupiny a form na pridani noveho
-  $this->get('/acl/roleprivileges', 'AclController:getRolePrivileges')->setName('acl.roleprivileges');  // privilegia dalsich roli a form na pridani noveho
-  $this->get('/acl/tableprivileges/{tablename}', 'AclController:getTableTablePrivileges');  // table privilegia na tabulku a form na pridani noveho
-  $this->get('/acl/globalprivileges/{tablename}', 'AclController:getGlobalTablePrivileges');  // global privilegia na tabulku a form na pridani noveho
-  $this->post('/acl/newprivilege', 'AclController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
+  $this->get('/permissions/my', 'PermissionsController:getMyAcl')->setName('acl.my');
+  $this->post('/permissions/newprivilege', 'PermissionsController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
   
   // stor
   $this->get('/stor/uploader[/~/{dir}]', 'StorController:storUploadGui')->setName('stor.uploader');
@@ -64,7 +55,29 @@ $app->group('', function () {
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
-// another group of routes, where user have to be signed in, but no csrf check. typical - api (ajax) scripts
+// group of routes, where user has to be signed in, and has to be in root group, csrf check
+$app->group('', function () {
+  $this->get('/permissions/crossroad', 'PermissionsController:getAclCrossroad')->setName('acl.crossroad');
+  $this->get('/permissions/developer', 'PermissionsController:getAclDeveloper')->setName('acl.developer');
+  $this->post('/permissions/developer', 'PermissionsController:postAddActionRole');
+  
+  $this->get('/permissions/usergroups/{id}', 'PermissionsController:getUserGroups');
+  $this->post('/permissions/usergroups', 'PermissionsController:postUserGroups')->setName('acl.update.membership');
+  $this->get('/permissions/userunix/{id}', 'PermissionsController:getUserUnix');
+  $this->post('/permissions/userunix', 'PermissionsController:postUserUnix')->setName('acl.update.userunix');
+  $this->get('/permissions/userprivileges/{id}', 'PermissionsController:getUserPrivileges');    // privilgie uzivatele a form na pridani noveho
+  $this->get('/permissions/groupprivileges/{id}', 'PermissionsController:getGroupPrivileges');  // privilegia skupiny a form na pridani noveho
+  $this->get('/permissions/roleprivileges', 'PermissionsController:getRolePrivileges')->setName('acl.roleprivileges');  // privilegia dalsich roli a form na pridani noveho
+  $this->get('/permissions/implementedactions', 'PermissionsController:getImplementedActions')->setName('acl.implementedactions');  // prirazeni status akce abulka
+  $this->get('/permissions/tableprivileges/{tablename}', 'PermissionsController:getTableTablePrivileges');  // table privilegia na tabulku a form na pridani noveho
+  $this->get('/permissions/globalprivileges/{tablename}', 'PermissionsController:getGlobalTablePrivileges');  // global privilegia na tabulku a form na pridani noveho
+  $this->post('/permissions/newimplementedaction', 'PermissionsController:postNewImplementedAction')->setName('acl.new.implemented.action'); // pridava novy zaznam do tabulky implemented_action
+  
+})->add(new AuthMiddleware($container))->add(new RootMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+
+
+// another group of routes, where user have to be signed in, but no csrf check.
+// typical - api (ajax) scripts
 // or pages with js generated forms
 $app->group('', function () {
   
@@ -104,8 +117,8 @@ $app->group('', function () {
   $this->post('/consumables/upload/{id:[0-9]+}[/{name}]', 'ConsumablesController:uploaderSave')->setName('consumables.upload');
   $this->post('/parts/upload/{id:[0-9]+}[/{name}]', 'PartsController:uploaderSave')->setName('parts.upload');
   
-  // api acl
-  $this->delete('/api/v1/acl/privileges/[{id}]', 'AclControllerApiV1:deletePrivilegeApi')->setName('acl.api.privilege.delete');
+  // api permissions
+  $this->delete('/api/v1/permissions/privileges/[{id}]', 'PermissionsControllerApiV1:deletePrivilegeApi')->setName('acl.api.privilege.delete');
   
   // show stor file (or force download)
   $this->get('/stor/get/{id:[0-9]+}[/{filename}]', 'StorController:serveFile')->setName('stor.serve.file');

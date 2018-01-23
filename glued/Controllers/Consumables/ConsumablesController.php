@@ -172,7 +172,7 @@ class ConsumablesController extends Controller
         
         $vystup_obrazku = '';
         $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
-        $this->container->db->join("stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
+        $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
         $this->container->db->where("c_path", 'consumables/'.$args['id']);
         $this->container->db->orderBy("lin.c_filename","asc");
         $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
@@ -271,7 +271,7 @@ class ConsumablesController extends Controller
                 
                 // zjistime jestli soubor se stejnym hashem uz mame
                 $this->container->db->where("sha512", $sha512);
-                $this->container->db->getOne('stor_objects');
+                $this->container->db->getOne('t_stor_objects');
                 if ($this->container->db->count == 0) {
                     
                     // vytvorime tomu adresar
@@ -307,7 +307,7 @@ class ConsumablesController extends Controller
                     
                     // vlozime do objects
                     $data = Array ("doc" => $json_string);
-                    $this->container->db->insert ('stor_objects', $data);
+                    $this->container->db->insert('t_stor_objects', $data);
                     
                     // vlozime do links
                     $data = Array (

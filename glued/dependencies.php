@@ -11,9 +11,9 @@ $container['auth'] = function ($container) {
     return new \Glued\Classes\Auth\Auth($container);
 };
 
-// glued acl class
-$container['acl'] = function ($container) {
-    return new \Glued\Classes\Acl\Acl($container);
+// glued Permissions class (acl, rbacs, abac)
+$container['permissions'] = function ($container) {
+    return new \Glued\Classes\Permissions\Permissions($container);
 };
 
 // tags class
@@ -111,14 +111,14 @@ $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
 };
 
-// glued ACL controler, html output
-$container['AclController'] = function ($container) {
-    return new \Glued\Controllers\Acl\AclController($container);
+// glued Permissions controler, html output
+$container['PermissionsController'] = function ($container) {
+    return new \Glued\Controllers\Permissions\PermissionsController($container);
 };
 
-// glued ACL controler, api
-$container['AclControllerApiV1'] = function ($container) {
-    return new \Glued\Controllers\Acl\AclControllerApiV1($container);
+// glued Permissions controler, api
+$container['PermissionsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Permissions\PermissionsControllerApiV1($container);
 };
 
 // glued file upload

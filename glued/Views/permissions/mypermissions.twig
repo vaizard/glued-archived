@@ -1,0 +1,50 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> My permissions {{ developer_link | raw }}</h3>
+    <p class="title-description"> přehled tvých práv napříč systémem </p>
+</div>
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Tvá práva v roli user</h3>
+                </div>
+                {{ vystup_users | raw }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Práva groups ve kterých jsi ({{ prislusnost_groups | raw }})</h3>
+                </div>
+                {{ vystup_groups | raw }}
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Další případná práva</h3>
+                </div>
+                zatím nevím jak zjistit mé další role
+            </div>
+        </div>
+    </div>
+    
+</section>
+
+
+
+
+
+
+{% endblock %}

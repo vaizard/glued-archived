@@ -3,8 +3,8 @@
 {% block content %}
 
 <div class="title-block">
-    <h3 class="title"> Role Privileges </h3>
-    <p class="title-description"> Existing Privileges of roles self and creator <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
+    <h3 class="title"> User Privileges </h3>
+    <p class="title-description"> Existing Privileges of user {{ user.c_screenname }} (id: {{ user.c_uid }}) <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
 </div>
 
 <section class="section">
@@ -19,6 +19,8 @@
             </div>
         </div>
         
+        {{ additional_javascript | raw }}
+        
         <div class="col-md-6">
             <div class="card card-block">
                 <div class="title-block">
@@ -26,18 +28,13 @@
                 </div>
                 
                 <form action="{{ path_for('acl.new.privilege') }}" method="post">
-                    <input type="hidden" name="formpage" value="role" />
+                    <input type="hidden" name="formpage" value="user" />
+                    <input type="hidden" name="user_id" value="{{ user.c_uid }}" />
                     
-                    <input type="hidden" name="who" value="0" />
-                  
-                  <div class="form-group">
-                    <label for="polozka0">Role</label>
-                    <select name="role" class="form-control" id="polozka0">
-                        <option value="self" selected>self</option>
-                        <option value="creator">creator</option>
-                    </select>
-                  </div>
-                  
+                    
+                    <input type="hidden" name="role" value="user" />
+                    <input type="hidden" name="who" value="{{ user.c_uid }}" />
+                    
                   <div class="form-group">
                     <label for="polozka1">Action</label>
                     <select name="action" class="form-control" id="polozka1">
@@ -57,8 +54,7 @@
                   <div class="form-group">
                     <label for="polozka3">Table name</label>
                     <select name="related_table" class="form-control" id="polozka3">
-                        <option value="timepixels" selected>timepixels</option>
-                        <option value="platby_mzdy">platby_mzdy</option>
+                        {{ table_options | raw }}
                     </select>
                   </div>
                     

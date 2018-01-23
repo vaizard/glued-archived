@@ -1,8 +1,8 @@
 <?php
 
-namespace Glued\Classes\Acl;
+namespace Glued\Classes\Permissions;
 
-class Acl
+class Permissions
 
 {
 
@@ -22,9 +22,22 @@ class Acl
 
     private $groups = array(
        "root"    => 1,
-       "officer" => 2,
-       "user"    => 4,
-       "bot"   => 8
+       "user"    => 2,
+       "bot"   => 4
+    );
+
+    private $tables = array(
+       "platby_mzdy",
+       "timepixels",
+       "t_assets_items",
+       "t_consumables_items",
+       "t_parts_items"
+    );
+
+    private $statuses = array(
+       "open"    => 1,
+       "published" => 2,
+       "available" => 4
     );
 
     public function __construct($container)
@@ -41,6 +54,28 @@ class Acl
     // return groups array
     public function show_groups() {
         return $this->groups;
+    }
+    
+    // return tables array
+    public function show_tables() {
+        return $this->tables;
+    }
+    
+    // return statuses array
+    public function show_statuses() {
+        return $this->statuses;
+    }
+    
+    // vrati pole skupin, kde je uzivatel
+    public function user_groups($user) {
+        $groups = $this->groups;
+        
+        $membership = array();
+        foreach ($groups as $gname => $gid) {
+            if ($user['c_group_mememberships'] & $gid) { $membership[] = $gname; }
+        }
+        
+        return $membership;
     }
     
     // read table privileges, TODO zabudovat negaci, primarne pujde o pravo na insert

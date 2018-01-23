@@ -18,8 +18,8 @@ class Pohadkar_platby extends Controller
         $user_id = $user_data['id'];
         
         // pripravim obsah modalu pro tabulku platby_mzdy
-        $modal_acl_table = $this->container->acl->modal_output_rights('platby_mzdy', 'table');
-        $modal_acl_global = $this->container->acl->modal_output_rights('platby_mzdy', 'global');
+        $modal_acl_table = $this->container->permissions->modal_output_rights('platby_mzdy', 'table');
+        $modal_acl_global = $this->container->permissions->modal_output_rights('platby_mzdy', 'global');
         
         // nacteme si mozne akce, TODO spis dat do ajaxu primo do formu
         $action_options = '';
@@ -31,7 +31,7 @@ class Pohadkar_platby extends Controller
         }
         
         // prehled tvych zadanych plateb z db (overuju creator read privilegium na tabulku)
-        if ($this->container->acl->have_creator_action('platby_mzdy', 'read')) {
+        if ($this->container->permissions->have_creator_action('platby_mzdy', 'read')) {
             $this->container->db->where("id_creator", $user_id);
             $platby = $this->container->db->get('platby_mzdy');
             if ($this->container->db->count > 0) {
@@ -48,7 +48,7 @@ class Pohadkar_platby extends Controller
         }
         
         // zjistim jestli mam create pravo na tabulku a podle toho se ukaze nebo neukaze odkaz
-        if ($this->container->acl->have_table_action('platby_mzdy', 'create')) {
+        if ($this->container->permissions->have_table_action('platby_mzdy', 'create')) {
             $odkaz_create = true;
         }
         
@@ -66,7 +66,7 @@ class Pohadkar_platby extends Controller
     // funkce ktera vypise formular na vlozeni nove platby. pokud tam prijdu bez privilegia, posle me to na forbidden stranku
     public function form($request, $response)
     {
-        if ($this->container->acl->have_table_action('platby_mzdy', 'create')) {
+        if ($this->container->permissions->have_table_action('platby_mzdy', 'create')) {
             return $this->container->view->render($response, 'platby-new.twig');
         }
         else {
@@ -100,7 +100,7 @@ class Pohadkar_platby extends Controller
     public function insert($request, $response)
     {
         // mam pravo vkladat?
-        if ($this->container->acl->have_table_action('platby_mzdy', 'create')) {
+        if ($this->container->permissions->have_table_action('platby_mzdy', 'create')) {
             
             
             // validaci zatim preskocime , TODO
