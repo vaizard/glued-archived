@@ -1,0 +1,19 @@
+{
+    "data": {
+        "_v": {
+          "ui:widget": "hidden"
+        },
+        "item_description": {
+          "ui:widget": "textarea"
+        },
+        "item_notes": {
+          "ui:widget": "textarea"
+        },
+        "ts_created": {
+          "ui:widget": "hidden"
+        },
+        "ts_updated": {
+          "ui:widget": "hidden"
+        }
+    }
+}

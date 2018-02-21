@@ -1,0 +1,141 @@
+{
+    "title": "Edit parts form",
+    "type": "object",
+    "properties":{
+        "data": {
+            "type": "object",
+            "properties":{
+                        "_v": {
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "owner": {
+                          "type": "string",
+                          "title": "Owner",
+                          "default": "Industra"
+                        },
+                        "category": {
+                          "type": "string",
+                          "title": "Category"
+                        },
+                        "item_name": {
+                          "type": "string",
+                          "title": "Item name"
+                        },
+                        "item_description": {
+                          "type": "string",
+                          "title": "Item description"
+                        },
+                        "item_no": {
+                          "type": "string",
+                          "title": "Item #"
+                        },
+                        "item_notes": {
+                          "type": "string",
+                          "title": "Notes"
+                        },
+                        "locations": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "location": {
+                                      "type": "string",
+                                      "title": "Location"
+                                    },
+                                    "stock": {
+                                      "type": "integer",
+                                      "title": "Stock",
+                                      "default": 0
+                                    },
+                                    "stock_unit": {
+                                      "type": "string",
+                                      "title": "Stock unit"
+                                    }
+                                }
+                            }
+                        },
+                        "purchases": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "supplier": {
+                                      "type": "string",
+                                      "title": "Supplier"
+                                    },
+                                    "quantity": {
+                                      "type": "integer",
+                                      "title": "Quantity",
+                                      "default": 0
+                                    },
+                                    "unit": {
+                                      "type": "string",
+                                      "title": "Unit"
+                                    },
+                                    "warranty": {
+                                      "type": "string",
+                                      "title": "Warranty"
+                                    },
+                                    "date": {
+                                      "type": "string",
+                                      "format": "date",
+                                      "title": "Date",
+                                    },
+                                    "invoice_no": {
+                                      "type": "string",
+                                      "title": "Invoice #"
+                                    },
+                                    "purchase_id": {
+                                      "type": "string",
+                                      "title": "Purchase id"
+                                    }
+                                }
+                            }
+                        },
+                        "suppliers": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "supplier": {
+                                      "type": "string",
+                                      "title": "Supplier"
+                                    },
+                                    "order_no": {
+                                      "type": "string",
+                                      "title": "Order #"
+                                    },
+                                    "order_name": {
+                                      "type": "string",
+                                      "title": "Order name"
+                                    },
+                                    "order_price": {
+                                      "type": "string",
+                                      "title": "Order price"
+                                    },
+                                    "order_currency": {
+                                      "type": "string",
+                                      "title": "Order currency"
+                                    },
+                                    "order_minunits": {
+                                      "type": "string",
+                                      "title": "Order minunits"
+                                    },
+                                    "leadtime": {
+                                      "type": "string",
+                                      "title": "Lead time"
+                                    }
+                                }
+                            }
+                        },
+                        "ts_created": {
+                          "type": "string"
+                        },
+                        "ts_updated": {
+                          "type": "string"
+                        }
+            }
+        }
+    }
+}

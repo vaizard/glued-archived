@@ -11,9 +11,9 @@ $container['auth'] = function ($container) {
     return new \Glued\Classes\Auth\Auth($container);
 };
 
-// glued acl class
-$container['acl'] = function ($container) {
-    return new \Glued\Classes\Acl\Acl($container);
+// glued Permissions class (acl, rbacs, abac)
+$container['permissions'] = function ($container) {
+    return new \Glued\Classes\Permissions\Permissions($container);
 };
 
 // tags class
@@ -111,14 +111,14 @@ $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
 };
 
-// glued ACL controler, html output
-$container['AclController'] = function ($container) {
-    return new \Glued\Controllers\Acl\AclController($container);
+// glued Permissions controler, html output
+$container['PermissionsController'] = function ($container) {
+    return new \Glued\Controllers\Permissions\PermissionsController($container);
 };
 
-// glued ACL controler, api
-$container['AclControllerApiV1'] = function ($container) {
-    return new \Glued\Controllers\Acl\AclControllerApiV1($container);
+// glued Permissions controler, api
+$container['PermissionsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Permissions\PermissionsControllerApiV1($container);
 };
 
 // glued file upload
@@ -150,4 +150,45 @@ $container['AccountingCostsControllerApiV1'] = function ($container) {
 // stor controler
 $container['StorController'] = function ($container) {
     return new \Glued\Controllers\Stor\StorController($container);
+};
+
+// stor controler api
+$container['StorControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Stor\StorControllerApiV1($container);
+};
+
+// stock controler
+$container['StockController'] = function ($container) {
+    return new \Glued\Controllers\Assets\StockController($container);
+};
+
+// stock controler api
+$container['StockControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Assets\StockControllerApiV1($container);
+};
+
+// barcode controler
+$container['BarcodeController'] = function ($container) {
+    return new \Glued\Controllers\Barcode\BarcodeController($container);
+};
+
+// consumables controler
+$container['ConsumablesController'] = function ($container) {
+    return new \Glued\Controllers\Consumables\ConsumablesController($container);
+};
+
+// consumables controler api
+$container['ConsumablesControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Consumables\ConsumablesControllerApiV1($container);
+};
+
+
+// parts controler
+$container['PartsController'] = function ($container) {
+    return new \Glued\Controllers\Parts\PartsController($container);
+};
+
+// parts controler api
+$container['PartsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Parts\PartsControllerApiV1($container);
 };

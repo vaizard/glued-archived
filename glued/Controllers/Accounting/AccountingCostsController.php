@@ -43,7 +43,27 @@ class AccountingCostsController extends Controller
     </script>
         ';
         
-        return $this->container->view->render($response, 'accounting/costs.twig', array('costs_output' => $costs_output, 'additional_javascript' => $additional_javascript));
+        // pripravim obsah modalu pro tabulku platby_mzdy
+        $modal_acl_table = $this->container->permissions->modal_output_rights('accounting_accepted', 'table');
+        $modal_acl_global = $this->container->permissions->modal_output_rights('accounting_accepted', 'global');
+        
+        // nacteme si mozne akce, TODO spis dat do ajaxu primo do formu
+        $action_options = '';
+        $akce = $this->container->db->get('t_action');
+        if ($this->container->db->count > 0) {
+            foreach ($akce as $akce1) {
+                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+            }
+        }
+        
+        return $this->container->view->render($response, 'accounting/costs.twig', array(
+            'related_table' => 'accounting_accepted',
+            'return_modal_form_uri' => $this->container->router->pathFor('accounting.costs'),
+            'action_options' => $action_options,
+            'modal_acl_table' => $modal_acl_table,
+            'modal_acl_global' => $modal_acl_global,
+            'costs_output' => $costs_output,
+            'additional_javascript' => $additional_javascript));
     }
     
     // show form for add new cost
@@ -53,10 +73,10 @@ class AccountingCostsController extends Controller
         
         // zvlastni pravidla pro vygenerovani jednotlivych prvku
         // odebrano   "required" : [ "wovat", "vat" ],
-        $json_uischema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonuischemas/bill_form_ui.json');
+        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
         // schema celeho formulare
-        $json_schema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonschemas/new_bill_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_bill_form.json');
         
         // zakladni data, jedna prazdna polozka arraye "prirazeni", aby se tam vykreslil prvni prazdny prvek formulare
         $json_formdata_output = '
@@ -115,10 +135,10 @@ class AccountingCostsController extends Controller
         
         // zvlastni pravidla pro vygenerovani jednotlivych prvku
         // odebrano   "required" : [ "wovat", "vat" ],
-        $json_uischema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonuischemas/bill_form_ui.json');
+        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
         // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
-        $json_schema_output = file_get_contents('/var/www/html/glued/glued/Controllers/Accounting/V1/jsonschemas/edit_bill_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/edit_bill_form.json');
         
         // zakladni data pro editaci
         $json_formdata_output = $data['c_data'];

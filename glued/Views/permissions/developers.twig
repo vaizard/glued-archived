@@ -1,0 +1,152 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> ACL Developer Settings <a class="pull-right" style="margin: 0 25px;" href="{{ path_for('acl.crossroad') }}">for Root</a></h3>
+    <p class="title-description"> Advaced ACL administration. </p>
+</div>
+
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> add new action </h3>
+                </div>
+                
+                <form role="form" action="{{ path_for('acl.developer') }}" method="post">
+                    <input type="hidden" name="what" value="action" />
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Name of Action</label>
+                        <input class="form-control" id="exampleInputEmail1" placeholder="Enter name of action" type="text" name="title">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Applying on what?</label>
+                        <div>
+                            <label>
+                                <input class="radio" name="apply_object" type="radio" value="1" checked>
+                                <span>Apply on object</span>
+                            </label>
+                            <label>
+                                <input class="radio" name="apply_object" type="radio" value="0">
+                                <span>Apply on table</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
+                
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> add new role </h3>
+                </div>
+                
+                <form role="form" action="{{ path_for('acl.developer') }}" method="post">
+                    <input type="hidden" name="what" value="role" />
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Name of Role</label>
+                        <input class="form-control" id="exampleInputEmail1" placeholder="Enter name of role" type="text" name="title">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
+                
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-3">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> object and global actions </h3>
+                </div>
+                {{ vystup_actions.object | raw }}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> table actions </h3>
+                </div>
+                {{ vystup_actions.table | raw }}
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> basic roles </h3>
+                </div>
+                <div><strong>user</strong></div>
+                <div><strong>group</strong></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> added roles </h3>
+                </div>
+                {{ vystup_roles | raw }}
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Přehled permissions (hardcodované) </h3>
+                </div>
+                {{ vystup_hardcoded_permissions | raw }}
+            </div>
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Přehled statusů (hardcodované) </h3>
+                </div>
+                {{ vystup_hardcoded_statuses | raw }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Přehled groups (hardcodované) </h3>
+                </div>
+                {{ vystup_hardcoded_groups | raw }}
+            </div>
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Přehled tabulek (hardcodované) </h3>
+                </div>
+                {{ vystup_hardcoded_tables | raw }}
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+{% endblock %}

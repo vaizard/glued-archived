@@ -1,0 +1,66 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> ACL Root Crossroads <a class="pull-right" style="margin: 0 25px;" href="{{ path_for('acl.developer') }}">for Developer</a></h3>
+    <p class="title-description"> Everything for root ACL administration. </p>
+</div>
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Přehled uživatelů (role user) </h3>
+                </div>
+                {{ vystup_users | raw }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Přehled skupin (role group) </h3>
+                </div>
+                {{ vystup_groups | raw }}
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-3">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Privilegia pro ostatní role (self, creator, ...) </h3>
+                </div>
+                <p><a href="{{ path_for('acl.roleprivileges') }}">role privileges</a></p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Editace tabulky t_implemented_action </h3>
+                </div>
+                <p><a href="{{ path_for('acl.implementedactions') }}">status + akce + tabulka</a></p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Přehled tabulek a kdo na ně má práva </h3>
+                </div>
+                {{ vystup_tables | raw }}
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+
+{% endblock %}

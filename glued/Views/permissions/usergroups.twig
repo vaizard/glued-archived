@@ -1,0 +1,39 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> Groups Membership </h3>
+    <p class="title-description"> Change Groups Membership of user {{ user.c_screenname }} (id: {{ user.c_uid }}) <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
+</div>
+
+<section class="section">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> In Groups </h3>
+                </div>
+                
+                <form role="form" action="{{ path_for('acl.update.membership') }}" method="post">
+                    <input type="hidden" name="user_id" value="{{ user.c_uid }}" />
+                    
+                    <div class="form-group">
+                        {{ checkboxes | raw  }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Set this membership</button>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
+                
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+{% endblock %}

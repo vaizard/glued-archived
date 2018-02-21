@@ -7,6 +7,14 @@ class Stor
 {
     protected $container;
     
+    public $app_dirs = array(
+       "stor"    => 'Stor',
+       "my_files"   => 'My files',
+       "assets"    => 'Assets',
+       "consumables"    => 'Consumables',
+       "parts"    => 'Parts'
+    );
+    
     // konstruktor
     public function __construct($container)
     {
@@ -60,4 +68,65 @@ class Stor
             return false;
         }
     }
+    
+    // prevede mime na fontawesome ikonu
+    public function font_awesome_mime_icon( $mime_type ) {
+        // definice znamych typu
+      static $font_awesome_file_icon_classes = array(
+        // Images
+        'image' => 'fa-file-image-o',
+        // Audio
+        'audio' => 'fa-file-audio-o',
+        // Video
+        'video' => 'fa-file-video-o',
+        // Documents
+        'application/pdf' => 'fa-file-pdf-o',
+        'application/msword' => 'fa-file-word-o',
+        'application/vnd.ms-word' => 'fa-file-word-o',
+        'application/vnd.oasis.opendocument.text' => 'fa-file-word-o',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml' => 'fa-file-word-o',
+        'application/vnd.ms-excel' => 'fa-file-excel-o',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml' => 'fa-file-excel-o',
+        'application/vnd.oasis.opendocument.spreadsheet' => 'fa-file-excel-o',
+        'application/vnd.ms-powerpoint' => 'fa-file-powerpoint-o',
+        'application/vnd.openxmlformats-officedocument.presentationml' => 'fa-file-powerpoint-o',
+        'application/vnd.oasis.opendocument.presentation' => 'fa-file-powerpoint-o',
+        'text/plain' => 'fa-file-text-o',
+        'text/html' => 'fa-file-code-o',
+        'application/json' => 'fa-file-code-o',
+        // Archives
+        'application/gzip' => 'fa-file-archive-o',
+        'application/zip' => 'fa-file-archive-o',
+        'application/x-zip-compressed' => 'fa-file-archive-o',
+        // Misc
+        'application/octet-stream' => 'fa-file-o',
+      );
+      
+      // jestlize to tam mame cele
+      if (isset($font_awesome_file_icon_classes[ $mime_type ])) {
+        return $font_awesome_file_icon_classes[ $mime_type ];
+      }
+      else {    // jinak se podivame jestli mame aspon prvni cast
+          $mime_parts = explode('/', $mime_type, 2);
+          $mime_group = $mime_parts[0];
+          if (isset($font_awesome_file_icon_classes[ $mime_group ])) {
+            return $font_awesome_file_icon_classes[ $mime_group ];
+          }
+          else {
+            return "fa-file-o"; // default na ktery spadne vse neurcene
+          }
+      }
+    }
+    
+    public function human_readable_size($raw) {
+        $size_names = array('Byte','KB','MB','GB','TB','PB','EB','ZB','YB','NB','DB');
+        $name_id = 0;
+        while ($raw>=1024 && ($name_id<count($size_names)-1)) {
+            $raw /= 1024;
+            $name_id++;
+        }
+        $ret = round($raw,1).' '.$size_names[$name_id];
+        return $ret;
+    }
+    
 }

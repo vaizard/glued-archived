@@ -1,0 +1,41 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+{{ additional_javascript | raw }}
+
+<div class="title-block">
+    <h3 class="title"> Consumables Module </h3>
+</div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-block">
+            <div class="card-title-block">
+                <h3 class="title">Existing consumables<a href="{{ path_for('consumables.addform') }}" class="pull-right" style="margin: 0 20px;">add new consumables</a> <a href="{{ path_for('consumables.addquickform') }}" class="pull-right" style="margin: 0 20px;">add quick consumables</a></h3>
+            </div>
+            <section class="example">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Category</th>
+                                <th>Name</th>
+                                <th>In stock</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ costs_output | raw }}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
