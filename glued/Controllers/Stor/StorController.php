@@ -13,13 +13,30 @@ class StorController extends Controller
     {
         $vystup = '';
         
+        $actual_dirname = '';
+        if (!empty($args['dir'])) {
+            if (!empty($args['oid'])) {
+                $actual_dirname = $args['dir'].'/'.$args['oid'];
+            }
+            else {
+                $actual_dirname = $args['dir'];
+            }
+        }
+        
+        // priprava vyberu diru do copy move popupu
+        $stor_dirs_options = '';
+        foreach ($this->container->stor->app_dirs as $dir => $description) {
+            if ($dir == 'my_owned' or $dir == 'my_files') { continue; }
+            $stor_dirs_options .= '<option value="'.$dir.'">'.$description.'</option>';
+        }
+        
         $additional_javascript = '
     <script>
     
-    '.(!empty($args['dir'])?' var actual_dirname = "'.$args['dir'].'"; ':' var actual_dirname = "stor"; ').'
+    var actual_dirname = "'.$actual_dirname.'";
     
     // definice funkce
-    function show_files(dirname) {
+    function show_files(dirname, can_upload) {
         $.ajax({
           url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.api.files').'",
           dataType: "text",
@@ -28,9 +45,24 @@ class StorController extends Controller
           success: function(data) {
             $("#stor-files-output").html(data);
             
-            // nastavime prepnuty dir do uploadovaciho a mazaciho formu
+            // prepneme form do uploadovaciho nebo zakazaneho stavu
+            if (can_upload) {
+                $("#can_upload_button").show();
+                $("#cannot_upload_message").hide();
+            }
+            else {
+                $("#can_upload_button").hide();
+                $("#cannot_upload_message").show();
+            }
+            
+            // nastavime prepnuty dir do uploadovaciho a mazaciho formu (a dalsich formu), vsechny kontejnery maji stejnou class
+            $(".stor_hidden_actual_dir").val(dirname);
+            /*
             $("#actual_dir").val(dirname);
             $("#actual_delete_dir").val(dirname);
+            $("#stor_edit_form_actual_dir").val(dirname);
+            $("#stor_copy_move_form_actual_dir").val(dirname);
+            */
             
             // musime znova inicializovat rozklikavaci ozubena kola na konci radku, coz se normalne dela v app.js pri nacteni stranky
             var $itemActions = $(".item-actions-dropdown");
@@ -64,15 +96,42 @@ class StorController extends Controller
         });
     }
     
+    // cte existujici objekty do modalu pro copy move
+    function read_modal_objects() {
+        // zjistime si ktery dir je vybrany
+        
+        var dirname = $("#stor_copy_move_target_dir").val();
+        
+        $.ajax({
+          url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.api.modal.objects').'",
+          dataType: "text",
+          type: "GET",
+          data: "dirname=" + dirname,
+          success: function(data) {
+            $("#stor_copy_move_target_object_id").html(data);
+          },
+          error: function(xhr, status, err) {
+            alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+          }
+        });
+    }
+    
     // na zacatku to zavolame se stor parametrem (mozna az po nahrani cele stranky)
     $(document).ready(function() {
-        show_files(actual_dirname);
+        show_files(actual_dirname, false);
+        read_modal_objects();
     });
     
     </script>
         ';
         
-        return $this->container->view->render($response, 'stor-upload-gui.twig', array('vystup' => $vystup, 'article_class' => 'items-list-page', 'additional_javascript' => $additional_javascript));
+        return $this->container->view->render($response, 'stor-upload-gui.twig',
+        array(
+            'vystup' => $vystup,
+            'article_class' => 'items-list-page',
+            'additional_javascript' => $additional_javascript,
+            'stor_dirs_options' => $stor_dirs_options
+        ));
     }
     
     
@@ -86,9 +145,25 @@ class StorController extends Controller
         
         $newfile = $files['file'];
         
-        $actual_dir = $request->getParam('actual_dir');
-        if (empty($actual_dir)) { $actual_dir = 'stor'; }
+        $raw_path = $request->getParam('actual_dir');
         
+        // vyjimka na my_files
+        if ($raw_path == 'my_files') {
+            $actual_dir = 'users';
+            $actual_object = $_SESSION['authentication_id'];
+        }
+        else {
+            $parts = explode('/', $raw_path);
+            if (count($parts) > 1) {
+                $actual_dir = $parts[0];
+                $actual_object = $parts[1];
+            }
+            else {
+                $actual_dir = '';
+            }
+        }
+        
+        // pokud dir existuje v seznamu povolenych diru, uploadujem
         if (isset($this->container->stor->app_dirs[$actual_dir])) {
             
             if ($newfile->getError() === UPLOAD_ERR_OK) {
@@ -139,8 +214,10 @@ class StorController extends Controller
                     $data = Array (
                     "c_sha512" => $sha512,
                     "c_owner" => $_SESSION['user_id'],
-                    "c_path" => $actual_dir."/p",
-                    "c_filename" => $filename
+                    "c_path" => $actual_dir."/".$actual_object,
+                    "c_filename" => $filename,
+                    "c_inherit_table" => $this->container->stor->app_dirs[$app_tables],
+                    "c_inherit_object" => $actual_object
                     );
                     $this->container->db->insert ('t_stor_links', $data);
                     
@@ -150,8 +227,10 @@ class StorController extends Controller
                     // soubor uz existuje v objects ale vlozime ho aspon do links
                     $data = Array (
                     "c_sha512" => $sha512,
-                    "c_path" => $actual_dir."/p",
-                    "c_filename" => $filename
+                    "c_path" => $actual_dir."/".$actual_object,
+                    "c_filename" => $filename,
+                    "c_inherit_table" => $this->container->stor->app_dirs[$app_tables],
+                    "c_inherit_object" => $actual_object
                     );
                     $this->container->db->insert ('t_stor_links', $data);
                     
@@ -167,7 +246,7 @@ class StorController extends Controller
         }
         
         if (!empty($actual_dir)) {
-            $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$actual_dir;
+            $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$raw_path;
         }
         else {
             $redirect_url = $this->container->router->pathFor('stor.uploader');
@@ -278,6 +357,124 @@ class StorController extends Controller
         readfile($fullpath);    // taky vlastne nevim jestli to takto vypsat
         exit(); // ? nevim nevim
         
+    }
+    
+    // update nazvu z popupoveho formu
+    public function uploaderUpdate($request, $response)
+    {
+        $link_id = (int) $request->getParam('file_id');
+        $actual_dir = $request->getParam('actual_dir');
+        //$return_uri = $request->getParam('return_uri');
+        
+        // nacteme si link
+        $this->container->db->where("c_uid", $link_id);
+        $link_data = $this->container->db->getOne('t_stor_links');
+        if ($this->container->db->count == 0) { // TODO, asi misto countu pouzit nejaky test $link_data
+            $this->container->flash->addMessage('error', 'pruser, soubor neexistuje, nevim na co jste klikli, ale jste tu spatne');
+        }
+        else {
+            // pokud mame prava na tento objekt
+            if ($this->container->permissions->have_action_on_object($link_data['c_inherit_table'], $link_data['c_inherit_object'], 'write')) {
+                // zmenime nazev na novy
+                $data = Array (
+                    'c_filename' => $request->getParam('new_filename')
+                );
+                $this->container->db->where("c_uid", $link_id);
+                if ($this->container->db->update('t_stor_links', $data)) {
+                    $this->container->flash->addMessage('info', 'soubor byl prejmenovan');
+                }
+                else {
+                    $this->container->flash->addMessage('error', 'prejmenovani se nepovedlo');
+                }
+            }
+            else {
+                $this->container->flash->addMessage('error', 'k prejmenovani nemate prava');
+            }
+        }
+        
+        // toto by melo byt vzdy nastaveno pri editaci, abychom mohli tu adresu zase vykreslit s uz zmenenym nazvem
+        if (!empty($actual_dir)) {
+            $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$actual_dir;
+        }
+        else {  // pro jistotu, kdyz to nebude nastaveno, jdeme na root
+            $redirect_url = $this->container->router->pathFor('stor.uploader');
+        }
+        
+        return $response->withRedirect($redirect_url);
+    }
+    
+    // copy nebo move
+    public function uploaderCopyMove($request, $response)
+    {
+        $link_id = (int) $request->getParam('file_id');
+        $actual_dir = $request->getParam('actual_dir');
+        $action_type = $request->getParam('action_type');
+        $target_dir = $request->getParam('target_dir');
+        $target_object_id = $request->getParam('target_object_id');
+        
+        
+        // nacteme si link
+        $this->container->db->where("c_uid", $link_id);
+        $link_data = $this->container->db->getOne('t_stor_links');
+        if ($this->container->db->count == 0) { // TODO, asi misto countu pouzit nejaky test $link_data
+            $this->container->flash->addMessage('error', 'pruser, soubor neexistuje, nevim na co jste klikli, ale jste tu spatne');
+        }
+        else {
+            // nacteme prava na tabulku, TODO, meli bychom ale nacist prava na ten konkretni objekt, coz neni vyladene zatim
+            $allowed_global_actions = $this->container->permissions->read_global_privileges($link_data['c_inherit_table']);
+            $allowed_global_target_actions = $this->container->permissions->read_global_privileges($this->container->stor->app_tables[$target_dir]);
+            
+            if ($action_type == 'copy') {
+                if (in_array('read', $allowed_global_actions) and in_array('write', $allowed_global_target_actions)) {
+                    $data = Array (
+                    "c_sha512" => $link_data['c_sha512'],
+                    "c_owner" => $_SESSION['user_id'],
+                    "c_path" => $target_dir.'/'.$target_object_id,
+                    "c_filename" => $link_data['c_filename'],
+                    "c_inherit_table" => $this->container->stor->app_tables[$target_dir],
+                    "c_inherit_object" => $target_object_id
+                    );
+                    if ($this->container->db->insert ('t_stor_links', $data)) {
+                        $this->container->flash->addMessage('info', 'soubor byl zkopirovan');
+                    }
+                    else {
+                        $this->container->flash->addMessage('error', 'kopirovani se nepovedlo');
+                    }
+                }
+                else {
+                    $this->container->flash->addMessage('error', 'ke kopirovani nemate prava');
+                }
+            }
+            else if ($action_type == 'move') {
+                if (in_array('write', $allowed_global_actions) and in_array('write', $allowed_global_target_actions)) {
+                    $data = Array (
+                        'c_path' => $target_dir.'/'.$target_object_id,
+                        'c_inherit_table' => $this->container->stor->app_tables[$target_dir],
+                        'c_inherit_object' => $target_object_id
+                    );
+                    $this->container->db->where("c_uid", $link_id);
+                    if ($this->container->db->update('t_stor_links', $data)) {
+                        $this->container->flash->addMessage('info', 'soubor byl presunut');
+                    }
+                    else {
+                        $this->container->flash->addMessage('error', 'presunuti se nepovedlo');
+                    }
+                }
+                else {
+                    $this->container->flash->addMessage('error', 'k presunu nemate prava');
+                }
+            }
+        }
+        
+        // toto by melo byt vzdy nastaveno pri editaci, abychom mohli tu adresu zase vykreslit s uz zmenenym nazvem
+        if (!empty($actual_dir)) {
+            $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$actual_dir;
+        }
+        else {  // pro jistotu, kdyz to nebude nastaveno, jdeme na root
+            $redirect_url = $this->container->router->pathFor('stor.uploader');
+        }
+        
+        return $response->withRedirect($redirect_url);
     }
     
 }

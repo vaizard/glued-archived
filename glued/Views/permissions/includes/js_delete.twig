@@ -1,0 +1,55 @@
+    <script>
+    function delete_privilege(item_id) {
+        if (confirm("do you really want to delete this privilege?")) {
+            $.ajax({
+              url: "{{ path_for('acl.api.privilege.delete') }}" + item_id,
+              dataType: "text",
+              type: "DELETE",
+              data: "voiddata=1",
+              success: function(data) {
+                $("#privilege_row_" + item_id).remove();
+              },
+              error: function(xhr, status, err) {
+                alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+              }
+            });
+        }
+    }
+    
+    function delete_implemented_action(item_id) {
+        if (confirm("do you really want to delete this implemented action?")) {
+            $.ajax({
+              url: "{{ path_for('acl.api.impaction.delete') }}" + item_id,
+              dataType: "text",
+              type: "DELETE",
+              data: "voiddata=1",
+              success: function(data) {
+                $("#impaction_row_" + item_id).remove();
+              },
+              error: function(xhr, status, err) {
+                alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+              }
+            });
+        }
+    }
+    
+    // mazani akce
+    function delete_action(item_id) {
+        if (confirm("do you really want to delete this action from system?")) {
+            $.ajax({
+              url: "{{ path_for('acl.api.action.delete') }}" + item_id,
+              dataType: "text",
+              type: "DELETE",
+              data: "voiddata=1",
+              success: function(data) {
+                window.location.href = "{{ path_for('acl.developer') }}";
+              },
+              error: function(xhr, status, err) {
+                alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+              }
+            });
+        }
+    }
+    
+    
+    </script>

@@ -164,78 +164,85 @@ class ConsumablesController extends Controller
     public function editStockForm($request, $response, $args)
     {
         
-        $this->container->db->where("c_uid", $args['id']);
-        $data = $this->container->db->getOne('t_consumables_items');
-        
-        $upload_adresa = $this->container->router->pathFor('consumables.upload', ['id' => $args['id']]);
-        $reload_adresa = $this->container->router->pathFor('consumables.editform', ['id' => $args['id']]);
-        
-        $vystup_obrazku = '';
-        $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
-        $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
-        $this->container->db->where("c_path", 'consumables/'.$args['id']);
-        $this->container->db->orderBy("lin.c_filename","asc");
-        $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
-        if (count($files) > 0) {
-            foreach ($files as $filedata) {
-                $adresa = $this->container->router->pathFor('stor.serve.file', ['id' => $filedata['c_uid'], 'filename' => $filedata['c_filename']]);
-                $vystup_obrazku .= '
-                <div>
-                    <a href="'.$adresa.'" class="">
-                        '.(in_array($filedata['mime'], array('image/jpeg', 'image/png'))?'<img src="'.$adresa.'" width="300" />':'').'<br />
-                        '.$filedata['c_filename'].'
-                        <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#file_uid\').val('.$filedata['c_uid'].');">
-                            <i class="fa fa-trash-o "></i>
+        // zjistime jestli mame write pravo na tento consumables
+        if ($this->container->permissions->have_action_on_object('t_consumables_items', $args['id'], 'write')) {
+            
+            $this->container->db->where("c_uid", $args['id']);
+            $data = $this->container->db->getOne('t_consumables_items');
+            
+            $upload_adresa = $this->container->router->pathFor('consumables.upload', ['id' => $args['id']]);
+            $reload_adresa = $this->container->router->pathFor('consumables.editform', ['id' => $args['id']]);
+            
+            $vystup_obrazku = '';
+            $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
+            $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
+            $this->container->db->where("c_path", 'consumables/'.$args['id']);
+            $this->container->db->orderBy("lin.c_filename","asc");
+            $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
+            if (count($files) > 0) {
+                foreach ($files as $filedata) {
+                    $adresa = $this->container->router->pathFor('stor.serve.file', ['id' => $filedata['c_uid'], 'filename' => $filedata['c_filename']]);
+                    $vystup_obrazku .= '
+                    <div>
+                        <a href="'.$adresa.'" class="">
+                            '.(in_array($filedata['mime'], array('image/jpeg', 'image/png'))?'<img src="'.$adresa.'" width="300" />':'').'<br />
+                            '.$filedata['c_filename'].'
+                            <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#file_uid\').val('.$filedata['c_uid'].');">
+                                <i class="fa fa-trash-o "></i>
+                            </a>
                         </a>
-                    </a>
-                </div>
-                ';
+                    </div>
+                    ';
+                }
             }
+            
+            
+            // zvlastni pravidla pro vygenerovani jednotlivych prvku
+            // odebrano   "required" : [ "wovat", "vat" ],
+            $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/form_ui.json');
+            
+            // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
+            $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/edit_consumables_form.json');
+            
+            // zakladni data pro editaci
+            $json_formdata_output = $data['c_data'];
+            
+            // vnitrek onsubmit funkce
+            //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
+            $json_onsubmit_output = '
+        $.ajax({
+          url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('consumables.api.edit', ['id' => $args['id']]).'",
+          dataType: "text",
+          type: "PUT",
+          data: "stockdata=" + JSON.stringify(formData.formData),
+          success: function(data) {
+            // diky replacu nezustava puvodni adresa v historii, takze se to vice blizi redirectu
+            window.location.replace("https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('consumables.gui').'");
+            /*
+            ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                     document.getElementById("main"));
+            */
+          },
+          error: function(xhr, status, err) {
+            
+            ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                     document.getElementById("main"));
+          }
+        });
+            ';
+            
+            
+            return $this->container->view->render($response, 'consumables/editstock.twig', array(
+                'json_schema_output' => $json_schema_output,
+                'json_uischema_output' => $json_uischema_output,
+                'json_formdata_output' => $json_formdata_output,
+                'json_onsubmit_output' => $json_onsubmit_output,
+                'cost_id' => $args['id'], 'upload_adresa' => $upload_adresa, 'reload_adresa' => $reload_adresa, 'vystup_obrazku' => $vystup_obrazku
+            ));
         }
-        
-        
-        // zvlastni pravidla pro vygenerovani jednotlivych prvku
-        // odebrano   "required" : [ "wovat", "vat" ],
-        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/form_ui.json');
-        
-        // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/edit_consumables_form.json');
-        
-        // zakladni data pro editaci
-        $json_formdata_output = $data['c_data'];
-        
-        // vnitrek onsubmit funkce
-        //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
-        $json_onsubmit_output = '
-    $.ajax({
-      url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('consumables.api.edit', ['id' => $args['id']]).'",
-      dataType: "text",
-      type: "PUT",
-      data: "stockdata=" + JSON.stringify(formData.formData),
-      success: function(data) {
-        // diky replacu nezustava puvodni adresa v historii, takze se to vice blizi redirectu
-        window.location.replace("https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('consumables.gui').'");
-        /*
-        ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
-                 document.getElementById("main"));
-        */
-      },
-      error: function(xhr, status, err) {
-        
-        ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
-                 document.getElementById("main"));
-      }
-    });
-        ';
-        
-        
-        return $this->container->view->render($response, 'consumables/editstock.twig', array(
-            'json_schema_output' => $json_schema_output,
-            'json_uischema_output' => $json_uischema_output,
-            'json_formdata_output' => $json_formdata_output,
-            'json_onsubmit_output' => $json_onsubmit_output,
-            'cost_id' => $args['id'], 'upload_adresa' => $upload_adresa, 'reload_adresa' => $reload_adresa, 'vystup_obrazku' => $vystup_obrazku
-        ));
+        else {
+            return $this->container->view->render($response, 'forbidden.twig');
+        }
     }
     
     
@@ -314,7 +321,9 @@ class ConsumablesController extends Controller
                     "c_sha512" => $sha512,
                     "c_owner" => $_SESSION['user_id'],
                     "c_path" => $actual_dir."/".$item_id,
-                    "c_filename" => $filename
+                    "c_filename" => $filename,
+                    "c_inherit_table" => "t_consumables_items",
+                    "c_inherit_object" => $item_id
                     );
                     $this->container->db->insert ('t_stor_links', $data);
                     
@@ -325,7 +334,9 @@ class ConsumablesController extends Controller
                     $data = Array (
                     "c_sha512" => $sha512,
                     "c_path" => $actual_dir."/".$item_id,
-                    "c_filename" => $filename
+                    "c_filename" => $filename,
+                    "c_inherit_table" => "t_consumables_items",
+                    "c_inherit_object" => $item_id
                     );
                     $this->container->db->insert ('t_stor_links', $data);
                     

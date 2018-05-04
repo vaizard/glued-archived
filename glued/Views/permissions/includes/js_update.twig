@@ -1,0 +1,22 @@
+    <script>
+    
+    // update nazvu akce
+    function update_action(item_id) {
+        if (confirm("do you really want to change name of this action?")) {
+            var newtitle = $("#newtitle").val();
+            $.ajax({
+              url: "{{ path_for('acl.api.action.update') }}" + item_id,
+              dataType: "text",
+              type: "PUT",
+              data: "newtitle=" + encodeURIComponent(newtitle),
+              success: function(data) {
+                window.location.reload();
+              },
+              error: function(xhr, status, err) {
+                alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+              }
+            });
+        }
+    }
+    
+    </script>

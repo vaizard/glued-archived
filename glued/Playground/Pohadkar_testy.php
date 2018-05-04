@@ -70,4 +70,118 @@ class Pohadkar_testy extends Controller
         return $this->container->view->render($response, 'pg-testy.twig', array('vystup' => $vystup));
     }
     
+    
+    // funkce ktera se pripoji k fb za pomoci sdk a stahne neco
+    public function sdkindustry($request, $response)
+    {
+        
+        $vystup = '';
+        
+        // moje aplikace Glued events
+        
+        //tokeny ziskaveme pres Graph API Explorer
+        
+        // obecny token aplikace, platny zrejme nekonecne dlouho
+        //$token = '943888169109322|QxiL-5Z0Jwa9GLzbztVaHoV03q4';
+        // o tento token pozadala aplikace vlastnika jednoho eventu (eventu lalala), platnost bude asi hodinu, takze dalsi dny uz by nemel fungovat
+        //$token = 'EAANadhcHB0oBAE3EK5TwGiqZClCbRIlaNXeqkRrExHWHXqX8ILcEzNjb55lnWAT4kZCPJhgObZCtVnoqZBMCspsiVJhl2kZAf6ymq7ZCpVLZC8eGDpRuWx1UPGppvMZCiN4K4JF6sLcTDk1bFZAWPixqP6D9nXZCdvuiD3JmByQiEAURdHl8d3naMSHcRDoDnYjPAlNH72KK81QHEwffAD23NTAnx1u4zgitpZCeKyqIq6FZAQZDZD';
+        
+        // token pro nacteni attendantu jednoho konkretniho eventu z industry, prodlouzeny na 2 mesice
+        $token = 'EAANadhcHB0oBAFd7tnT6WIGupqfhpk63QFpCzbI3mpmVRVUoKiRTX0ddtUBXB88w3ioZBobbXMDs0s71ZB9AMGtEgpZAc47LxfOMYZCCW2TvbbM8QGUk5SxcIYoND9BwBM6t11egbY7v4nTM5yDQsHfcf8qgk3oZD';
+        
+        
+        // v2.10
+        $fb = new \Facebook\Facebook([
+          'app_id' => '943888169109322',
+          'app_secret' => '22b1a0cb2437d7ae6a570dc1be750fba',
+          'default_graph_version' => 'v2.12'
+          //'default_access_token' => '{access-token}', // optional
+        ]);
+        
+        // 2024171704523996 - vysivane napisy
+        // 2010135479301940 - Ukradený èas
+        
+        //$industra_event = '2024171704523996';
+        $industra_event = '1734810199900434';   // glued event
+        //$industra_event = '2015999335322076';   // glued opakovana udalost - nejde nacist
+        
+        $vystup .= '<h2>attendanti eventu '.$industra_event.' pomoci sdk graph api</h2>';
+        try {
+          // Returns a `Facebook\FacebookResponse` object
+          $fbresponse = $fb->get(
+            '/'.$industra_event.'/attending',
+            $token
+          );
+          // 
+        } catch(Facebook\Exceptions\FacebookResponseException $e) {
+          echo 'Graph returned an error: ' . $e->getMessage();
+          exit;
+        } catch(Facebook\Exceptions\FacebookSDKException $e) {
+          echo 'Facebook SDK returned an error: ' . $e->getMessage();
+          exit;
+        }
+        $graphEdge = $fbresponse->getGraphEdge();
+        
+        // Iterate over all the GraphNode's returned from the edge
+        foreach ($graphEdge as $graphNode) {
+            $vystup .= '<div style="margin: 30px 10px;">'.print_r($graphNode, true).'</div>';
+        }
+        
+        
+        
+        $vystup .= '<h2>stazene eventy z industry pomoci sdk graph api</h2>';
+        try {
+          // Returns a `Facebook\FacebookResponse` object
+          $fbresponse = $fb->get(
+            '/115212861982246/events?fields=name,updated_time',
+            $token
+          );
+          // 
+        } catch(Facebook\Exceptions\FacebookResponseException $e) {
+          echo 'Graph returned an error: ' . $e->getMessage();
+          exit;
+        } catch(Facebook\Exceptions\FacebookSDKException $e) {
+          echo 'Facebook SDK returned an error: ' . $e->getMessage();
+          exit;
+        }
+        $graphEdge = $fbresponse->getGraphEdge();
+        
+        // Iterate over all the GraphNode's returned from the edge
+        foreach ($graphEdge as $graphNode) {
+            $vystup .= '<div style="margin: 30px 10px;">'.print_r($graphNode, true).'</div>';
+        }
+        
+        
+        
+        // id eventu
+        //$id_eventu = '2024171704523996';    // vysivane napisy v industre
+        $id_eventu = '1734810199900434';  // lalala
+        //$id_eventu = '2015999335322076';  // opakovana udalost
+        
+        
+        $vystup .= '<h2>vse o eventu '.$id_eventu.'</h2>';
+        try {
+          // Returns a `Facebook\FacebookResponse` object
+          $fbresponse = $fb->get(
+            '/'.$id_eventu.'?fields=name,description,start_time,end_time,attending_count,declined_count,maybe_count,interested_count,cover',
+            $token
+          );
+        } catch(Facebook\Exceptions\FacebookResponseException $e) {
+          echo 'Graph returned an error: ' . $e->getMessage();
+          exit;
+        } catch(Facebook\Exceptions\FacebookSDKException $e) {
+          echo 'Facebook SDK returned an error: ' . $e->getMessage();
+          exit;
+        }
+        $graphNode = $fbresponse->getGraphNode();
+        
+        $vystup .= '<div style="margin: 30px 10px;">'.print_r($graphNode, true).'</div>';
+        
+        
+        
+        
+        
+        return $this->container->view->render($response, 'sdk-industra.twig', array('vystup' => $vystup));
+    }
+    
 }

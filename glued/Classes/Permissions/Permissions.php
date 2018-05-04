@@ -177,6 +177,119 @@ class Permissions
         return $pole_akci;
     }
     
+    // nacteni negovanych idecek nalogovaneho usera pro danou tabulku a akci
+    public function read_negative_id($tbl, $action, $virtual_user = false) {
+        
+        $pole_id = array();
+        // nacteme data nalogovaneho usera. pokud virtual = true, musime nacist data fiktivniho usera (v session v jine promenne), na coz neni udelana funkce v auth, TODO probrat bezpecnost
+        $user_data = $this->container->auth->user();
+        
+        $user_id     = $user_data['c_uid'];
+        $user_groups = $user_data['c_group_mememberships'];
+        
+        $query = "
+        select pr.c_related_uid
+        from t_privileges as pr
+        where
+            pr.c_neg = '1' AND
+            pr.c_related_table = '$tbl' AND
+            pr.c_action = '$action' AND
+            pr.c_type = 'object' AND
+            (
+                -- user privileges
+                (pr.c_role = 'user' and pr.c_who = $user_id)
+                -- group privileges
+                or (pr.c_role = 'group' and (pr.c_who & $user_groups <> 0))
+            )
+        ";
+        
+        $result = $this->container->mysqli->query($query);
+        
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                if (!in_array($row["c_related_uid"], $pole_id)) { $pole_id[] = $row["c_related_uid"]; }
+            }
+        }
+        
+        return $pole_id;
+    }
+    
+    // zjisteni jestli mam pravo akce na 1 zaznam v dane tabulce, jen z pohledu objektoveho prava
+    public function have_basic_action_on_object($tbl, $object_id, $action, $virtual_user = false) {
+        
+        // nacteme data nalogovaneho usera. pokud virtual = true, musime nacist data fiktivniho usera (v session v jine promenne), na coz neni udelana funkce v auth, TODO probrat bezpecnost
+        $user_data = $this->container->auth->user();
+        
+        $user_id     = $user_data['c_uid'];
+        $user_groups = $user_data['c_group_mememberships'];
+        
+        $query = "
+        select pr.c_related_uid
+        from t_privileges as pr
+        where
+            pr.c_neg = '0' AND
+            pr.c_related_table = '$tbl' AND
+            pr.c_related_uid = '$object_id' AND
+            pr.c_action = '$action' AND
+            pr.c_type = 'object' AND
+            (
+                -- user privileges
+                (pr.c_role = 'user' and pr.c_who = $user_id)
+                -- group privileges
+                or (pr.c_role = 'group' and (pr.c_who & $user_groups <> 0))
+            )
+        ";
+        
+        $result = $this->container->mysqli->query($query);
+        
+        if ($result->num_rows > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    // zjisteni jestli mam negativni pravo akce na 1 zaznam v dane tabulce, jen z pohledu objektoveho prava
+    public function have_basic_negative_action_on_object($tbl, $object_id, $action, $virtual_user = false) {
+        
+        // nacteme data nalogovaneho usera. pokud virtual = true, musime nacist data fiktivniho usera (v session v jine promenne), na coz neni udelana funkce v auth, TODO probrat bezpecnost
+        $user_data = $this->container->auth->user();
+        
+        $user_id     = $user_data['c_uid'];
+        $user_groups = $user_data['c_group_mememberships'];
+        
+        $query = "
+        select pr.c_related_uid
+        from t_privileges as pr
+        where
+            pr.c_neg = '1' AND
+            pr.c_related_table = '$tbl' AND
+            pr.c_related_uid = '$object_id' AND
+            pr.c_action = '$action' AND
+            pr.c_type = 'object' AND
+            (
+                -- user privileges
+                (pr.c_role = 'user' and pr.c_who = $user_id)
+                -- group privileges
+                or (pr.c_role = 'group' and (pr.c_who & $user_groups <> 0))
+            )
+        ";
+        
+        $result = $this->container->mysqli->query($query);
+        
+        if ($result->num_rows > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    
+    
+    
+    
+    
     // read creator global privileges of table. overujeme v podstate obecne, jestli v dane tabulce ma creator pravo pracovat se svyma vytvorenyma vecma
     public function read_creator_privileges($tbl, $virtual_user = false) {
         
@@ -215,6 +328,7 @@ class Permissions
         
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
+                // tady asi bude mozne vice stejnych akci , TODO omezit jen na unikatni
                 $pole_akci[] = $row["c_title"];
             }
         }
@@ -223,7 +337,7 @@ class Permissions
     }
     
     
-    // overeni jestli mam pravo delat table akci
+    // overeni jestli mam pravo delat table akci na tabulku
     public function have_table_action($tbl, $action_name, $virtual_user = false) {
         $allowed_actions = $this->read_table_privileges($tbl, $virtual_user);
         
@@ -231,7 +345,7 @@ class Permissions
         else { return false; }
     }
     
-    // overeni jestli mam pravo delat global akci
+    // overeni jestli mam pravo delat global akci na tabulku
     public function have_global_action($tbl, $action_name, $virtual_user = false) {
         $allowed_actions = $this->read_global_privileges($tbl, $virtual_user);
         
@@ -248,6 +362,20 @@ class Permissions
         if (in_array($action_name, $allowed_actions) or in_array($action_name, $allowed_global_actions)) { return true; }
         else { return false; }
     }
+    
+    // ultimatni funkce, ktera zjisti, jestli mam na dany objekt v dane tabulce pravo provest danou akci
+    // bere do uvahy pozitivni i negativni prava na dany objekt a prava na globalni akce nad tabulkou
+    public function have_action_on_object($tbl, $object_id, $action, $virtual_user = false) {
+        // nejdriv zjistime, jestli nemam na objekt negativni pravo
+        if ($this->have_basic_negative_action_on_object($tbl, $object_id, $action, $virtual_user)) { return false; }
+        // dale zjistime, jestli nemam pozitivni pravo na tento objekt
+        else if ($this->have_basic_action_on_object($tbl, $object_id, $action, $virtual_user)) { return true; }
+        // pokud ani jedno z toho, podivame se jestli mam globalni pravo na tu akci na tabulce, tam je pokryt i root
+        else if ($this->have_global_action($tbl, $action, $virtual_user)) { return true; }
+        // jinak pravo nemam
+        else { return false; }
+    }
+    
     
     // fukce ktera naplni modal pro danou tabulku (kdo ma na co pravo)
     public function modal_output_rights($tbl, $type) {

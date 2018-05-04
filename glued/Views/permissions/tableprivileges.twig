@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% include 'permissions/includes/js_delete.twig' %}
+
 <div class="title-block">
     <h3 class="title"> Privileges over Table </h3>
     <p class="title-description"> Who has {{ privileges_type }} privileges on table {{ table_name }} <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
@@ -10,7 +12,7 @@
 <section class="section">
     <div class="row">
         
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card card-block">
                 <div class="title-block">
                     <h3 class="title"> Existing privileges </h3>

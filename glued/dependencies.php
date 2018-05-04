@@ -192,3 +192,10 @@ $container['PartsController'] = function ($container) {
 $container['PartsControllerApiV1'] = function ($container) {
     return new \Glued\Controllers\Parts\PartsControllerApiV1($container);
 };
+
+// fbevents controller
+$container['FBEventsController'] = function ($container) {
+    return new \Glued\Controllers\FBEvents\FBEventsController($container);
+};
+
+

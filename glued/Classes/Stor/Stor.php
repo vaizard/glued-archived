@@ -8,11 +8,20 @@ class Stor
     protected $container;
     
     public $app_dirs = array(
-       "stor"    => 'Stor',
-       "my_files"   => 'My files',
+       "my_files"    => 'My private files',
+       "my_owned"    => 'My owned files',
+       "users"    => 'Users private files',
        "assets"    => 'Assets',
        "consumables"    => 'Consumables',
        "parts"    => 'Parts'
+    );
+    
+    // prevod path na tabulku, kvuli predzjisteni prav
+    public $app_tables = array(
+       "users"    => 't_authentication',
+       "assets"    => 't_assets_items',
+       "consumables"    => 't_consumables_items',
+       "parts"    => 't_parts_items'
     );
     
     // konstruktor

@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% include 'permissions/includes/js_delete.twig' %}
+
 <div class="title-block">
     <h3 class="title"> Implemented actions </h3>
     <p class="title-description"> Existing combinations in t_implemeted_action <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
