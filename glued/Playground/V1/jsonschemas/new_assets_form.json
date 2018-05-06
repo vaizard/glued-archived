@@ -1,0 +1,23 @@
+{
+    "title": "Test of input mask",
+    "type": "object",
+    "properties":{
+        "data": {
+            "type": "object",
+            "properties":{
+                        "owner": {
+                          "type": "string",
+                          "title": "Owner"
+                        },
+                        "category": {
+                          "type": "string",
+                          "title": "Category"
+                        },
+                        "item_name": {
+                          "type": "string",
+                          "title": "Item name"
+                        }
+            }
+        }
+    }
+}

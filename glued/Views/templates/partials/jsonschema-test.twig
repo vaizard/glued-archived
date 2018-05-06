@@ -1,17 +1,15 @@
 
 {% if json_schema_output is defined %}
     
-    <!-- <script type="text/javascript" src="https://fiddle.jshell.net/js/babel/babel.js"></script> -->
     <script type="text/javascript" src="{{ base_url() }}/js/babel.js"></script>
     
     <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
     <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
     
-    <!-- <script src="https://unpkg.com/react-jsonschema-form/dist/react-jsonschema-form.js"></script> -->
-    <!-- <script src="https://killua.vaizard.xyz/react-jsonschema-form.js"></script> -->
     <script src="https://unpkg.com/react-jsonschema-form@1.0.3/dist/react-jsonschema-form.js"></script>
     
-    
+    <!-- Will be exported to window.ReactInputMask , je to spatne pripojene, je tam js chyba -->
+    <script src="https://unpkg.com/react-input-mask/dist/react-input-mask.min.js"></script>
     
     <style type="text/css">
     ul.list-inline li {
@@ -44,12 +42,10 @@
     }
     </style>
     
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"> -->
-    
-    <!-- <link rel="stylesheet" href="{{ base_url() }}/css/glued.css"> -->
     
   <title>json schema template</title>
+
+<!-- cast s PhoneInput nejede, asi kvuli babelu, js se spatne pripoji -->
 
 <script type="text/babel">
 const Form = JSONSchemaForm.default;
@@ -71,6 +67,20 @@ function onChange(formData) { }
 
 ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData}></Form>),
     document.getElementById("main"));
+
+
+
+
+
+
+class PhoneInput extends React.Component {
+  render() {
+    return <InputMask {...this.props} mask="+4\9 99 999 99" maskChar=" " />;
+  }
+}
+
+ReactDOM.render((<PhoneInput />),
+    document.getElementById("imask"));
 
 </script>
 

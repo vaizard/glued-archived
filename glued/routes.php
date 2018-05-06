@@ -191,6 +191,7 @@ $app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadka
 $app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4:schematest');
 $app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4:schematest2');
 
+
 // pohadkar upload a prehled zipu (POZOR, funkci volam s jednou dvojteckou : aby tam bylo this)
 $app->get('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:uploadgui')->setName('o2gui')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->post('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:savezip')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
@@ -207,7 +208,8 @@ $app->get('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_testy
 $app->post('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_testy:test')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 // fb test sdk
 $app->get('/playground/pohadkar_testy/sdkindustry', '\Glued\Playground\Pohadkar_testy:sdkindustry')->setName('sdkindustry')->add(new AuthMiddleware($container));
-
+// test kombinace json schema formu a input masky
+$app->get('/playground/pohadkar_testy/schema-mask', '\Glued\Playground\Pohadkar_testy:schema_mask_test')->setName('input_mask_test');
 
 // Killua_Jsv4
 $app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4:validationtest');
