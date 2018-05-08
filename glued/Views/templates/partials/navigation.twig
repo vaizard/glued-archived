@@ -3,12 +3,9 @@
     <ul class="sidebar-menu metismenu" id="sidebar-menu">
         <li><a href="{{ path_for('home') }}"><i class="fa fa-home"></i> Home</a></li>
   {% if auth.check %}
-                <li><a href="{{ path_for('o2gui') }}"><i class="fa fa-bar-chart-o"></i> Analýza faktur</a></li>
-                <li><a href="{{ path_for('platbylist') }}"><i class="fa fa-money"></i> Generování plateb</a></li>
                 <li><a href="{{ path_for('acl.my') }}"><i class="fa fa-lock"></i> Permissions</a></li>
-                <li><a href="{{ path_for('accounting.costs') }}"><i class="fa fa-book"></i> Účtenky</a></li>
                 <li>
-                    <a href="">
+                    <a href="" aria-expanded="false">
                         <i class="fa fa-area-chart"></i> Inventory
                         <i class="fa arrow"></i>
                     </a>
@@ -18,14 +15,35 @@
                         <li><a href="{{ path_for('parts.gui') }}"><i class="fa fa-qrcode"></i> Parts</a></li>
                     </ul>
                 </li>
-                <li><a href="{{ path_for('barcode.code') }}"><i class="fa fa-qrcode"></i> Barcode</a></li>
+                <li>
+                    <a href="" aria-expanded="false">
+                        <i class="fa fa-area-chart"></i> Accounting
+                        <i class="fa arrow"></i>
+                    </a>
+                    <ul class="sidebar-nav collapse" aria-expanded="false">
+                        <li><a href="{{ path_for('o2gui') }}"><i class="fa fa-bar-chart-o"></i> Analýza faktur</a></li>
+                        <li><a href="{{ path_for('platbylist') }}"><i class="fa fa-money"></i> Generování plateb</a></li>
+                        <li><a href="{{ path_for('accounting.costs') }}"><i class="fa fa-book"></i> Účtenky</a></li>
+                    </ul>
+                </li>
                 <li><a href="{{ path_for('stor.uploader') }}"><i class="fa fa-cloud"></i> Stor</a></li>
                 <li><a href="{{ path_for('fbevents.main') }}"><i class="fa fa-cloud"></i> FB Events</a></li>
-                <li><a href="{{ path_for('sdkindustry') }}"><i class="fa fa-gears"></i> Test Eventu FB</a></li>
+                {% if auth.root %}
+                    <li>
+                        <a href="" aria-expanded="false">
+                            <i class="fa fa-area-chart"></i> Developers
+                            <i class="fa arrow"></i>
+                        </a>
+                        <ul class="sidebar-nav collapse" aria-expanded="false">
+                            <li><a href="{{ path_for('barcode.code') }}"><i class="fa fa-qrcode"></i> Barcode</a></li>
+                            <li><a href="{{ path_for('sdkindustry') }}"><i class="fa fa-gears"></i> Test Eventu FB</a></li>
+                            <li><a href="{{ path_for('development.tools') }}"><i class="fa fa-gears"></i> Development Tools</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
   {% else %}
            <li><a href="{{ path_for('auth.signup') }}"><i class="fa fa-pencil-square-o"></i> Sign up</a></li>
            <li><a href="{{ path_for('auth.signin') }}"><i class="fa fa-sign-in"></i> Sign in</a></li>
   {% endif %}
-        <li><a href="{{ path_for('development.tools') }}"><i class="fa fa-gears"></i> Development Tools</a></li>
     </ul>
 </nav>

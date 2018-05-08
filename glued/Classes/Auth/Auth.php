@@ -53,6 +53,22 @@ class Auth
         else { return true; }
     }
 
+    // check if user is in rot group, returns true/false, TODO udelat jednodussi nekde globalne, bez vyuzivani zdejsich funkci, ktere ctou znovu z db, nebo je vyuzit efektivneji
+    // nastavujeme to v dependencies pro view jako globalni promennou 'root' => $container->auth->root()
+    // ale i tam to je s todama oznaceno jako docasne
+    public function root()
+    {
+        $user_id = $_SESSION['user_id'] ?? false;
+        $authentication_id = $_SESSION['authentication_id'] ?? false;
+        if ($user_id === false or $authentication_id === false) { return false; }
+        else {
+            $my_user_data = $this->container->auth->user();
+            $my_groups = $this->container->permissions->user_groups($my_user_data);
+            if (in_array('root', $my_groups)) { return true; }
+            else { return false; }
+        }
+    }
+    
 
     // signout user (delete his session)
     public function signout()

@@ -8,8 +8,7 @@
     
     <script src="https://unpkg.com/react-jsonschema-form@1.0.3/dist/react-jsonschema-form.js"></script>
     
-    <!-- Will be exported to window.ReactInputMask , je to spatne pripojene, je tam js chyba -->
-    <script src="https://unpkg.com/react-input-mask/dist/react-input-mask.min.js"></script>
+
     
     <style type="text/css">
     ul.list-inline li {
@@ -45,12 +44,10 @@
     
   <title>json schema template</title>
 
-<!-- cast s PhoneInput nejede, asi kvuli babelu, js se spatne pripoji -->
+<!-- jednodussi json schema -->
 
 <script type="text/babel">
 const Form = JSONSchemaForm.default;
-
-
 
 const uiSchema = {{ json_uischema_output | raw }};
 
@@ -66,22 +63,50 @@ function onSubmit(formData) {
 function onChange(formData) { }
 
 ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData}></Form>),
-    document.getElementById("main"));
-
-
-
-
-
-
-class PhoneInput extends React.Component {
-  render() {
-    return <InputMask {...this.props} mask="+4\9 99 999 99" maskChar=" " />;
-  }
-}
-
-ReactDOM.render((<PhoneInput />),
-    document.getElementById("imask"));
+    document.getElementById("main"),
+    function () {
+        nas_hack();
+      }
+    );
 
 </script>
+
+
+
+
+<!-- input mask pripojena a pouzita mimo babel a react -->
+
+<script type="text/javascript" src="https://japex.vaizard.xyz/npmtest/node_modules/vanilla-text-mask/dist/vanillaTextMask.js"></script>
+<script type="text/javascript">
+
+// definice jedne masky
+var phoneMask = ['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/];
+
+// toto musime dat do ready, protoze ten prvek tam jeste neni
+document.addEventListener("DOMContentLoaded", function(event) {
+          // Assuming you have an input element in your HTML with the class .myInput
+          var myInput = document.querySelector('.test_vanilla');
+
+          var maskedInputController = vanillaTextMask.maskInput({
+            inputElement: myInput,
+            mask: phoneMask
+          });
+});
+
+// nase funkce, kterou volame jako callback po vygenerovani json schema formu
+function nas_hack () {
+    var myInput2 = document.querySelector('#root_data_owner');  // zacileni json schema inputu
+    var maskedInputController2 = vanillaTextMask.maskInput({
+        inputElement: myInput2,
+        mask: phoneMask
+    });
+    
+    
+}
+
+
+</script>
+
+
 
 {% endif %}
