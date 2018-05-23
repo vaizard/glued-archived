@@ -37,7 +37,7 @@
             }              
         },
         "distribution": {
-            classNames: "col-md-12 pull-left disable-array-flex",
+            classNames: "col-md-12 pull-left",
             "ui:options":  {
               orderable: false
             },            
@@ -52,7 +52,7 @@
                 classNames: "col-md-4 pull-left"
               },
               "ext_order_id": {
-                classNames: "col-md-12 pull-left disable-array-flex",
+                classNames: "col-md-12 pull-left",
                 "ui:options":  {
                   orderable: false
                 },                
@@ -68,7 +68,7 @@
             }
         },                       
         vat: {
-            classNames: "col-md-12 pull-left disable-array-flex",
+            classNames: "col-md-12 pull-left",
             "ui:options":  {
               orderable: false
             },            
@@ -82,7 +82,7 @@
             }          
         },
         ext_id: {
-            classNames: "col-md-12 pull-left disable-array-flex",
+            classNames: "col-md-12 pull-left",
             "ui:options":  {
               orderable: false
             },            

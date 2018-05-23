@@ -135,7 +135,8 @@ class AccountingCostsController extends Controller
             'json_schema_output' => $json_schema_output,
             'json_uischema_output' => $json_uischema_output,
             'json_formdata_output' => $json_formdata_output,
-            'json_onsubmit_output' => $json_onsubmit_output
+            'json_onsubmit_output' => $json_onsubmit_output,
+            'json_formdata_render_custom_array' => '1'
         ));
     }
     
@@ -187,7 +188,8 @@ class AccountingCostsController extends Controller
             'json_uischema_output' => $json_uischema_output,
             'json_formdata_output' => $json_formdata_output,
             'json_onsubmit_output' => $json_onsubmit_output,
-            'cost_id' => $args['id']
+            'cost_id' => $args['id'],
+            'json_formdata_render_custom_array' => '1'
         ));
     }
     

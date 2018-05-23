@@ -48,3 +48,17 @@ div.checkbox {
 .pad-right {
     padding-right: 30px;
 }
+
+.title-and-add legend{
+    float: left;
+    width: auto;
+}
+
+.title-and-add button {
+    margin-left: 15px;
+    float: left;
+}
+
+.bottomized {
+    margin-top: 32px;
+}
