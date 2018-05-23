@@ -1,15 +1,108 @@
 {
-    "date-plneni": {
-      "ui:widget": "alt-date"
-    },
-    "poznamka": {
-      "ui:widget": "textarea"
-    },
-    "prirazeni": {
-        "items": {
-          "poznamka": {
-            "ui:widget": "textarea"
-          }
+    "data": {
+        currency: {
+          classNames: "col-md-2 pull-left pad-left"
+        },        
+        price_vat: {
+          classNames: "col-md-2 pull-left"
+        },
+        price_novat: {
+          classNames: "col-md-2 pull-left"
+        },
+        doc_id: {
+          classNames: "col-md-2 pull-left"
+        },
+        dt_taxable_supply: {
+          classNames: "col-md-2 pull-left"
+        },        
+        note: {
+          classNames: "col-md-2 pull-left pad-right"
+        },                
+        "supplier": {
+            classNames: "col-md-12 pull-left",
+            "contact_id": {
+              "ui:widget": "hidden"
+            },
+            regid: {
+              classNames: "col-md-3 pull-left"
+            },
+            vatid: {
+              classNames: "col-md-3 pull-left"
+            },            
+            name: {
+              classNames: "col-md-3 pull-left"
+            },            
+            address: {
+              classNames: "col-md-3 pull-left"
+            }              
+        },
+        "distribution": {
+            classNames: "col-md-12 pull-left disable-array-flex",
+            "ui:options":  {
+              orderable: false
+            },            
+            "items": {
+              "price-novat": {
+                classNames: "col-md-4 pull-left"
+              },
+              "pixel_id": {
+                classNames: "col-md-4 pull-left"
+              },              
+              "note": {
+                classNames: "col-md-4 pull-left"
+              },
+              "ext_order_id": {
+                classNames: "col-md-12 pull-left disable-array-flex",
+                "ui:options":  {
+                  orderable: false
+                },                
+                "items": {
+                  "name": {
+                    classNames: "col-md-6 pull-left"
+                  },
+                  "id": {
+                    classNames: "col-md-6 pull-left"
+                  }                  
+                }
+              }              
+            }
+        },                       
+        vat: {
+            classNames: "col-md-12 pull-left disable-array-flex",
+            "ui:options":  {
+              orderable: false
+            },            
+            "items": {
+              "vatval": {
+                classNames: "col-md-6 pull-left"
+              },
+              "price": {
+                classNames: "col-md-6 pull-left"
+              }              
+            }          
+        },
+        ext_id: {
+            classNames: "col-md-12 pull-left disable-array-flex",
+            "ui:options":  {
+              orderable: false
+            },            
+            "items": {
+              "name": {
+                classNames: "col-md-6 pull-left"
+              },
+              "id": {
+                classNames: "col-md-6 pull-left"
+              }              
+            }          
+        },   
+        "creator": {
+          "ui:widget": "hidden"
+        },
+        "dt_created": {
+          "ui:widget": "hidden"
+        },    
+        "_id": {
+          "ui:widget": "hidden"
         }
     }
 }

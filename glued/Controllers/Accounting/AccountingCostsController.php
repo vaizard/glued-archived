@@ -10,16 +10,30 @@ class AccountingCostsController extends Controller
     public function getCosts($request, $response)
     {
         $costs_output = '';
+        $sloupce = array("c_uid", "c_data->>'$.data.doc_id' as doc_id", "c_data->>'$.data.supplier.name' as name", "c_data->>'$.data.price_vat' as price_vat", "c_data->>'$.data.currency' as currency");
         $this->container->db->orderBy("c_uid","asc");
-        $bills = $this->container->db->get('accounting_accepted');
+        $bills = $this->container->db->get('t_accounting_received', null, $sloupce);
         if (count($bills) > 0) {
             foreach ($bills as $data) {
-                $billdata = json_decode($data['c_data'], true);
-                $costs_output .= '<div id="cost_row_'.$data['c_uid'].'">ID: '.$data['c_uid'].', bill number: '.$billdata['bill-nr'].' <a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'">edit</a> | <span style="cursor: pointer; color: red;" onclick="delete_cost('.$data['c_uid'].');">delete</span></div>';
+                $costs_output .= '
+                    <tr id="cost_row_'.$data['c_uid'].'">
+                        <th scope="row">'.$data['c_uid'].'</th>
+                        <td>'.$data['doc_id'].'</td>
+                        <td>'.$data['name'].'</td>
+                        <td>'.$data['price_vat'].' '.$data['currency'].'</td>
+                        <td><a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'">edit</a></td>
+                        <td><span style="cursor: pointer; color: red;" onclick="delete_cost('.$data['c_uid'].');">delete</span></td>
+                    </tr>
+                ';
             }
         }
         else {
-            $costs_output = 'zatim zadne nejsou vlozeny';
+            $costs_output .= '
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="3">no bills at the moment</td>
+                </tr>
+            ';
         }
         
         $additional_javascript = '
@@ -69,7 +83,7 @@ class AccountingCostsController extends Controller
     // show form for add new cost
     public function addCostForm($request, $response)
     {
-        $form_output = 'zde je formular';
+        $form_output = '';
         
         // zvlastni pravidla pro vygenerovani jednotlivych prvku
         // odebrano   "required" : [ "wovat", "vat" ],
@@ -78,16 +92,18 @@ class AccountingCostsController extends Controller
         // schema celeho formulare
         $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_bill_form.json');
         
-        // zakladni data, jedna prazdna polozka arraye "prirazeni", aby se tam vykreslil prvni prazdny prvek formulare
+        // zakladni data, jedna polozka procentualni dane
         $json_formdata_output = '
 {
-  "prirazeni": [
-    {
-      "zakazka-nr": "",
-      "sum": "",
-      "poznamka": ""
+    "data":{
+        "currency": "CZK",
+        "vat": [
+            {
+              "vatval": "21",
+              "price": ""
+            }
+        ]
     }
-  ]
 }
         ';
         //$this->container['settings']['glued']['hostname']
@@ -107,7 +123,7 @@ class AccountingCostsController extends Controller
         
       },
       error: function(xhr, status, err) {
-        
+        alert(status + err + data);
         ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
                  document.getElementById("main"));
       }
@@ -128,10 +144,9 @@ class AccountingCostsController extends Controller
     {
         
         $this->container->db->where("c_uid", $args['id']);
-        $data = $this->container->db->getOne('accounting_accepted');
+        $data = $this->container->db->getOne('t_accounting_received');
         
-        
-        $form_output = 'zde je formular';
+        $form_output = '';
         
         // zvlastni pravidla pro vygenerovani jednotlivych prvku
         // odebrano   "required" : [ "wovat", "vat" ],
@@ -158,7 +173,7 @@ class AccountingCostsController extends Controller
         
       },
       error: function(xhr, status, err) {
-        
+        alert(status + err + data);
         ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
                  document.getElementById("main"));
       }

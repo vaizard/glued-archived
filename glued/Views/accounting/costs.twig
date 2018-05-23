@@ -4,19 +4,38 @@
 
 {{ additional_javascript | raw }}
 
-<div class="row">
-
-    <div class="col-md-8 col-md-offset-2">
-        <div class="panel panel-default">
-          <div class="panel-heading">existing costs<a href="{{ path_for('accounting.addcostform') }}" class="pull-right">add new cost</a></div>
-          <div class="panel-body">
-            {{ costs_output | raw }}
-          </div>
-        </div>
-      
-    
-    </div>
-
+<div class="title-block">
+    <h3 class="title"> Costs </h3>
 </div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-block">
+            <div class="card-title-block">
+                <h3 class="title">Existing costs<a href="{{ path_for('accounting.addcostform') }}" class="pull-right" style="margin: 0 20px;">add new cost</a> </h3>
+            </div>
+            <section class="example">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Bill number</th>
+                                <th>Name</th>
+                                <th>Price with VAT</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ costs_output | raw }}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}

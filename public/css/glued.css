@@ -22,3 +22,29 @@ div.checkbox {
 .modal-tab-content {
     padding: 10px 20px;
 }
+
+
+
+/* json schema formy */
+
+.disable-array-flex .array-item-list {
+    display: block !Important;
+}
+
+.disable-array-flex .array-item {
+    display: flex;
+}
+
+.disable-array-flex .array-item-toolbox {
+    width: 30%;
+    float: left;
+    padding-top: 30px;
+}
+
+.pad-left {
+    padding-left: 30px;
+}
+
+.pad-right {
+    padding-right: 30px;
+}
