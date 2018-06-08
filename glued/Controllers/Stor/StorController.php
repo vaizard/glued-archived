@@ -150,7 +150,7 @@ class StorController extends Controller
         // vyjimka na my_files
         if ($raw_path == 'my_files') {
             $actual_dir = 'users';
-            $actual_object = $_SESSION['authentication_id'];
+            $actual_object = $_SESSION['user_id'];
         }
         else {
             $parts = explode('/', $raw_path);
@@ -159,11 +159,11 @@ class StorController extends Controller
                 $actual_object = $parts[1];
             }
             else {
-                $actual_dir = '';
+                $actual_dir = '';   // pokud to neni objekt v diru, tak delame jako ze dir neexistuje.
             }
         }
         
-        // pokud dir existuje v seznamu povolenych diru, uploadujem
+        // pokud dir existuje v seznamu povolenych diru, uploadujem (ovsem je zadany timpadem i objekt)
         if (isset($this->container->stor->app_dirs[$actual_dir])) {
             
             if ($newfile->getError() === UPLOAD_ERR_OK) {
@@ -214,7 +214,6 @@ class StorController extends Controller
                     $data = Array (
                     "c_sha512" => $sha512,
                     "c_owner" => $_SESSION['user_id'],
-                    "c_path" => $actual_dir."/".$actual_object,
                     "c_filename" => $filename,
                     "c_inherit_table" => $this->container->stor->app_dirs[$app_tables],
                     "c_inherit_object" => $actual_object
@@ -227,7 +226,7 @@ class StorController extends Controller
                     // soubor uz existuje v objects ale vlozime ho aspon do links
                     $data = Array (
                     "c_sha512" => $sha512,
-                    "c_path" => $actual_dir."/".$actual_object,
+                    "c_owner" => $_SESSION['user_id'],
                     "c_filename" => $filename,
                     "c_inherit_table" => $this->container->stor->app_dirs[$app_tables],
                     "c_inherit_object" => $actual_object
@@ -411,7 +410,7 @@ class StorController extends Controller
         $action_type = $request->getParam('action_type');
         $target_dir = $request->getParam('target_dir');
         $target_object_id = $request->getParam('target_object_id');
-        
+        $set_new_owner = (int) $request->getParam('set_new_owner'); // 1 - system, 2 - prihlaseny, 3 - nemenit
         
         // nacteme si link
         $this->container->db->where("c_uid", $link_id);
@@ -424,12 +423,24 @@ class StorController extends Controller
             $allowed_global_actions = $this->container->permissions->read_global_privileges($link_data['c_inherit_table']);
             $allowed_global_target_actions = $this->container->permissions->read_global_privileges($this->container->stor->app_tables[$target_dir]);
             
+            // urceni ownera
+            if ($set_new_owner == 1) {  // system select
+                // pokud presunuju nebo kopiruju do private users, mel by byt owner vzdy ten user
+                if ($target_dir == 'users') {
+                    $new_owner = $target_object_id;
+                }
+                else {  // pokud je cil nejaky modul, tak u copy bych mel byt owner ja, a u move bud nemenit nebo ja
+                    $new_owner = $_SESSION['user_id'];
+                }
+            }
+            else if ($set_new_owner == 2) { $new_owner = $_SESSION['user_id']; }    // vzdy ja
+            else if ($set_new_owner == 3) { $new_owner = $link_data['c_owner']; }   // nemenit
+            
             if ($action_type == 'copy') {
                 if (in_array('read', $allowed_global_actions) and in_array('write', $allowed_global_target_actions)) {
                     $data = Array (
                     "c_sha512" => $link_data['c_sha512'],
-                    "c_owner" => $_SESSION['user_id'],
-                    "c_path" => $target_dir.'/'.$target_object_id,
+                    "c_owner" => $new_owner,
                     "c_filename" => $link_data['c_filename'],
                     "c_inherit_table" => $this->container->stor->app_tables[$target_dir],
                     "c_inherit_object" => $target_object_id
@@ -448,7 +459,7 @@ class StorController extends Controller
             else if ($action_type == 'move') {
                 if (in_array('write', $allowed_global_actions) and in_array('write', $allowed_global_target_actions)) {
                     $data = Array (
-                        'c_path' => $target_dir.'/'.$target_object_id,
+                        'c_owner' => $new_owner,
                         'c_inherit_table' => $this->container->stor->app_tables[$target_dir],
                         'c_inherit_object' => $target_object_id
                     );

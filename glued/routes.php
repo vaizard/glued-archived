@@ -210,6 +210,13 @@ $app->post('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_test
 $app->get('/playground/pohadkar_testy/sdkindustry', '\Glued\Playground\Pohadkar_testy:sdkindustry')->setName('sdkindustry')->add(new AuthMiddleware($container));
 // test kombinace json schema formu a input masky
 $app->get('/playground/pohadkar_testy/schema-mask', '\Glued\Playground\Pohadkar_testy:schema_mask_test')->setName('input_mask_test');
+// test kombinace json schema a extras
+$app->get('/playground/pohadkar_testy/schema-extras', '\Glued\Playground\Pohadkar_testy:schema_extras_test')->setName('rjsf_extras_test');
+// test stackedit
+$app->get('/playground/pohadkar_testy/stackedit', '\Glued\Playground\Pohadkar_testy:stackedit_test')->setName('stackedit_test');
+// libovolny output, test ruznych veci udelanych v php
+$app->get('/playground/pohadkar_testy/output1', '\Glued\Playground\Pohadkar_testy:test_output1')->setName('test.output1');
+
 
 // Killua_Jsv4
 $app->get('/playground/killua_jsv4/validationtest', '\Glued\Playground\Killua_Jsv4:validationtest');

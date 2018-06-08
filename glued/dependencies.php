@@ -11,20 +11,30 @@ $container['auth'] = function ($container) {
     return new \Glued\Classes\Auth\Auth($container);
 };
 
+
 // glued Permissions class (acl, rbacs, abac)
 $container['permissions'] = function ($container) {
     return new \Glued\Classes\Permissions\Permissions($container);
 };
+
 
 // tags class
 $container['tags'] = function ($container) {
     return new \Glued\Classes\Tags\Tags($container);
 };
 
+
 // stor class
 $container['stor'] = function ($container) {
     return new \Glued\Classes\Stor\Stor($container);
 };
+
+
+// glued class about logged user
+$container['auth_user'] = function ($container) {
+    return new \Glued\Classes\Auth_user\Auth_user($container);
+};
+
 
 // view renderer using the twig template engine
 $container['view'] = function ($container) {
@@ -44,15 +54,16 @@ $container['view'] = function ($container) {
 
     // this is here so that we can use (i.e. see views/templates/partials/navigation.twig)
     // {{ auth.check }}, as set in classes/Auth/Auth.php, inside our templates.
-    // NOTE: $container['auth'] closure must be before this view closure.
+    // NOTE: $container['auth'] closure must be before this view closure. (KUBA: nemusi, vola se az pri prvnim pouziti view, a to je az po definici vsech closure)
     // NOTE: we cant use $view->getEnvironment()->addGlobal('auth', $container->auth); 
     //       as this would do a sql query everytime we access the global
     // TODO: possibly change this into middleware later?
+    // KUBA: upraveno na promenne objektu auth_user, ktere se nacitaji jen jednou v ramci zpracovani stranky
     $view->getEnvironment()->addGlobal('auth', [
-        'check' => $container->auth->check(),
-        'user' => $container->auth->user(),
-        'email' => $container->auth->email(),
-        'root' => $container->auth->root()
+        'check' => $container->auth_user->check,
+        'user' => $container->auth_user->user,
+        'email' => $container->auth_user->email,
+        'root' => $container->auth_user->root
     ]);
 
     $view->getEnvironment()->addGlobal('flash', $container->flash);

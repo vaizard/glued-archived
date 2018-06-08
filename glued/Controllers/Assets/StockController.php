@@ -184,7 +184,8 @@ class StockController extends Controller
             $vystup_obrazku = '';
             $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
             $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
-            $this->container->db->where("c_path", 'assets/'.$args['id']);
+            $this->container->db->where("c_inherit_table", "t_assets_items");
+            $this->container->db->where("c_inherit_object", $args['id']);
             $this->container->db->orderBy("lin.c_filename","asc");
             $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
             if (count($files) > 0) {
@@ -323,7 +324,6 @@ class StockController extends Controller
                     $data = Array (
                     "c_sha512" => $sha512,
                     "c_owner" => $_SESSION['user_id'],
-                    "c_path" => $actual_dir."/".$item_id,
                     "c_filename" => $filename,
                     "c_inherit_table" => "t_assets_items",
                     "c_inherit_object" => $item_id
@@ -336,7 +336,6 @@ class StockController extends Controller
                     // soubor uz existuje v objects ale vlozime ho aspon do links
                     $data = Array (
                     "c_sha512" => $sha512,
-                    "c_path" => $actual_dir."/".$item_id,
                     "c_filename" => $filename,
                     "c_inherit_table" => "t_assets_items",
                     "c_inherit_object" => $item_id

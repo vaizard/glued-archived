@@ -117,11 +117,8 @@ class StorControllerApiV1 extends Controller
         */
         // kdyz je prazdny, vypiseme app diry v rootu
         if (empty($dirname)) {
-            $my_user_data = $this->container->auth->user();
-            $my_groups = $this->container->permissions->user_groups($my_user_data);
-            
             foreach ($this->container->stor->app_dirs as $dir => $description) {
-                if (!in_array('root', $my_groups) and $dir == 'users') { continue; }
+                if (!$this->container->auth_user->root and $dir == 'users') { continue; }
                 
                 // u my files tam dame true, jako ze muzeme pridavat
                 if ($dir == 'my_files') {
@@ -165,16 +162,16 @@ class StorControllerApiV1 extends Controller
             // dvojtecka smer nahoru do rootu
             $vystup .= $this->firstRowUplink('');
             
-            $authentication_id = $_SESSION['authentication_id'] ?? false;
-            $dirname = 'users';
-            $object_id = $authentication_id;
+            $table_name = $this->container->stor->app_tables['users'];
+            $object_id = $this->container->auth_user->user_id;
             
             // jsem ve svych souborech, takze mam prava na vse
             
             // prehled nahranych souborů pro modul stor
             $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "lin.c_inherit_object", "lin.c_ts_created", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime");
             $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
-            $this->container->db->where("c_path", $dirname.'/'.$object_id);   // TODO zmenit na dedenou tabulku a id
+            $this->container->db->where("c_inherit_table", $table_name);
+            $this->container->db->where("c_inherit_object", $object_id);
             $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
             if (count($files) > 0) {
                 foreach ($files as $data) {
@@ -258,17 +255,20 @@ class StorControllerApiV1 extends Controller
             // dvojtecka smer nahoru do rootu
             $vystup .= $this->firstRowUplink('');
             
-            $user_id = $_SESSION['user_id'] ?? false;
+            $user_id = $this->container->auth_user->user_id;
             
             // jsem ve svych souborech, takze mam prava na vse
             
             // prehled nahranych souborů pro modul stor
-            $sloupce = array("lin.c_uid", "lin.c_path", "lin.c_owner", "lin.c_filename", "lin.c_inherit_object", "lin.c_ts_created", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime");
+            $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "lin.c_inherit_table", "lin.c_inherit_object", "lin.c_ts_created", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime");
             $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
-            $this->container->db->where("c_owner", $user_id);   // TODO zmenit na dedenou tabulku a id
+            $this->container->db->where("c_owner", $user_id);
             $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
             if (count($files) > 0) {
                 foreach ($files as $data) {
+                    $dir_path = array_search($data['c_inherit_table'], $this->container->stor->app_tables);
+                    $full_path = $dir_path.'/'.$data['c_inherit_object'];
+                    
                     $action_dropdown = '
                         <div class="item-actions-dropdown">
                             <a class="item-actions-toggle-btn">
@@ -322,7 +322,7 @@ class StorControllerApiV1 extends Controller
                                 <div class="item-col">
                                     <div class="item-heading">Category</div>
                                     <div class="no-overflow">
-                                        <a href="" onclick="show_files(\''.$data['c_path'].'\', true); return false;">'.$data['c_path'].'</a>
+                                        <a href="" onclick="show_files(\''.$full_path.'\', true); return false;">'.$full_path.'</a>
                                     </div>
                                 </div>
                                 <div class="item-col">
@@ -353,11 +353,21 @@ class StorControllerApiV1 extends Controller
             if (isset($this->container->stor->app_dirs[$dirname])) {
                 if (isset($this->container->stor->app_tables[$dirname])) {
                     // nacteme idecka
-                    $cols = Array("c_uid");
+                    $cols = Array("c_uid", "stor_name");
                     $this->container->db->orderBy("c_uid","asc");
                     $idecka = $this->container->db->get($this->container->stor->app_tables[$dirname], null, $cols);
                     if ($this->container->db->count > 0) {
-                        foreach ($idecka as $idecko) { 
+                        foreach ($idecka as $idecko) {
+                            // TODO, vypsat to nejak srozumitelneji (vyzaduje funkce v kazdem modulu, ktere vypisou nazev, nebo jednotny sloupec s nazvem)
+                            // udelame si zatim specialni vetev pro usery
+                            if ($dirname == 'users') {
+                                $this_screenname = $this->container->auth->user_screenname($idecko['c_uid']);
+                                $zobraz_nazev = $idecko['c_uid'].' ['.$this_screenname.']';
+                            }
+                            else {
+                                $zobraz_nazev = $idecko['c_uid'];
+                            }
+                            
                             $vystup .= '
                                         <li class="item">
                                             <div class="item-row">
@@ -368,7 +378,7 @@ class StorControllerApiV1 extends Controller
                                                     <div class="item-heading">Name</div>
                                                     <div>
                                                         <a href="" onclick="show_files(\''.$dirname.'/'.$idecko['c_uid'].'\', true); return false;" class="">
-                                                            <h4 class="item-title"> '.$idecko['c_uid'].' </h4>
+                                                            <h4 class="item-title"> '.$idecko['c_uid'].' - '.$idecko['stor_name'].' </h4>
                                                         </a>
                                                     </div>
                                                 </div>
@@ -431,7 +441,8 @@ class StorControllerApiV1 extends Controller
                     // prehled nahranych souborů pro objekt v modulu stor
                     $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "lin.c_inherit_object", "lin.c_ts_created", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime");
                     $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
-                    $this->container->db->where("c_path", $dirname.'/'.$object_id);   // TODO zmenit na dedenou tabulku a id
+                    $this->container->db->where("c_inherit_table", $acl_tabulka);
+                    $this->container->db->where("c_inherit_object", $object_id);
                     $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
                     if (count($files) > 0) {
                         foreach ($files as $data) {
@@ -567,12 +578,12 @@ class StorControllerApiV1 extends Controller
         if (isset($this->container->stor->app_dirs[$dirname])) {
             if (isset($this->container->stor->app_tables[$dirname])) {
                 // nacteme idecka
-                $cols = Array("c_uid");
+                $cols = Array("c_uid", "stor_name");
                 $this->container->db->orderBy("c_uid","asc");
                 $idecka = $this->container->db->get($this->container->stor->app_tables[$dirname], null, $cols);
                 if ($this->container->db->count > 0) {
                     foreach ($idecka as $idecko) {
-                        $vystup .= '<option>'.$idecko['c_uid'].'</option>';
+                        $vystup .= '<option value="'.$idecko['c_uid'].'">'.$idecko['c_uid'].' - '.$idecko['stor_name'].'</option>';
                     }
                 }
             }

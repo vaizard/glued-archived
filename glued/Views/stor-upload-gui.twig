@@ -112,7 +112,14 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div><select name="action_type"><option>move</option><option>copy</option></select></div>
+                    <div>owner of final copied or moved file</div>
+                    <div><select name="set_new_owner">
+                        <option value="1" selected>let system select</option>
+                        {% if auth.root %}
+                            <option value="2">set me as owner</option>
+                            <option value="3">do not change owner</option>
+                        {% endif %}
+                    </select></div>
                     <div>target dir:</div>
                     <div><select id="stor_copy_move_target_dir" name="target_dir" onchange="read_modal_objects();">
                         {{ stor_dirs_options | raw }}
@@ -121,7 +128,8 @@
                     <div><select id="stor_copy_move_target_object_id" name="target_object_id"></select></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Do it !</button>
+                    <button type="submit" name="action_type" value="copy" class="btn btn-primary">Copy</button>
+                    <button type="submit" name="action_type" value="move" class="btn btn-primary">Move</button>
                 </div>
             </form>
         </div>

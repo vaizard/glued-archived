@@ -68,6 +68,20 @@ function onChange(formData) { }
 
 {% if json_formdata_render_custom_array is defined %}
 
+const MyCustomWidget = (props) => {
+  return (
+    <input type="text"
+      className="form-control underlined"
+      value={props.value}
+      required={props.required}
+      onChange={(event) => props.onChange(event.target.value)} />
+  );
+};
+
+const widgets = {
+  myCustomWidget: MyCustomWidget
+};
+
 function ArrayFieldTemplate(props) {
   return (
     <div className={props.className}>
@@ -90,7 +104,7 @@ function ArrayFieldTemplate(props) {
   );
 }
 
-ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData} ArrayFieldTemplate={ArrayFieldTemplate}></Form>),
+ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData} ArrayFieldTemplate={ArrayFieldTemplate} widgets={widgets}></Form>),
     document.getElementById("main"));
 
 {% else %}

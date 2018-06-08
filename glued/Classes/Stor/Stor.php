@@ -10,15 +10,16 @@ class Stor
     public $app_dirs = array(
        "my_files"    => 'My private files',
        "my_owned"    => 'My owned files',
-       "users"    => 'Users private files',
+       "users"    => 'Users',
        "assets"    => 'Assets',
        "consumables"    => 'Consumables',
        "parts"    => 'Parts'
     );
     
     // prevod path na tabulku, kvuli predzjisteni prav
+    // pozor, kazda z techto tabulek musi mit id nazvane c_uid a virtualni sloupec stor_name
     public $app_tables = array(
-       "users"    => 't_authentication',
+       "users"    => 't_users',
        "assets"    => 't_assets_items',
        "consumables"    => 't_consumables_items',
        "parts"    => 't_parts_items'

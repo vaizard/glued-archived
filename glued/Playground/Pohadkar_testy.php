@@ -234,4 +234,76 @@ class Pohadkar_testy extends Controller
         ));
     }
     
+    
+    // test kombinace json schema a extras
+    public function schema_extras_test($request, $response)
+    {
+        // zvlastni pravidla pro vygenerovani jednotlivych prvku
+        // v __DIR__ je hodnota aktualniho adresare, takze zde /var/www/html/glued/glued/Controllers/Assets
+        // odebrano   "required" : [ "wovat", "vat" ],
+        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/form_ui.json');
+        
+        // schema celeho formulare
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_assets_form.json');
+        
+        // zakladni data, momentalne nic, ale musi tam byt aspon prazdny json objekt, tedy ty slozene zavorky
+        $json_formdata_output = '{"data":{"ts_created":"'.time().'","ts_updated":"'.time().'"}}';
+        
+        //$this->container['settings']['glued']['hostname']
+        //$this->container->settings->glued->hostname
+        // vnitrek onsubmit funkce
+        //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
+        $json_onsubmit_output = '
+    $.ajax({
+      url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('assets.api.new').'",
+      dataType: "text",
+      type: "POST",
+      data: "stockdata=" + JSON.stringify(formData.formData),
+      success: function(data) {
+        // diky replacu nezustava puvodni adresa v historii, takze se to vice blizi redirectu
+        // presmerovani na editacni stranku se vraci z toho ajaxu
+        window.location.replace(data);
+        /*
+        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+        */
+      },
+      error: function(xhr, status, err) {
+        
+        ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+      }
+    });
+        ';
+        
+        return $this->container->view->render($response, 'playground/test4_extras.twig', array(
+            'json_schema_output' => $json_schema_output,
+            'json_uischema_output' => $json_uischema_output,
+            'json_formdata_output' => $json_formdata_output,
+            'json_onsubmit_output' => $json_onsubmit_output
+        ));
+    }
+    
+    // funkce ktera otestuje stackedit
+    public function stackedit_test($request, $response)
+    {
+        return $this->container->view->render($response, 'playground/test5_stackedit.twig');
+    }
+    
+    
+    // test ktery jen enco vypise
+    public function test_output1($request, $response)
+    {
+        $vystup = '<h3>test promennych ve tride Auth_user</h3>';
+        
+        $vystup .= '<div>check: '.$this->container->auth_user->check.'</div>';
+        $vystup .= '<div>user: '.print_r($this->container->auth_user->user, true).'</div>';
+        $vystup .= '<div>email: '.$this->container->auth_user->email.'</div>';
+        $vystup .= '<div>root: '.$this->container->auth_user->root.'</div>';
+        $vystup .= '<div>user_id: '.$this->container->auth_user->user_id.'</div>';
+        $vystup .= '<div>authentication_id: '.$this->container->auth_user->authentication_id.'</div>';
+        
+        return $this->container->view->render($response, 'playground/simple_output.twig', array('vystup' => $vystup));
+    }
+    
 }

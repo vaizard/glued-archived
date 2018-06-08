@@ -1,0 +1,44 @@
+{% extends 'templates/glued-playground-sablona5.twig' %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            
+            <h3>stackedit test - markup editor textarey</h3>
+            
+            <div>
+            <textarea id="test_area" name="test_area" style="width: 80%; height: 200px;">tento obsah se bude editovat</textarea>
+            <br />
+            <span style="cursor: pointer; text-decoration: underlined;" onclick="activate_stackedit('test_area');">edit this markup</span>
+            </div>
+            
+            <h3>konverze textu na html</h3>
+            <div id="stackedit_silent_mode" style="display: none;">
+tento obsah se bude editovat
+takže **toto bude tluste**
+toto bude *kurzivou*
+nějaký seznam:
+
+ - bod 1
+ - bod 2
+ - atd
+tabulka
+|hustá|tabulka |
+|--|--|
+|  a tak|všelijak  |
+            </div>
+            <div id="prelozene_html"></div>
+            
+          </div>
+        </div>
+      
+    
+    </div>
+
+</div>
+
+{% endblock %}

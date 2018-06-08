@@ -23,7 +23,9 @@ div.checkbox {
     padding: 10px 20px;
 }
 
-
+#app {
+    background-color: #fff;
+}
 
 /* json schema formy */
 
