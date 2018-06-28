@@ -46,6 +46,7 @@ $app->group('', function () {
   // stor
   $this->get('/stor/uploader[/~/{dir}[/{oid:[0-9]+}]]', 'StorController:storUploadGui')->setName('stor.uploader');
   $this->post('/stor/uploader', 'StorController:uploaderSave');
+  $this->get('/stor/browser', 'StorController:storBrowserGui')->setName('stor.browser');
   
   // GUI for assets, consumables a pod
   $this->get('/assets', 'StockController:stockGui')->setName('assets.gui');
@@ -86,6 +87,14 @@ $app->group('', function () {
 })->add(new AuthMiddleware($container))->add(new RootMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
+// ajaxy s csrf checkem a pregenerovanim ocekavaneho csrf
+$app->group('', function () {
+  // ajax, ktery po odeslani filtru vraci soubory odpovidajici vyberu
+  // hodila by se get metoda, ale radeji pouziju post, protoze se posila pole vybranych filtru a nejsem si jisty jak to bude v getu fungovat
+  $this->get('/api/v1/stor/filter', 'StorControllerApiV1:showFilteredFiles')->setName('stor.api.filtered.files');
+})->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+
+
 // another group of routes, where user have to be signed in, but no csrf check.
 // typical - api (ajax) scripts
 // or pages with js generated forms
@@ -106,11 +115,26 @@ $app->group('', function () {
   $this->get('/parts/quicknew', 'PartsController:addQuickForm')->setName('parts.addquickform');
   $this->get('/parts/edit/{id:[0-9]+}', 'PartsController:editForm')->setName('parts.editform');
   
-  // testovaci mazaci stor, bez csrf, protoze form se pise v controleru a ne ve twigu (TODO pozor, uz je tam i csrf, aspon pri pouziti primo ze storu, takze by se to dalo presunout do vetve s csrf)
+  // STOR
+  // show stor file (or force download)
+  $this->get('/stor/get/{id:[0-9]+}[/{filename}]', 'StorController:serveFile')->setName('stor.serve.file');
+  // odeslani mazaciho stor formu, s csrf
   $this->post('/stor/uploader/delete', 'StorController:uploaderDelete')->setName('stor.uploader.delete');
+  // smazani souboru ajaxem
+  $this->post('/api/v1/stor/delete', 'StorControllerApiV1:ajaxDelete')->setName('stor.ajax.delete');
+  // editace nazvu souboru ajaxem
+  $this->post('/api/v1/stor/update', 'StorControllerApiV1:ajaxUpdate')->setName('stor.ajax.update');
   // update editace stor file (nazev) TODO nemel by tu byt put, kdyz je to update?
   $this->post('/stor/uploader/update', 'StorController:uploaderUpdate')->setName('stor.uploader.update');
   $this->post('/stor/uploader/copymove', 'StorController:uploaderCopyMove')->setName('stor.uploader.copy.move');
+  // ajax ktery vypise soubory v adresari, protoze vypisujeme, dame tam get metodu
+  $this->get('/api/v1/stor/files', 'StorControllerApiV1:showFiles')->setName('stor.api.files');
+  // ajax co vypise vhodne idecka k vybranemu diru, pro copy move
+  $this->get('/api/v1/stor/modalobjects', 'StorControllerApiV1:showModalObjects')->setName('stor.api.modal.objects');
+  // ajax co vraci optiony v jsonu pro select 2 filtr
+  $this->get('/api/v1/stor/filteroptions', 'StorControllerApiV1:showFilterOptions')->setName('stor.api.filter.options');
+
+  
   
   // api veci (vraci json)
   $this->post('/api/v1/accounting/costs', 'AccountingCostsControllerApiV1:insertCostApi')->setName('accounting.api.new');
@@ -135,14 +159,6 @@ $app->group('', function () {
   $this->delete('/api/v1/permissions/impaction/[{id}]', 'PermissionsControllerApiV1:deleteImpActionApi')->setName('acl.api.impaction.delete');
   $this->delete('/api/v1/permissions/action/[{id}]', 'PermissionsControllerApiV1:deleteActionApi')->setName('acl.api.action.delete');   // id neni byt soucasti name, protoze se pridava rucne v ajaxu za nej
   $this->put('/api/v1/permissions/changeaction/[{id}]', 'PermissionsControllerApiV1:changeActionApi')->setName('acl.api.action.update');
-  
-  // show stor file (or force download)
-  $this->get('/stor/get/{id:[0-9]+}[/{filename}]', 'StorController:serveFile')->setName('stor.serve.file');
-  
-  // ajax ktery vypise soubory v adresari, protoze vypisujeme, dame tam get metodu
-  $this->get('/api/v1/stor/files', 'StorControllerApiV1:showFiles')->setName('stor.api.files');
-  // ajax co vypise vhodne idecka k vybranemu diru, pro copy move
-  $this->get('/api/v1/stor/modalobjects', 'StorControllerApiV1:showModalObjects')->setName('stor.api.modal.objects');
   
   // barcode
   $this->get('/app/barcode/get-parametry', 'BarcodeController:barCode')->setName('barcode.code');

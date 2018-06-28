@@ -343,6 +343,7 @@ class StorControllerApiV1 extends Controller
                     ';
                 }
             }
+            
         }
         // kdyz nemame id, vypiseme vsechny mozne id jako adresare, tady asi prava nebudou zatim hrat roli
         else if (!$mame_id) {
@@ -594,4 +595,558 @@ class StorControllerApiV1 extends Controller
         $response->getBody()->write($vystup);
         return $response;
     }
+    
+    // vraci moznosti do select2 podle toho co je zatim napsane. vystup je v jsonu, pole objektu
+    public function showFilterOptions($request, $response) {
+        $vystup = '';
+        
+        $term = $request->getParam('term');
+        
+        // podle toho cim to zacne
+        // lomitko = adresar, @ = uzivatel, # = tag
+        $prvni_znak = mb_substr($term, 0, 1, 'utf-8');
+        
+        if ($term == '//') {
+            $vystup .= '
+    {
+      "results": [
+        {
+          "id": "//",
+          "text": "//apps"
+        }
+      ]
+    }
+            ';
+        }
+        else if ($prvni_znak == '/') {   // adresare
+            $casti = explode('/', $term);
+            $app_cast = $casti[1];
+            // zjistime kolika odpovida apps
+            $objekty_adresaru = array();
+            $posledni_dir = '';
+            foreach ($this->container->stor->app_dirs as $dir => $description) {
+                if (!isset($this->container->stor->app_tables[$dir])) { continue; }
+                if (empty($app_cast) or substr_count($dir, $app_cast) > 0) {
+                    $objekty_adresaru[] = '
+        {
+          "id": "/'.$dir.'",
+          "text": "/'.$dir.'"
+        }
+                    ';
+                    $posledni_dir = $dir;
+                }
+            }
+            
+            $vystup .= '
+{
+  "results": [
+            ';
+            if (isset($casti[2]) and count($objekty_adresaru) == 1) { // je tam druhe lomitko, nabidneme teda objekty
+                $objekt_cast = $casti[2];
+                $cols = Array("c_uid", "stor_name");
+                $this->container->db->orderBy("c_uid","asc");
+                $idecka = $this->container->db->get($this->container->stor->app_tables[$posledni_dir], null, $cols);
+                if ($this->container->db->count > 0) {
+                    $objekty_modulu = array();
+                    foreach ($idecka as $idecko) {
+                        $nazev = $idecko['c_uid'].' - '.$idecko['stor_name'];
+                        if (empty($objekt_cast) or substr_count(mb_strtolower($nazev, 'utf-8'), mb_strtolower($objekt_cast, 'utf-8')) > 0) {
+                            $objekty_modulu[] = '
+            {
+              "id": "/'.$posledni_dir.'/'.$idecko['c_uid'].'",
+              "text": "/'.$posledni_dir.'/'.$nazev.'"
+            }
+                            ';
+                        }
+                    }
+                    $vystup .= implode(',', $objekty_modulu);
+                }
+            }
+            else {  // je tam jen jedno lomitko, nabidneme appy
+                $vystup .= implode(',', $objekty_adresaru);
+            }
+            $vystup .= '
+  ]
+}
+            ';
+        }
+        else if ($prvni_znak == '@') {  // uzivatele
+            // nacteme idecka
+            $cols = Array("c_uid", "stor_name");
+            $this->container->db->orderBy("c_uid","asc");
+            $idecka = $this->container->db->get('t_users', null, $cols);
+            $objekty_useru = array();
+            if ($this->container->db->count > 0) {
+                foreach ($idecka as $idecko) {
+                    $objekty_useru[] = '
+    {
+      "id": "@'.$idecko['c_uid'].'",
+      "text": "@'.$idecko['c_uid'].' - '.$idecko['stor_name'].'"
+    }
+                    ';
+                }
+            }
+            $vystup .= '
+    {
+      "results": [';
+        $vystup .= implode(',', $objekty_useru);
+        $vystup .= '
+      ]
+    }
+            ';
+        }
+        else if ($prvni_znak == '#') {  // tagy, zatim nemame tabulku
+            $vystup .= '
+    {
+      "results": [
+        {
+          "id": "#tag1",
+          "text": "#tag1"
+        },
+        {
+          "id": "#tag1",
+          "text": "#tag2"
+        }
+      ]
+    }
+            ';
+        }
+        else {  // musime vratit prazdne pole, aby to bylo validni
+            $vystup .= '
+    {
+      "results": [ ]
+    }
+            ';
+        }
+        
+        // protoze je to ajax, tak vystup nebudeme strkat do view ale rovnou ho vytiskneme
+        
+        $response->getBody()->write($vystup);
+        return $response;
+    }
+    
+    
+    // fukce co vypise prehled filtrovanych souboru v adresari
+    public function showFilteredFiles($request, $response)
+    {
+        $vystup = '';
+        $uploader = '';
+        
+        $raw_filters = $request->getParam('filters');
+        $orderby = $request->getParam('orderby');
+        $direction = $request->getParam('direction');
+        $page = $request->getParam('page');
+        
+        // dekodujeme na pole
+        $filters = json_decode($raw_filters, true);
+        
+        $vystup .= '<div>filtrovaci json: '.$raw_filters.', orderby: '.$orderby.', direction: '.$direction.', page: '.$page.'</div>';
+        
+        // vrsek vzdy
+        $vystup .= '<div class="card items">';
+        $vystup .= '<ul class="item-list striped">';
+        $vystup .= '
+                        <li class="item item-list-header">
+                            <div class="item-row">
+                                <div class="item-col item-col-header fixed">
+                                    <div>
+                                        <span>Type</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-title" onclick="filter_stor_files(\'name\', \''.(($orderby == 'name' and $direction == 'asc')?'desc':'asc').'\', 1);">
+                                    <div>
+                                        <span><i class="fa fa-sort"></i> Name</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header" onclick="filter_stor_files(\'size\', \''.(($orderby == 'size' and $direction == 'asc')?'desc':'asc').'\', 1);">
+                                    <div>
+                                        <span><i class="fa fa-sort"></i> Size</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header">
+                                    <div class="no-overflow">
+                                        <span>App</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header">
+                                    <div class="no-overflow">
+                                        <span>Owner</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-date" onclick="filter_stor_files(\'uploaded\', \''.(($orderby == 'uploaded' and $direction == 'asc')?'desc':'asc').'\', 1);">
+                                    <div>
+                                        <span><i class="fa fa-sort"></i> Uploaded</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header fixed item-col-actions-dropdown"> </div>
+                            </div>
+                        </li>
+        ';
+        
+        // zanalyzujeme si co mame zadane ($filters)
+        if (count($filters) > 0) {
+            $je_tam_apps = false;
+            $jsou_tam_objekty = false;
+            $objektovy_dir = '';
+            $pole_adresaru = array();
+            $pole_useru = array();
+            $pole_tagu = array();
+            $pole_nazvu = array();
+            
+            $bude_uploader = false;
+            $uploader_path = '';
+            
+            foreach ($filters as $filter) {
+                // podle toho cim to zacne
+                // lomitko = adresar, @ = uzivatel, # = tag
+                $prvni_znak = mb_substr($filter, 0, 1, 'utf-8');
+                
+                // nejdriv detekujeme pritomnost apps //
+                if ($filter == '//') {
+                    $je_tam_apps = true;
+                }
+                // lomitkovy filtr by mel byt jen jeden, pokud bude vic, vezmeme jen prvni (a nebo to muzeme vzit jako or?)
+                else if ($prvni_znak == '/') {
+                    $pole_adresaru[] = $filter; // dame to tam cele, protoze pak to teprve budeme delit na lomitka a muze tam byt i objekt
+                    // zjistime, jestli to nahodou neni pozadavek na vypis objektu z app
+                    foreach ($this->container->stor->app_dirs as $dir => $description) {
+                        if (!isset($this->container->stor->app_tables[$dir])) { continue; }
+                        if ($filter == '/'.$dir.'/') {
+                            $jsou_tam_objekty = true;
+                            $objektovy_dir = $dir;
+                        }
+                    }
+                }
+                // ownerovy filtr muze byt taky jen jeden, taky vemem jen prvni (a nebo to muzeme vzit jako or?)
+                else if ($prvni_znak == '@') {
+                    $pole_useru[] = mb_substr($filter, 1, null, 'utf-8');
+                }
+                // tagovych filtru muze byt vic
+                else if ($prvni_znak == '#') {
+                    $pole_tagu[] = mb_substr($filter, 1, null, 'utf-8');
+                }
+                // nazvovych filtru muze byt vic
+                else {
+                    $pole_nazvu[] = $filter;
+                }
+            }
+            
+            // pokud je tam apps, vypiseme jen apps
+            if ($je_tam_apps) {
+                foreach ($this->container->stor->app_dirs as $dir => $description) {
+                    if (!isset($this->container->stor->app_tables[$dir])) { continue; }
+                    $vystup .= '
+                        <li class="item">
+                            <div class="item-row">
+                                <div class="item-col fixed">
+                                </div>
+                                <div class="item-col fixed pull-left item-col-title">
+                                    <div class="item-heading">Name</div>
+                                    <div>
+                                        <a href="" class="stor-shortcuts" data-id="/'.$dir.'/" data-text="/'.$dir.'/">
+                                            <h4 class="item-title">/'.$dir.'/</h4>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="item-col">
+                                </div>
+                                <div class="item-col">
+                                </div>
+                                <div class="item-col">
+                                </div>
+                                <div class="item-col item-col-date">
+                                </div>
+                                <div class="item-col fixed item-col-actions-dropdown">
+                                </div>
+                            </div>
+                        </li>
+                    ';
+                }
+            }
+            else if ($jsou_tam_objekty) {
+                // nacteme idecka
+                $cols = Array("c_uid", "stor_name");
+                $this->container->db->orderBy("c_uid","asc");
+                $idecka = $this->container->db->get($this->container->stor->app_tables[$objektovy_dir], null, $cols);
+                if ($this->container->db->count > 0) {
+                    foreach ($idecka as $idecko) {
+                        $vystup .= '
+                                    <li class="item">
+                                        <div class="item-row">
+                                            <div class="item-col fixed">
+                                                <i class="fa fa-folder-o fa-2x"></i>
+                                            </div>
+                                            <div class="item-col fixed pull-left item-col-title">
+                                                <div class="item-heading">Name</div>
+                                                <div>
+                                                    <a href="" class="stor-shortcuts" data-id="/'.$objektovy_dir.'/'.$idecko['c_uid'].'" data-text="/'.$objektovy_dir.'/'.$idecko['c_uid'].' - '.$idecko['stor_name'].'">
+                                                        <h4 class="item-title"> '.$idecko['c_uid'].' - '.$idecko['stor_name'].' </h4>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="item-col">
+                                            </div>
+                                            <div class="item-col">
+                                            </div>
+                                            <div class="item-col">
+                                            </div>
+                                            <div class="item-col item-col-date">
+                                            </div>
+                                            <div class="item-col fixed item-col-actions-dropdown">
+                                            </div>
+                                        </div>
+                                    </li>
+                        ';
+                    }
+                }
+            }
+            else {
+                // krome tagovych muzeme udelat vyber jednim sql dotazem nad links tabulkou
+                $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "lin.c_inherit_table", "lin.c_inherit_object", "lin.c_ts_created", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime");
+                $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
+                if (count($pole_adresaru) > 0) {
+                    $casti = explode('/', $pole_adresaru[0]);
+                    $inherit_table = $this->container->stor->app_tables[$casti[1]];
+                    $this->container->db->where("c_inherit_table", $inherit_table);
+                    if (!empty($casti[2])) {
+                        $this->container->db->where("c_inherit_object", $casti[2]);
+                        // je tam adresar i objekt, muzeme ukazat uploadovaci form
+                        $bude_uploader = true;
+                        $uploader_path = $casti[1].'/'.$casti[2];
+                    }
+                }
+                if (count($pole_useru) > 0) {
+                    $this->container->db->where("c_owner", $pole_useru[0]);
+                }
+                if (count($pole_tagu) > 0) {
+                    // tagy zatim nemame
+                }
+                if (count($pole_nazvu) > 0) {
+                    $this->container->db->where("c_filename", '%'.$pole_nazvu[0].'%', 'like');
+                }
+                // oderby
+                if ($orderby == 'name') {
+                    $this->container->db->orderBy("c_filename", $direction);
+                }
+                else if ($orderby == 'size') {
+                    $this->container->db->orderBy("size", $direction);
+                }
+                else if ($orderby == 'uploaded') {
+                    $this->container->db->orderBy("c_ts_created", $direction);
+                }
+                
+                $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
+                if (count($files) > 0) {
+                    foreach ($files as $data) {
+                        $dir_path = array_search($data['c_inherit_table'], $this->container->stor->app_tables);
+                        $full_path = $dir_path.'/'.$data['c_inherit_object'];
+                        
+                        $action_dropdown = '
+                            <div class="item-actions-dropdown">
+                                <a class="item-actions-toggle-btn">
+                                    <span class="inactive">
+                                        <i class="fa fa-cog"></i>
+                                    </span>
+                                    <span class="active">
+                                        <i class="fa fa-chevron-circle-right"></i>
+                                    </span>
+                                </a>
+                                <div class="item-actions-block">
+                                    <ul class="item-actions-list">
+                                        <li>
+                                            <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#delete_file_uid\').val('.$data['c_uid'].');">
+                                                <i class="fa fa-trash-o "></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="edit" href="#" data-toggle="modal" data-target="#modal-edit-stor" onclick="$(\'#edit_file_uid\').val('.$data['c_uid'].');var pomucka = $(\'#fname_'.$data['c_uid'].'\').text(); $(\'#edit_file_fname\').val(pomucka);">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="edit" href="#" data-toggle="modal" data-target="#modal-copy-move-stor" onclick="$(\'#copy_move_file_uid\').val('.$data['c_uid'].');">
+                                                <i class="fa fa-files-o"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        ';
+                        
+                        $vystup .= '
+                            <li class="item">
+                                <div class="item-row">
+                                    <div class="item-col fixed">
+                                        <i class="fa '.$this->container->stor->font_awesome_mime_icon($data['mime']).' fa-2x"></i>
+                                    </div>
+                                    <div class="item-col fixed pull-left item-col-title">
+                                        <div class="item-heading">Name</div>
+                                        <div>
+                                            <a href="'.$this->container->router->pathFor('stor.serve.file', ['id' => $data['c_uid'], 'filename' => $data['c_filename']]).'" class="">
+                                                <h4 id="fname_'.$data['c_uid'].'" class="item-title">'.$data['c_filename'].'</h4>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="item-col">
+                                        <div class="item-heading">Sales</div>
+                                        <div> '.$this->container->stor->human_readable_size($data['size']).' </div>
+                                    </div>
+                                    <div class="item-col">
+                                        <div class="item-heading">Category</div>
+                                        <div class="no-overflow">
+                                            <a href="" onclick="show_files(\''.$full_path.'\', true); return false;">'.$full_path.'</a>
+                                        </div>
+                                    </div>
+                                    <div class="item-col">
+                                        <div class="item-heading">Owner</div>
+                                        <div class="no-overflow">
+                                            <a href="">'.$this->container->auth->user_screenname($data['c_owner']).'</a>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-date">
+                                        <div class="item-heading">Uploaded</div>
+                                        <div class="no-overflow"> '.$data['c_ts_created'].' </div>
+                                    </div>
+                                    <div class="item-col fixed item-col-actions-dropdown">
+                                        '.$action_dropdown.'
+                                    </div>
+                                </div>
+                            </li>
+                        ';
+                    }
+                }
+            }
+        }
+        else {
+            $your_user_id = $this->container->auth_user->user_id;
+            $your_screenname = $this->container->auth->user_screenname($your_user_id);
+            $vystup .= '
+                <li class="item">
+                    <div class="item-row">
+                        <div class="item-col fixed">
+                        </div>
+                        <div class="item-col fixed pull-left item-col-title">
+                            <div class="item-heading">Name</div>
+                            <div>
+                                <a href="" class="stor-shortcuts" data-id="@'.$your_user_id.'" data-text="@'.$your_user_id.' - '.$your_screenname.'">
+                                    <h4 class="item-title">My files</h4>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="item-col">
+                        </div>
+                        <div class="item-col">
+                        </div>
+                        <div class="item-col">
+                        </div>
+                        <div class="item-col item-col-date">
+                        </div>
+                        <div class="item-col fixed item-col-actions-dropdown">
+                        </div>
+                    </div>
+                </li>
+                <li class="item">
+                    <div class="item-row">
+                        <div class="item-col fixed">
+                        </div>
+                        <div class="item-col fixed pull-left item-col-title">
+                            <div class="item-heading">Name</div>
+                            <div>
+                                <a href="" class="stor-shortcuts" data-id="//" data-text="//apps">
+                                    <h4 class="item-title">Apps</h4>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="item-col">
+                        </div>
+                        <div class="item-col">
+                        </div>
+                        <div class="item-col">
+                        </div>
+                        <div class="item-col item-col-date">
+                        </div>
+                        <div class="item-col fixed item-col-actions-dropdown">
+                        </div>
+                    </div>
+                </li>
+            ';
+        }
+        
+        $vystup .= '</ul>';
+        $vystup .= '</div>';
+        
+        // protoze je to ajax, tak vystup nebudeme strkat do view ale rovnou ho vytiskneme
+        
+        //$response->getBody()->write($uploader.$vystup);
+        //return $response;
+        
+        // zkusime to s viewem
+        if ($bude_uploader) {
+            return $this->container->view->render($response, 'stor/partials/filter-with-upload.twig',
+            array(
+                'vystup' => $vystup,
+                'uploader_path' => $uploader_path
+            ));
+        }
+        else {
+            return $this->container->view->render($response, 'stor/partials/filter-without-upload.twig',
+            array(
+                'vystup' => $vystup
+            ));
+        }
+    }
+    
+    // mazani ajaxem
+    public function ajaxDelete($request, $response) {
+        $vystup = '';
+        
+        $link_id = $request->getParam('link_id');
+        
+        $returned_data = $this->container->stor->delete_stor_file($link_id);
+        
+        // protoze je to ajax, tak vystup nebudeme strkat do view ale rovnou ho vytiskneme
+        
+        $response->getBody()->write($returned_data['message']);
+        return $response;
+    }
+    
+    // prejmenovani ajaxem. nebudeme na to delat zvlastni funkci ve tride, je to jednoduche
+    public function ajaxUpdate($request, $response) {
+        $vystup = '';
+        
+        $link_id = $request->getParam('link_id');
+        $new_fname = $request->getParam('new_fname');
+        
+        // nacteme si link
+        $this->container->db->where("c_uid", $link_id);
+        $link_data = $this->container->db->getOne('t_stor_links');
+        if ($this->container->db->count == 0) { // TODO, asi misto countu pouzit nejaky test $link_data
+            $vystup = 'pruser, soubor neexistuje, nevim na co jste klikli, ale jste tu spatne';
+        }
+        else {
+            // pokud mame prava na tento objekt
+            if ($this->container->permissions->have_action_on_object($link_data['c_inherit_table'], $link_data['c_inherit_object'], 'write')) {
+                // zmenime nazev na novy
+                $data = Array (
+                    'c_filename' => $new_fname
+                );
+                $this->container->db->where("c_uid", $link_id);
+                if ($this->container->db->update('t_stor_links', $data)) {
+                    $vystup = 'soubor byl prejmenovan';
+                }
+                else {
+                    $vystup = 'prejmenovani se nepovedlo';
+                }
+            }
+            else {
+                $vystup = 'k prejmenovani nemate prava';
+            }
+        }
+        
+        // protoze je to ajax, tak vystup nebudeme strkat do view ale rovnou ho vytiskneme
+        
+        $response->getBody()->write($vystup);
+        return $response;
+    }
+    
 }

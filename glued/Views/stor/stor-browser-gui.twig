@@ -1,0 +1,127 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> Stored Files </h3>
+    <p class="title-description"> Browser with a filter. Start typing the fileename. Try also / (apps), # (tags) or @ (users). If you filter apps and there is just one app left, you can type second / and objects in app will appear.</p>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-md-11">
+            
+            {{ vystup | raw }}
+            
+            <select id="stor-files-select2-filter" name="filters[]" multiple="multiple">
+                {{ preset_options | raw }}
+            </select>
+            
+        </div>
+        <div class="col-md-1">
+            <button id="stor-files-filter-button">filter</button>
+        </div>
+    </div>
+</section>
+
+
+<section class="section">
+    <div class="row">
+        <div class="col-md-12" id="stor-files-output">
+            
+        </div>
+    </div>
+</section>
+
+
+<div class="modal fade" id="confirm-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <i class="fa fa-warning"></i> Alert</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete this file?</p>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="delete_file_uid" value="" />
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="delete_stor_file_ajax();">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal-edit-stor">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="{{ path_for('stor.uploader.update') }}">
+                <input id="edit_file_uid" type="hidden" value="" />
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit file</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div><input style="width: 100%;" id="edit_file_fname" type="text" value="" /></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="edit_stor_file_ajax();">Change filename</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal-copy-move-stor">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="{{ path_for('stor.uploader.copy.move') }}">
+                <input type="hidden" name="action_source" value="browser" />
+                <input id="copy_move_file_uid" type="hidden" name="file_id" value="" />
+                <div class="modal-header">
+                    <h4 class="modal-title">Copy or Move File</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>owner of final copied or moved file</div>
+                    <div><select name="set_new_owner">
+                        <option value="1" selected>let system select</option>
+                        {% if auth.root %}
+                            <option value="2">set me as owner</option>
+                            <option value="3">do not change owner</option>
+                        {% endif %}
+                    </select></div>
+                    <div>target dir:</div>
+                    <div><select id="stor_copy_move_target_dir" name="target_dir" onchange="read_modal_objects();">
+                        {{ stor_dirs_options | raw }}
+                    </select></div>
+                    <div>target object id:</div>
+                    <div><select id="stor_copy_move_target_object_id" name="target_object_id"></select></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action_type" value="copy" class="btn btn-primary">Copy</button>
+                    <button type="submit" name="action_type" value="move" class="btn btn-primary">Move</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+{% endblock %}
