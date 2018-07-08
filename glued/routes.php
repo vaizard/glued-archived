@@ -59,6 +59,12 @@ $app->group('', function () {
   $this->post('/fbevents/newpage', 'FBEventsController:addPageAction');
   $this->get('/fbevents/page/{id}', 'FBEventsController:fbeventsPage')->setName('fbevents.page');
   $this->post('/fbevents/page/{id}', 'FBEventsController:fbeventsPageUpdate');
+  $this->get('/fbevents/newtoken', 'FBEventsController:addTokenForm')->setName('fbevents.addtoken');
+  $this->post('/fbevents/newtoken', 'FBEventsController:addTokenAction');
+  $this->get('/fbevents/edittoken/{id}', 'FBEventsController:editTokenForm')->setName('fbevents.edittoken');
+  $this->post('/fbevents/edittoken/{id}', 'FBEventsController:editTokenAction');
+  
+  
   
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 

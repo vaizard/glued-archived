@@ -13,7 +13,10 @@
         <div class="card-block">
             <div class="card-title-block">
                 <h3 class="title">
-                    <form action="{{ path_for('fbevents.page', {'id' : page_db_id }) }}" method="post"><button type="submit" class="btn btn-primary">Update events online</button>{{ csrf.field | raw  }}</form>
+                    <form action="{{ path_for('fbevents.page', {'id' : page_db_id }) }}" method="post">
+                        <button type="submit" class="btn btn-primary">Update events online</button>
+                        all events <input type="radio" name="ev_type" value="1" checked /> | upcoming events <input type="radio" name="ev_type" value="2" />
+                        {{ csrf.field | raw  }}</form>
                     <a href="{{ path_for('fbevents.main') }}" class="pull-right">back</a>
                 </h3>
             </div>

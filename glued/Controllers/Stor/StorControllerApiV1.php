@@ -941,78 +941,99 @@ class StorControllerApiV1 extends Controller
                         $dir_path = array_search($data['c_inherit_table'], $this->container->stor->app_tables);
                         $full_path = $dir_path.'/'.$data['c_inherit_object'];
                         
-                        $action_dropdown = '
-                            <div class="item-actions-dropdown">
-                                <a class="item-actions-toggle-btn">
-                                    <span class="inactive">
-                                        <i class="fa fa-cog"></i>
-                                    </span>
-                                    <span class="active">
-                                        <i class="fa fa-chevron-circle-right"></i>
-                                    </span>
-                                </a>
-                                <div class="item-actions-block">
-                                    <ul class="item-actions-list">
-                                        <li>
-                                            <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#delete_file_uid\').val('.$data['c_uid'].');">
-                                                <i class="fa fa-trash-o "></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="edit" href="#" data-toggle="modal" data-target="#modal-edit-stor" onclick="$(\'#edit_file_uid\').val('.$data['c_uid'].');var pomucka = $(\'#fname_'.$data['c_uid'].'\').text(); $(\'#edit_file_fname\').val(pomucka);">
-                                                <i class="fa fa-pencil"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="edit" href="#" data-toggle="modal" data-target="#modal-copy-move-stor" onclick="$(\'#copy_move_file_uid\').val('.$data['c_uid'].');">
-                                                <i class="fa fa-files-o"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        ';
+                        // urcime jake mame globalni prava na inherit objekt (ne na soubor ale na objekt ve kterem soubor je)
+                        // TODO, pole s nactenymi pravy by melo byt globalni, aby se necetly stejna prava u kazdeho dalsiho souboru se stejnou dvojici table objekt
+                        $allowed_global_actions = array();
+                        if ($this->container->permissions->have_action_on_object($data['c_inherit_table'], $data['c_inherit_object'], 'list')) { $allowed_global_actions[] = 'list'; }
+                        if ($this->container->permissions->have_action_on_object($data['c_inherit_table'], $data['c_inherit_object'], 'read')) { $allowed_global_actions[] = 'read'; }
+                        if ($this->container->permissions->have_action_on_object($data['c_inherit_table'], $data['c_inherit_object'], 'write')) { $allowed_global_actions[] = 'write'; }
                         
-                        $vystup .= '
-                            <li class="item">
-                                <div class="item-row">
-                                    <div class="item-col fixed">
-                                        <i class="fa '.$this->container->stor->font_awesome_mime_icon($data['mime']).' fa-2x"></i>
-                                    </div>
-                                    <div class="item-col fixed pull-left item-col-title">
-                                        <div class="item-heading">Name</div>
-                                        <div>
-                                            <a href="'.$this->container->router->pathFor('stor.serve.file', ['id' => $data['c_uid'], 'filename' => $data['c_filename']]).'" class="">
-                                                <h4 id="fname_'.$data['c_uid'].'" class="item-title">'.$data['c_filename'].'</h4>
-                                            </a>
+                        // jestli soubor vubec vylistovat, TODO tohle je ale spis read pravo na objekt. ne list.
+                        if (in_array('list', $allowed_global_actions)) {
+                            
+                            $action_dropdown = '';
+                            // jestli bude ozubene kolo
+                            if (in_array('write', $allowed_global_actions)) {
+                                $action_dropdown = '
+                                    <div class="item-actions-dropdown">
+                                        <a class="item-actions-toggle-btn">
+                                            <span class="inactive">
+                                                <i class="fa fa-cog"></i>
+                                            </span>
+                                            <span class="active">
+                                                <i class="fa fa-chevron-circle-right"></i>
+                                            </span>
+                                        </a>
+                                        <div class="item-actions-block">
+                                            <ul class="item-actions-list">
+                                                <li>
+                                                    <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#delete_file_uid\').val('.$data['c_uid'].');">
+                                                        <i class="fa fa-trash-o "></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="edit" href="#" data-toggle="modal" data-target="#modal-edit-stor" onclick="$(\'#edit_file_uid\').val('.$data['c_uid'].');var pomucka = $(\'#fname_'.$data['c_uid'].'\').text(); $(\'#edit_file_fname\').val(pomucka);">
+                                                        <i class="fa fa-pencil"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="edit" href="#" data-toggle="modal" data-target="#modal-copy-move-stor" onclick="$(\'#copy_move_file_uid\').val('.$data['c_uid'].');">
+                                                        <i class="fa fa-files-o"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </div>
-                                    <div class="item-col">
-                                        <div class="item-heading">Sales</div>
-                                        <div> '.$this->container->stor->human_readable_size($data['size']).' </div>
-                                    </div>
-                                    <div class="item-col">
-                                        <div class="item-heading">Category</div>
-                                        <div class="no-overflow">
-                                            <a href="" onclick="show_files(\''.$full_path.'\', true); return false;">'.$full_path.'</a>
+                                ';
+                            }
+                            
+                            $vystup .= '
+                                <li class="item">
+                                    <div class="item-row">
+                                        <div class="item-col fixed">
+                                            <i class="fa '.$this->container->stor->font_awesome_mime_icon($data['mime']).' fa-2x"></i>
+                                        </div>
+                                        <div class="item-col fixed pull-left item-col-title">
+                                            <div class="item-heading">Name</div>
+                                            <div>
+                                                '.(in_array('read', $allowed_global_actions)?'
+                                                <a href="'.$this->container->router->pathFor('stor.serve.file', ['id' => $data['c_uid'], 'filename' => $data['c_filename']]).'" class="">
+                                                    <h4 id="fname_'.$data['c_uid'].'" class="item-title">'.$data['c_filename'].'</h4>
+                                                </a>
+                                                ':'
+                                                    <h4 id="fname_'.$data['c_uid'].'" class="item-title">'.$data['c_filename'].'</h4>
+                                                ').'
+                                            </div>
+                                        </div>
+                                        <div class="item-col">
+                                            <div class="item-heading">Sales</div>
+                                            <div> '.$this->container->stor->human_readable_size($data['size']).' </div>
+                                        </div>
+                                        <div class="item-col">
+                                            <div class="item-heading">Category</div>
+                                            <div class="no-overflow">
+                                                <a href="" class="stor-shortcuts" data-id="/'.$full_path.'" data-text="/'.$full_path.'">
+                                                    /'.$full_path.'
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="item-col">
+                                            <div class="item-heading">Owner</div>
+                                            <div class="no-overflow">
+                                                <a href="">'.$this->container->auth->user_screenname($data['c_owner']).'</a>
+                                            </div>
+                                        </div>
+                                        <div class="item-col item-col-date">
+                                            <div class="item-heading">Uploaded</div>
+                                            <div class="no-overflow"> '.$data['c_ts_created'].' </div>
+                                        </div>
+                                        <div class="item-col fixed item-col-actions-dropdown">
+                                            '.$action_dropdown.'
                                         </div>
                                     </div>
-                                    <div class="item-col">
-                                        <div class="item-heading">Owner</div>
-                                        <div class="no-overflow">
-                                            <a href="">'.$this->container->auth->user_screenname($data['c_owner']).'</a>
-                                        </div>
-                                    </div>
-                                    <div class="item-col item-col-date">
-                                        <div class="item-heading">Uploaded</div>
-                                        <div class="no-overflow"> '.$data['c_ts_created'].' </div>
-                                    </div>
-                                    <div class="item-col fixed item-col-actions-dropdown">
-                                        '.$action_dropdown.'
-                                    </div>
-                                </div>
-                            </li>
-                        ';
+                                </li>
+                            ';
+                        }
                     }
                 }
             }
@@ -1075,12 +1096,7 @@ class StorControllerApiV1 extends Controller
         $vystup .= '</ul>';
         $vystup .= '</div>';
         
-        // protoze je to ajax, tak vystup nebudeme strkat do view ale rovnou ho vytiskneme
-        
-        //$response->getBody()->write($uploader.$vystup);
-        //return $response;
-        
-        // zkusime to s viewem
+        // textovy vystup ajaxu nejdriv vyrenderujeme pres view, aby se tam dosadilo csrf pres middleware
         if ($bude_uploader) {
             return $this->container->view->render($response, 'stor/partials/filter-with-upload.twig',
             array(
@@ -1101,6 +1117,9 @@ class StorControllerApiV1 extends Controller
         $vystup = '';
         
         $link_id = $request->getParam('link_id');
+        
+        // TODO zjistit jestli mame write prava na inherit table a objekt
+        
         
         $returned_data = $this->container->stor->delete_stor_file($link_id);
         
