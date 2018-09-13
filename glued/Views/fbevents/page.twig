@@ -1,0 +1,46 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+
+
+<div class="title-block">
+    <h3 class="title"> FB Events on page <strong>{{ page_name }}</strong> ({{ page_id }}) </h3>
+</div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-block">
+            <div class="card-title-block">
+                <h3 class="title">
+                    <form action="{{ path_for('fbevents.page', {'id' : page_db_id }) }}" method="post">
+                        <button type="submit" class="btn btn-primary">Update events online</button>
+                        all events <input type="radio" name="ev_type" value="1" checked /> | upcoming events <input type="radio" name="ev_type" value="2" />
+                        {{ csrf.field | raw  }}</form>
+                    <a href="{{ path_for('fbevents.main') }}" class="pull-right">back</a>
+                </h3>
+            </div>
+            <section class="example">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Event ID</th>
+                                <th>Event Name</th>
+                                <th>Start Time</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ events_output | raw }}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

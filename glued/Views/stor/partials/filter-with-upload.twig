@@ -1,0 +1,18 @@
+
+<div class="card card-block">
+    <div class="title-block">
+        <h3 class="title"> Upload new file </h3>
+    </div>
+    
+    <form method="post" action="{{ path_for('stor.uploader') }}" enctype="multipart/form-data">
+        <label>Select file to upload:</label>
+        <input type="hidden" name="upload_type" value="browser" />
+        <input type="hidden" name="actual_dir" value="{{uploader_path}}" />
+        <input type="file" name="file" />
+        <button type="submit">Upload</button>
+        {{ csrf.field | raw }}
+    </form>
+    
+</div>
+
+{{ vystup | raw }}

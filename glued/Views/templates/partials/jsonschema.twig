@@ -8,8 +8,8 @@
     <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
     
     <!-- <script src="https://unpkg.com/react-jsonschema-form/dist/react-jsonschema-form.js"></script> -->
-    <script src="https://killua.vaizard.xyz/react-jsonschema-form.js"></script>
-    
+    <!-- <script src="https://killua.vaizard.xyz/react-jsonschema-form.js"></script> -->
+    <script src="https://unpkg.com/react-jsonschema-form@1.0.3/dist/react-jsonschema-form.js"></script>
     
     <style type="text/css">
     ul.list-inline li {
@@ -52,8 +52,6 @@
 <script type="text/babel">
 const Form = JSONSchemaForm.default;
 
-
-
 const uiSchema = {{ json_uischema_output | raw }};
 
 const schema = {{ json_schema_output | raw }};
@@ -67,8 +65,55 @@ function onSubmit(formData) {
 
 function onChange(formData) { }
 
+
+{% if json_formdata_render_custom_array is defined %}
+
+const MyCustomWidget = (props) => {
+  return (
+    <input type="text"
+      className="form-control underlined"
+      value={props.value}
+      required={props.required}
+      onChange={(event) => props.onChange(event.target.value)} />
+  );
+};
+
+const widgets = {
+  myCustomWidget: MyCustomWidget
+};
+
+function ArrayFieldTemplate(props) {
+  return (
+    <div className={props.className}>
+      <div className="title-and-add clearfix">
+            <legend>{props.title}</legend>
+            <button onClick={props.onAddClick} type="button" className="btn btn-info"> + </button>
+      </div>
+      {props.items &&
+        props.items.map(element => (
+          <div key={element.index} className="row">
+            <div className="col-md-10">{element.children}</div>
+            <div className="col-md-2">
+                <button onClick={element.onDropIndexClick(element.index)} className="btn btn-danger bottomized">
+                  x
+                </button>
+            </div>
+          </div>
+        ))}
+    </div>
+  );
+}
+
+ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData} ArrayFieldTemplate={ArrayFieldTemplate} widgets={widgets}></Form>),
+    document.getElementById("main"));
+
+{% else %}
+
 ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData}></Form>),
     document.getElementById("main"));
+
+{% endif %}
+
 
 </script>
 

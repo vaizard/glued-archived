@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+  <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title> ModularAdmin - Free Dashboard Theme | HTML Version </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+        <link rel="stylesheet" href="{{ base_url() }}/dashboard/css/vendor.css">
+        <link rel="stylesheet" href="{{ base_url() }}/dashboard/css/app.css">
+        <link rel="stylesheet" href="{{ base_url() }}/css/glued.css">
+        
+    <title>Glued</title>
+    
+  </head>
+  
+  <body>
+        <div class="main-wrapper">
+            <div class="app" id="app">
+                
+                <header class="header">
+                    <div class="header-block header-block-collapse d-lg-none d-xl-none">
+                        <button class="collapse-btn" id="sidebar-collapse-btn">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </div>
+                    <div class="header-block header-block-search">
+                        <form role="search">
+                            <div class="input-container">
+                                <i class="fa fa-search"></i>
+                                <input type="search" placeholder="Search">
+                                <div class="underline"></div>
+                            </div>
+                        </form>
+                    </div>
+                    {% include 'templates/partials/pagesettings.twig' %}
+                    {% include 'templates/partials/usericon.twig' %}
+                </header>
+                
+                <aside class="sidebar">
+                    <div class="sidebar-container">
+                        <div class="sidebar-header">
+                            <div class="brand">
+                                <div class="logo">
+                                    <span class="l l1"></span>
+                                    <span class="l l2"></span>
+                                    <span class="l l3"></span>
+                                    <span class="l l4"></span>
+                                    <span class="l l5"></span>
+                                </div> Glued </div>
+                        </div>
+                        {% include 'templates/partials/navigation.twig' %}
+                    </div>
+                </aside>
+                
+                <div class="sidebar-overlay" id="sidebar-overlay"></div>
+                <div class="sidebar-mobile-menu-handle" id="sidebar-mobile-menu-handle"></div>
+                <div class="mobile-menu-handle"></div>
+                
+                <article class="content {{ article_class }}">
+                    {% include 'templates/partials/flash.twig' %}
+                    {% block content %}{% endblock %}
+                </article>
+                
+                <footer class="footer">
+                    <div class="footer-block author">
+                        <ul>
+                            <li> created by
+                                <a href="http://mau.osadnici.eu/">Pohadkar</a>
+                            </li>
+                            <li>
+                                <a href="http://mau.osadnici.eu/">get in touch</a>
+                            </li>
+                        </ul>
+                    </div>
+                </footer>
+                
+                {% include 'templates/partials/modalpopup.twig' %}
+            </div><!-- app -->
+        </div><!-- main-wrapper -->
+        
+        <!-- Reference block for JS -->
+        <div class="ref" id="ref">
+            <div class="color-primary"></div>
+            <div class="chart">
+                <div class="color-primary"></div>
+                <div class="color-secondary"></div>
+            </div>
+        </div>
+        <script src="{{ base_url() }}/dashboard/js/vendor.js"></script>
+        <script src="{{ base_url() }}/dashboard/js/app.js"></script>
+        
+        {% if additional_javascript is defined %}
+        {{ additional_javascript | raw }}
+        {% endif %}
+        
+        <script src="https://unpkg.com/stackedit-js@1.0.5/docs/lib/stackedit.min.js"></script>
+        
+        <script type="text/javascript">
+        
+        function activate_stackedit(id_area) {
+            const el = document.querySelector('textarea');
+            const stackedit = new Stackedit();
+            
+            // Open the iframe
+            stackedit.openFile({
+                name: 'Filename2', // with an optional filename
+                content: {
+                    text: el.value // and the Markdown content.
+                }
+            });
+            
+            // Listen to StackEdit events and apply the changes to the textarea.
+            stackedit.on('fileChange', (file) => {
+                el.value = file.content.text;
+            });
+        }
+        
+        
+        // prevedeni textu v divu na html
+        
+        const htmlEl = document.querySelector('#stackedit_silent_mode');
+        const htmlCil = document.querySelector('#prelozene_html');
+        var markdown = htmlEl.innerHTML;
+        
+        function doOpen(background) {
+          const stackedit = new Stackedit();
+          stackedit.on('fileChange', function onFileChange(file) {
+            //markdown = file.content.text;
+            htmlCil.innerHTML = file.content.html;
+          });
+          stackedit.openFile({
+            name: 'HTML with StackEdit',
+            content: {
+              text: markdown
+            }
+          }, background);
+        }
+        
+        doOpen(true);
+        
+        </script>
+        
+  </body>
+</html>

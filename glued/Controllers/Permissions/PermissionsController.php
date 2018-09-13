@@ -24,7 +24,15 @@ class PermissionsController extends Controller
         $privileges = $this->container->db->get('t_privileges');
         if ($this->container->db->count > 0) {
             foreach ($privileges as $privilege) {
-                $vystup_users .= '<div id="privilege_row_'.$privilege['c_id'].'">you '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong></div>';
+                $vystup_users .= '<div id="privilege_row_'.$privilege['c_id'].'">you ';
+                if ($privilege['c_neg'] == 0) { $vystup_users .= 'can'; }
+                else { $vystup_users .= 'can not !'; }
+                $vystup_users .= ' <strong>'.$privilege['c_action'].'</strong> ';
+                if ($privilege['c_type'] == 'table') { $vystup_users .= '(table)'; }
+                else if ($privilege['c_type'] == 'global') { $vystup_users .= '(global)'; }
+                else if ($privilege['c_type'] == 'object') { $vystup_users .= '(object id:'.$privilege['c_related_uid'].')'; }
+                $vystup_users .= ' on table <strong>'.$privilege['c_related_table'].'</strong>';
+                $vystup_users .= '</div>';
             }
         }
         else {
@@ -42,7 +50,15 @@ class PermissionsController extends Controller
                 $privileges = $this->container->db->get('t_privileges');
                 if ($this->container->db->count > 0) {
                     foreach ($privileges as $privilege) {
-                        $vystup_groups .= '<div id="privilege_row_'.$privilege['c_id'].'">group <strong>'.$key.'</strong> '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong></div>';
+                        $vystup_groups .= '<div id="privilege_row_'.$privilege['c_id'].'">group ';
+                        if ($privilege['c_neg'] == 0) { $vystup_groups .= 'can'; }
+                        else { $vystup_groups .= 'can not !'; }
+                        $vystup_groups .= ' <strong>'.$privilege['c_action'].'</strong> ';
+                        if ($privilege['c_type'] == 'table') { $vystup_groups .= '(table)'; }
+                        else if ($privilege['c_type'] == 'global') { $vystup_groups .= '(global)'; }
+                        else if ($privilege['c_type'] == 'object') { $vystup_groups .= '(object id:'.$privilege['c_related_uid'].')'; }
+                        $vystup_groups .= ' on table <strong>'.$privilege['c_related_table'].'</strong>';
+                        $vystup_groups .= '</div>';
                     }
                 }
             }
@@ -86,9 +102,9 @@ class PermissionsController extends Controller
         <tr>
             <th scope="row">'.$data['c_uid'].'</th>
             <td>'.$data['c_screenname'].'</td>
-            <td><a href="usergroups/'.$data['c_uid'].'">set</a></td>
-            <td><a href="userunix/'.$data['c_uid'].'">set</a></td>
-            <td><a href="userprivileges/'.$data['c_uid'].'">edit</a></td>
+            <td><a href="'.$this->container->router->pathFor('acl.membership', ['id' => $data['c_uid']]).'">set</a></td>
+            <td><a href="'.$this->container->router->pathFor('acl.userunix', ['id' => $data['c_uid']]).'">set</a></td>
+            <td><a href="'.$this->container->router->pathFor('acl.userprivileges', ['id' => $data['c_uid']]).'">edit</a></td>
         </tr>';
         }
         $vystup_users .= '
@@ -114,7 +130,7 @@ class PermissionsController extends Controller
         <tr>
             <th scope="row">'.$group_id.'</th>
             <td>'.$group_name.'</td>
-            <td><a href="groupprivileges/'.$group_id.'">edit</a></td>
+            <td><a href="'.$this->container->router->pathFor('acl.groupprivileges', ['id' => $group_id]).'">edit</a></td>
         </tr>';
         }
         $vystup_groups .= '
@@ -138,8 +154,8 @@ class PermissionsController extends Controller
             $vystup_tables .= '
                         <tr>
                             <th scope="row">'.$table_name.'</th>
-                            <td><a href="tableprivileges/'.$table_name.'">view</a></td>
-                            <td><a href="globalprivileges/'.$table_name.'">view</a></td>
+                            <td><a href="'.$this->container->router->pathFor('acl.tableprivileges', ['tablename' => $table_name]).'">view</a></td>
+                            <td><a href="'.$this->container->router->pathFor('acl.globalprivileges', ['tablename' => $table_name]).'">view</a></td>
                         </tr>';
         }
         $vystup_tables .= '
@@ -163,7 +179,7 @@ class PermissionsController extends Controller
         $akce = $this->container->db->get('t_action');
         if (count($akce) > 0) {
             foreach ($akce as $akce1) {
-                $vystup_actions['object'] .= '<div><strong>'.$akce1['c_title'].'</strong></div>';
+                $vystup_actions['object'] .= '<div><strong>'.$akce1['c_title'].'</strong><a class="pull-right" href="'.$this->container->router->pathFor('acl.editaction', ['id' => $akce1['c_uid']]).'">edit</a></div>';
             }
         }
         else {
@@ -173,7 +189,7 @@ class PermissionsController extends Controller
         $akce = $this->container->db->get('t_action');
         if (count($akce) > 0) {
             foreach ($akce as $akce1) {
-                $vystup_actions['table'] .= '<div><strong>'.$akce1['c_title'].'</strong></div>';
+                $vystup_actions['table'] .= '<div><strong>'.$akce1['c_title'].'</strong><a class="pull-right" href="'.$this->container->router->pathFor('acl.editaction', ['id' => $akce1['c_uid']]).'">edit</a></div>';
             }
         }
         else {
@@ -185,7 +201,7 @@ class PermissionsController extends Controller
         $role = $this->container->db->get('t_implemented_roles');
         if (count($role) > 0) {
             foreach ($role as $role1) {
-                $vystup_roles .= '<div><strong>'.$role1['c_role'].'</strong></div>';
+                $vystup_roles .= '<div><strong>'.$role1['c_role'].'</strong><a class="pull-right" href="'.$this->container->router->pathFor('acl.editrole', ['id' => $role1['c_uid']]).'">edit</a></div>';
             }
         }
         
@@ -385,43 +401,28 @@ class PermissionsController extends Controller
         $privileges = $this->container->db->get('t_privileges');
         if ($this->container->db->count > 0) {
             foreach ($privileges as $privilege) {
-                $vystup_privileg .= '<div id="privilege_row_'.$privilege['c_id'].'">'.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong>
-                <span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_privilege('.$privilege['c_id'].');">delete</span>
-                <span class="pull-right">[edit]</span>
-                </div>';
+                $vystup_privileg .= '<div id="privilege_row_'.$privilege['c_id'].'">';
+                if ($privilege['c_neg'] == 0) { $vystup_privileg .= 'can'; }
+                else { $vystup_privileg .= 'can not !'; }
+                $vystup_privileg .= ' <strong>'.$privilege['c_action'].'</strong> ';
+                if ($privilege['c_type'] == 'table') { $vystup_privileg .= '(table)'; }
+                else if ($privilege['c_type'] == 'global') { $vystup_privileg .= '(global)'; }
+                else if ($privilege['c_type'] == 'object') { $vystup_privileg .= '(object id:'.$privilege['c_related_uid'].')'; }
+                $vystup_privileg .= ' on table <strong>'.$privilege['c_related_table'].'</strong>';
+                $vystup_privileg .= '<span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_privilege('.$privilege['c_id'].');">delete</span>';
+                $vystup_privileg .= '</div>';
             }
         }
         else {
             $vystup_privileg .= 'no privileges at the moment';
         }
         
-        $additional_javascript = '
-    <script>
-    function delete_privilege(item_id) {
-        if (confirm("do you really want to delete this privilege?")) {
-            $.ajax({
-              url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('acl.api.privilege.delete').'" + item_id,
-              dataType: "text",
-              type: "DELETE",
-              data: "voiddata=1",
-              success: function(data) {
-                $("#privilege_row_" + item_id).remove();
-              },
-              error: function(xhr, status, err) {
-                alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
-              }
-            });
-        }
-    }
-    </script>
-        ';
-        
         // nacteme si mozne akce
         $action_options = '';
         $akce = $this->container->db->get('t_action');
         if ($this->container->db->count > 0) {
             foreach ($akce as $akce1) {
-                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object/global':'table').')</option>';
             }
         }
         
@@ -439,8 +440,7 @@ class PermissionsController extends Controller
                 'user' => $user,
                 'privileges_output' => $vystup_privileg,
                 'action_options' => $action_options,
-                'table_options' => $table_options,
-                'additional_javascript' => $additional_javascript
+                'table_options' => $table_options
             ));
     }
     
@@ -458,7 +458,16 @@ class PermissionsController extends Controller
             $privileges = $this->container->db->get('t_privileges');
             if ($this->container->db->count > 0) {
                 foreach ($privileges as $privilege) {
-                    $vystup_privileg .= '<div>'.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
+                    $vystup_privileg .= '<div id="privilege_row_'.$privilege['c_id'].'">';
+                    if ($privilege['c_neg'] == 0) { $vystup_privileg .= 'can'; }
+                    else { $vystup_privileg .= 'can not !'; }
+                    $vystup_privileg .= ' <strong>'.$privilege['c_action'].'</strong> ';
+                    if ($privilege['c_type'] == 'table') { $vystup_privileg .= '(table)'; }
+                    else if ($privilege['c_type'] == 'global') { $vystup_privileg .= '(global)'; }
+                    else if ($privilege['c_type'] == 'object') { $vystup_privileg .= '(object id:'.$privilege['c_related_uid'].')'; }
+                    $vystup_privileg .= ' on table <strong>'.$privilege['c_related_table'].'</strong>';
+                    $vystup_privileg .= '<span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_privilege('.$privilege['c_id'].');">delete</span>';
+                    $vystup_privileg .= '</div>';
                 }
             }
             else {
@@ -470,7 +479,7 @@ class PermissionsController extends Controller
             $akce = $this->container->db->get('t_action');
             if ($this->container->db->count > 0) {
                 foreach ($akce as $akce1) {
-                    $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+                    $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object/global':'table').')</option>';
                 }
             }
             
@@ -504,28 +513,46 @@ class PermissionsController extends Controller
         $this->container->db->where("c_uid", $args['id']);
         $user = $this->container->db->getOne('t_users');
         
-        
-        
-        $vystup_privileg = '';
-        $this->container->db->where("c_role", 'self');
-        $this->container->db->orWhere("c_role", 'creator'); // OR
-        $privileges = $this->container->db->get('t_privileges');
-        if ($this->container->db->count > 0) {
-            foreach ($privileges as $privilege) {
-                $vystup_privileg .= '<div>role <strong>'.$privilege['c_role'].'</strong> '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
-            }
-        }
-        else {
-            $vystup_privileg .= 'no privileges at the moment';
-        }
-        
-        // nacteme si role
+        // nacteme si mozne role (z tabulky t_implemented_roles)
+        // jak pro vyber pravidel, tak pro select do formulare
         $role_options = '';
+        $role_names = array();
         $roles = $this->container->db->get('t_implemented_roles');
         if ($this->container->db->count > 0) {
             foreach ($roles as $role1) {
                 $role_options .= '<option value="'.$role1['c_role'].'">'.$role1['c_role'].'</option>';
+                $role_names[] = $role1['c_role'];
             }
+        }
+        
+        // nacteme privilegia
+        $vystup_privileg = '';
+        if (count($role_names) > 0) {
+            foreach ($role_names as $kk => $vv) {
+                if ($kk == 0) { $this->container->db->where("c_role", $vv); }
+                else { $this->container->db->orWhere("c_role", $vv); }
+            }
+            $privileges = $this->container->db->get('t_privileges');
+            if ($this->container->db->count > 0) {
+                foreach ($privileges as $privilege) {
+                    $vystup_privileg .= '<div id="privilege_row_'.$privilege['c_id'].'">role <strong>'.$privilege['c_role'].'</strong> ';
+                    if ($privilege['c_neg'] == 0) { $vystup_privileg .= 'can'; }
+                    else { $vystup_privileg .= 'can not !'; }
+                    $vystup_privileg .= ' <strong>'.$privilege['c_action'].'</strong> ';
+                    if ($privilege['c_type'] == 'table') { $vystup_privileg .= '(table)'; }
+                    else if ($privilege['c_type'] == 'global') { $vystup_privileg .= '(global)'; }
+                    else if ($privilege['c_type'] == 'object') { $vystup_privileg .= '(object id:'.$privilege['c_related_uid'].')'; }
+                    $vystup_privileg .= ' on table <strong>'.$privilege['c_related_table'].'</strong>';
+                    $vystup_privileg .= '<span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_privilege('.$privilege['c_id'].');">delete</span>';
+                    $vystup_privileg .= '</div>';
+                }
+            }
+            else {
+                $vystup_privileg .= 'no privileges at the moment';
+            }
+        }
+        else {
+            $vystup_privileg .= 'no roles defined';
         }
         
         // nacteme si mozne akce
@@ -533,7 +560,7 @@ class PermissionsController extends Controller
         $akce = $this->container->db->get('t_action');
         if ($this->container->db->count > 0) {
             foreach ($akce as $akce1) {
-                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object':'table').')</option>';
+                $action_options .= '<option value="'.$akce1['c_title'].'">'.$akce1['c_title'].' ('.($akce1['c_apply_object'] == 1?'object/global':'table').')</option>';
             }
         }
         
@@ -572,7 +599,10 @@ class PermissionsController extends Controller
                 foreach ($statuses as $kk => $vv) {
                     if ($privilege['c_status'] & $vv) { $pole_pouzitych_statusu[] = $kk; }
                 }
-                $vystup_privileg .= '<div>use action <strong>'.$privilege['c_action'].'</strong> on table <strong>'.$privilege['c_table'].'</strong> when status is <strong>'.implode(', ', $pole_pouzitych_statusu).'</strong> <span class="pull-right">[edit, delete]</span></div>';
+                $vystup_privileg .= '<div id="impaction_row_'.$privilege['c_id'].'">use action <strong>'.$privilege['c_action'].'</strong> on table <strong>'.$privilege['c_table'].'</strong> when status is <strong>'.implode(', ', $pole_pouzitych_statusu).'</strong>
+                    <span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_implemented_action('.$privilege['c_id'].');">delete</span>
+                    <span class="pull-right">[edit]</span>
+                </div>';
             }
         }
         else {
@@ -629,7 +659,18 @@ class PermissionsController extends Controller
             $privileges = $this->container->db->get('t_privileges');
             if ($this->container->db->count > 0) {
                 foreach ($privileges as $privilege) {
-                    $vystup_privileg .= '<div>role <strong>'.$privilege['c_role'].'</strong> '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
+                    $vystup_privileg .= '<div id="privilege_row_'.$privilege['c_id'].'">role <strong>'.$privilege['c_role'].'</strong> ';
+                    if ($privilege['c_role'] == 'user') { $vystup_privileg .= '(user id:'.$privilege['c_who'].') '; }
+                    if ($privilege['c_role'] == 'group') { $vystup_privileg .= '(group id:'.$privilege['c_who'].') '; }
+                    if ($privilege['c_neg'] == 0) { $vystup_privileg .= 'can'; }
+                    else { $vystup_privileg .= 'can not !'; }
+                    $vystup_privileg .= ' <strong>'.$privilege['c_action'].'</strong> ';
+                    if ($privilege['c_type'] == 'table') { $vystup_privileg .= '(table)'; }
+                    else if ($privilege['c_type'] == 'global') { $vystup_privileg .= '(global)'; }
+                    else if ($privilege['c_type'] == 'object') { $vystup_privileg .= '(object id:'.$privilege['c_related_uid'].')'; }
+                    $vystup_privileg .= ' on table <strong>'.$privilege['c_related_table'].'</strong>';
+                    $vystup_privileg .= '<span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_privilege('.$privilege['c_id'].');">delete</span>';
+                    $vystup_privileg .= '</div>';
                 }
             }
             else {
@@ -659,7 +700,18 @@ class PermissionsController extends Controller
             $privileges = $this->container->db->get('t_privileges');
             if ($this->container->db->count > 0) {
                 foreach ($privileges as $privilege) {
-                    $vystup_privileg .= '<div>role <strong>'.$privilege['c_role'].'</strong> '.($privilege['c_neg'] == 0?'can':'can not !').' <strong>'.$privilege['c_action'].'</strong> ('.$privilege['c_type'].' type) on table <strong>'.$privilege['c_related_table'].'</strong> <span class="pull-right">[edit, delete]</span></div>';
+                    $vystup_privileg .= '<div id="privilege_row_'.$privilege['c_id'].'">role <strong>'.$privilege['c_role'].'</strong> ';
+                    if ($privilege['c_role'] == 'user') { $vystup_privileg .= '(user id:'.$privilege['c_who'].') '; }
+                    if ($privilege['c_role'] == 'group') { $vystup_privileg .= '(group id:'.$privilege['c_who'].') '; }
+                    if ($privilege['c_neg'] == 0) { $vystup_privileg .= 'can'; }
+                    else { $vystup_privileg .= 'can not !'; }
+                    $vystup_privileg .= ' <strong>'.$privilege['c_action'].'</strong> ';
+                    if ($privilege['c_type'] == 'table') { $vystup_privileg .= '(table)'; }
+                    else if ($privilege['c_type'] == 'global') { $vystup_privileg .= '(global)'; }
+                    else if ($privilege['c_type'] == 'object') { $vystup_privileg .= '(object id:'.$privilege['c_related_uid'].')'; }
+                    $vystup_privileg .= ' on table <strong>'.$privilege['c_related_table'].'</strong>';
+                    $vystup_privileg .= '<span style="cursor: pointer; color: red; margin-left: 10px;" class="pull-right" onclick="delete_privilege('.$privilege['c_id'].');">delete</span>';
+                    $vystup_privileg .= '</div>';
                 }
             }
             else {
@@ -753,6 +805,78 @@ class PermissionsController extends Controller
         }
         
         return $response->withRedirect($this->container->router->pathFor('acl.implementedactions'));
+    }
+    
+    // shows edit page for action (rename, delete buttons)
+    public function getEditAction($request, $response, $args)
+    {
+        $action_id = (int) $args['id'];
+        
+        $this->container->db->where("c_uid", $action_id);
+        $action = $this->container->db->getOne('t_action');
+        if ($this->container->db->count > 0) {
+            
+            $action_name = $action['c_title'];
+            
+            $vystup = '';
+            
+            // vyskyt v tabulce t_privileges
+            $this->container->db->where("c_action", $action_name);
+            if ($action['c_apply_object'] == 1) {   // object a global
+                $this->container->db->where("(c_type = ? or c_type = ?)", Array('object', 'global'));
+            }
+            else {  // table
+                $this->container->db->where("c_type", 'table');
+            }
+            $this->container->db->get('t_privileges');
+            $pocet = $this->container->db->count;
+            $vystup .= '<div>table t_privileges: '.$pocet.'</div>';
+            
+            // vyskyt v tabulce implemented action, tam jsou jen akce typu object
+            if ($action['c_apply_object'] == 1) {
+                $this->container->db->where("c_action", $action_name);
+                $this->container->db->get('t_implemented_action');
+                $pocet = $this->container->db->count;
+                $vystup .= '<div>table t_implemented_action: '.$pocet.'</div>';
+            }
+            else {
+                $vystup .= '<div>table t_implemented_action: not affected</div>';
+            }
+            
+            return $this->container->view->render($response, 'permissions/editaction.twig', 
+                array(
+                    'action_name' => $action_name,
+                    'action_id' => $action_id,
+                    'output' => $vystup
+                ));
+        }
+        else {
+            $this->container->flash->addMessage('info', 'bad action id');
+            return $response->withRedirect($this->container->router->pathFor('acl.crossroad'));
+        }
+    }
+    
+    // shows edit page for role (maybe rename, delete buttons but not yet)
+    public function getEditRole($request, $response, $args)
+    {
+        $role_id = (int) $args['id'];
+        
+        $this->container->db->where("c_uid", $role_id);
+        $action = $this->container->db->getOne('t_implemented_roles');
+        if ($this->container->db->count > 0) {
+            
+            $role_name = $action['c_role'];
+            
+            return $this->container->view->render($response, 'permissions/editrole.twig', 
+                array(
+                    'role_name' => $role_name,
+                    'role_id' => $role_id
+                ));
+        }
+        else {
+            $this->container->flash->addMessage('info', 'bad role id');
+            return $response->withRedirect($this->container->router->pathFor('acl.crossroad'));
+        }
     }
     
 }

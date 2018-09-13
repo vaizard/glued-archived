@@ -2,6 +2,8 @@
 
 {% block content %}
 
+{% include 'permissions/includes/js_delete.twig' %}
+
 <div class="title-block">
     <h3 class="title"> Role Privileges </h3>
     <p class="title-description"> Existing Privileges of roles self and creator <a class="pull-right" href="{{ path_for('acl.crossroad') }}">go back</a> </p>
@@ -48,8 +50,8 @@
                     <label for="polozka2">Type</label>
                     <select name="type" class="form-control" id="polozka2">
                         <option value="table" selected>table</option>
-                        <option value="global">every row</option>
-                        <option value="object">one row</option>
+                        <option value="global">selection of rows (global)</option>
+                        <option value="object">one row (object)</option>
                     </select>
                   </div>
                     

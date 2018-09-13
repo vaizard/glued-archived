@@ -1,0 +1,54 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+
+<div class="title-block">
+    <h3 class="title"> Editing Token id: {{ token_id }}</h3>
+</div>
+
+<div class="row">
+
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+          <div class="panel-heading clearfix">
+            <a href="{{ path_for('fbevents.main') }}" class="pull-right">back</a>
+          </div>
+          <div class="panel-body">
+                
+                <form action="{{ path_for('fbevents.edittoken', { 'id': token_id }) }}" method="post">
+                    
+                  <div class="form-group">
+                    <label for="polozka4">Title of token</label>
+                    <input type="text" name="title" class="form-control" id="polozka4" value="{{ token_title }}" />
+                  </div>
+                    
+                  <div class="form-group">
+                    <label for="polozka4">App ID (long int number)</label>
+                    <input type="text" name="app_id" class="form-control" id="polozka4" value="{{ token_data.app_id }}" />
+                  </div>
+                    
+                  <div class="form-group">
+                    <label for="polozka4">App secret (long hexa number)</label>
+                    <input type="text" name="app_secret" class="form-control" id="polozka4" value="{{ token_data.app_secret }}" />
+                  </div>
+                    
+                  <div class="form-group">
+                    <label for="polozka4">Token (really long alfanum string)</label>
+                    <input type="text" name="token" class="form-control" id="polozka4" value="{{ token_data.token }}" />
+                  </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
+            
+          </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+
+{% if json_schema_output is defined %}
+    
+    <script type="text/javascript" src="{{ base_url() }}/js/babel.js"></script>
+    
+    <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+    
+    <script src="https://unpkg.com/react-jsonschema-form@1.0.3/dist/react-jsonschema-form.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/react-jsonschema-form-extras@0.9.19/lib/index.min.js"></script>
+    
+    
+    <style type="text/css">
+    ul.list-inline li {
+        display: inline-block;
+        margin-right: 10px;
+    }
+    ul.list-inline li a.btn {
+        display: block;
+        height: calc(2.25rem + 2px);
+    }
+    .btn-add {
+        width: 80px;
+        margin-top: 15px;
+    }
+    /* nahrazeni contentu tlacitek */
+    .btn-add i, .array-item-remove i, .array-item-move-up i, .array-item-move-down i {
+        display: none;
+    }
+    .btn-add:after {
+        content: "Add";
+    }
+    .array-item-remove:after {
+        content: "Delete";
+    }
+    .array-item-move-up:after {
+        content: "Up";
+    }
+    .array-item-move-down:after {
+        content: "Down";
+    }
+    </style>
+    
+    
+  <title>json schema template</title>
+
+
+
+
+
+
+<!-- jednodussi json schema -->
+
+<script type="text/babel">
+
+const Form = JSONSchemaForm.default;
+
+const uiSchema = {{ json_uischema_output | raw }};
+
+const schema = {{ json_schema_output | raw }};
+
+const formData = {{ json_formdata_output | raw }};
+
+
+function onSubmit(formData) {
+    {{ json_onsubmit_output | raw }}
+}
+
+function onChange(formData) { }
+
+ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData} fields={fields}></Form>),
+    document.getElementById("main")
+    );
+
+</script>
+
+
+
+
+{% endif %}

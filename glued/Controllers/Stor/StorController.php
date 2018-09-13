@@ -8,18 +8,37 @@ use Glued\Classes\Auth;
 class StorController extends Controller
 {
     
+    // uploader with simple browser
+    
     // fukce co vypise prehled nahranych a formular pro nahrani dalsiho
     public function storUploadGui($request, $response, $args)
     {
         $vystup = '';
         
+        $actual_dirname = '';
+        if (!empty($args['dir'])) {
+            if (!empty($args['oid'])) {
+                $actual_dirname = $args['dir'].'/'.$args['oid'];
+            }
+            else {
+                $actual_dirname = $args['dir'];
+            }
+        }
+        
+        // priprava vyberu diru do copy move popupu
+        $stor_dirs_options = '';
+        foreach ($this->container->stor->app_dirs as $dir => $description) {
+            if ($dir == 'my_owned' or $dir == 'my_files') { continue; }
+            $stor_dirs_options .= '<option value="'.$dir.'">'.$description.'</option>';
+        }
+        
         $additional_javascript = '
     <script>
     
-    '.(!empty($args['dir'])?' var actual_dirname = "'.$args['dir'].'"; ':' var actual_dirname = "stor"; ').'
+    var actual_dirname = "'.$actual_dirname.'";
     
     // definice funkce
-    function show_files(dirname) {
+    function show_files(dirname, can_upload) {
         $.ajax({
           url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.api.files').'",
           dataType: "text",
@@ -28,9 +47,24 @@ class StorController extends Controller
           success: function(data) {
             $("#stor-files-output").html(data);
             
-            // nastavime prepnuty dir do uploadovaciho a mazaciho formu
+            // prepneme form do uploadovaciho nebo zakazaneho stavu
+            if (can_upload) {
+                $("#can_upload_button").show();
+                $("#cannot_upload_message").hide();
+            }
+            else {
+                $("#can_upload_button").hide();
+                $("#cannot_upload_message").show();
+            }
+            
+            // nastavime prepnuty dir do uploadovaciho a mazaciho formu (a dalsich formu), vsechny kontejnery maji stejnou class
+            $(".stor_hidden_actual_dir").val(dirname);
+            /*
             $("#actual_dir").val(dirname);
             $("#actual_delete_dir").val(dirname);
+            $("#stor_edit_form_actual_dir").val(dirname);
+            $("#stor_copy_move_form_actual_dir").val(dirname);
+            */
             
             // musime znova inicializovat rozklikavaci ozubena kola na konci radku, coz se normalne dela v app.js pri nacteni stranky
             var $itemActions = $(".item-actions-dropdown");
@@ -64,15 +98,42 @@ class StorController extends Controller
         });
     }
     
+    // cte existujici objekty do modalu pro copy move
+    function read_modal_objects() {
+        // zjistime si ktery dir je vybrany
+        
+        var dirname = $("#stor_copy_move_target_dir").val();
+        
+        $.ajax({
+          url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.api.modal.objects').'",
+          dataType: "text",
+          type: "GET",
+          data: "dirname=" + dirname,
+          success: function(data) {
+            $("#stor_copy_move_target_object_id").html(data);
+          },
+          error: function(xhr, status, err) {
+            alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+          }
+        });
+    }
+    
     // na zacatku to zavolame se stor parametrem (mozna az po nahrani cele stranky)
     $(document).ready(function() {
-        show_files(actual_dirname);
+        show_files(actual_dirname, false);
+        read_modal_objects();
     });
     
     </script>
         ';
         
-        return $this->container->view->render($response, 'stor-upload-gui.twig', array('vystup' => $vystup, 'article_class' => 'items-list-page', 'additional_javascript' => $additional_javascript));
+        return $this->container->view->render($response, 'stor-upload-gui.twig',
+        array(
+            'vystup' => $vystup,
+            'article_class' => 'items-list-page',
+            'additional_javascript' => $additional_javascript,
+            'stor_dirs_options' => $stor_dirs_options
+        ));
     }
     
     
@@ -86,9 +147,26 @@ class StorController extends Controller
         
         $newfile = $files['file'];
         
-        $actual_dir = $request->getParam('actual_dir');
-        if (empty($actual_dir)) { $actual_dir = 'stor'; }
+        $raw_path = $request->getParam('actual_dir');
+        $upload_type = $request->getParam('upload_type');
         
+        // vyjimka na my_files
+        if ($raw_path == 'my_files') {
+            $actual_dir = 'users';
+            $actual_object = $_SESSION['user_id'];
+        }
+        else {
+            $parts = explode('/', $raw_path);
+            if (count($parts) > 1) {
+                $actual_dir = $parts[0];
+                $actual_object = $parts[1];
+            }
+            else {
+                $actual_dir = '';   // pokud to neni objekt v diru, tak delame jako ze dir neexistuje.
+            }
+        }
+        
+        // pokud dir existuje v seznamu povolenych diru, uploadujem (ovsem je zadany timpadem i objekt)
         if (isset($this->container->stor->app_dirs[$actual_dir])) {
             
             if ($newfile->getError() === UPLOAD_ERR_OK) {
@@ -139,8 +217,9 @@ class StorController extends Controller
                     $data = Array (
                     "c_sha512" => $sha512,
                     "c_owner" => $_SESSION['user_id'],
-                    "c_path" => $actual_dir."/p",
-                    "c_filename" => $filename
+                    "c_filename" => $filename,
+                    "c_inherit_table" => $this->container->stor->app_tables[$actual_dir],
+                    "c_inherit_object" => $actual_object
                     );
                     $this->container->db->insert ('t_stor_links', $data);
                     
@@ -150,8 +229,10 @@ class StorController extends Controller
                     // soubor uz existuje v objects ale vlozime ho aspon do links
                     $data = Array (
                     "c_sha512" => $sha512,
-                    "c_path" => $actual_dir."/p",
-                    "c_filename" => $filename
+                    "c_owner" => $_SESSION['user_id'],
+                    "c_filename" => $filename,
+                    "c_inherit_table" => $this->container->stor->app_tables[$actual_dir],
+                    "c_inherit_object" => $actual_object
                     );
                     $this->container->db->insert ('t_stor_links', $data);
                     
@@ -166,73 +247,35 @@ class StorController extends Controller
             $this->container->flash->addMessage('error', 'your cannot upload into this dir.');
         }
         
-        if (!empty($actual_dir)) {
-            $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$actual_dir;
+        if ($upload_type == 'browser') {
+            $redirect_url = $this->container->router->pathFor('stor.browser').'?filter=/'.$actual_dir.'/'.$actual_object;
         }
         else {
-            $redirect_url = $this->container->router->pathFor('stor.uploader');
+            if (!empty($actual_dir)) {
+                $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$raw_path;
+            }
+            else {
+                $redirect_url = $this->container->router->pathFor('stor.uploader');
+            }
         }
         
         return $response->withRedirect($redirect_url);
     }
     
-    // funkce pro post test smazani linku (a pokud je posledni tak i objektu)
+    // funkce pro post smazani linku (a pokud je posledni tak i objektu)
     public function uploaderDelete($request, $response)
     {
         $link_id = (int) $request->getParam('file_uid');
         $actual_delete_dir = $request->getParam('actual_delete_dir');
         $return_uri = $request->getParam('return_uri');
         
-        // nacteme si link a jeho sha512
-        $this->container->db->where("c_uid", $link_id);
-        $link_data = $this->container->db->getOne('t_stor_links');
-        if ($this->container->db->count == 0) { // TODO, asi misto countu pouzit nejaky test $link_data
-            $this->container->flash->addMessage('error', 'pruser, soubor neexistuje, nevim na co jste klikli, ale jste tu spatne');
+        $returned_data = $this->container->stor->delete_stor_file($link_id);
+        
+        if ($returned_data['success']) {
+            $this->container->flash->addMessage('info', $returned_data['message']);
         }
         else {
-            $hash = $link_data['c_sha512'];
-            
-            // spocitame kolik mame linku s timto hasem
-            $this->container->db->where("c_sha512", $hash);
-            $links = $this->container->db->get('t_stor_links');
-            
-            //pokud mame jen jeden, smazeme i objekt
-            if (count($links) == 1) {
-                // nejdriv smazem z links
-                $this->container->db->where("c_uid", $link_id);
-                if ($this->container->db->delete('t_stor_links')) {
-                    // nacteme si z object cestu ke smazani souboru, i kdz, sla by odvodit, ale muze tam byt prave jiny driver a pak cesta neni dana hashem, TODO
-                    // zatim predpokladame driver fs, [0] znamena prvni prvek pole storage, coz je objekt takze za tim zase zaciname teckou
-                    // rawQuery v joshcam vraci vzdy pole, i kdyz je vysledek jen jeden
-                    $objects = $this->container->db->rawQuery(" SELECT `doc`->>'$.data.storage[0].path' AS path FROM t_stor_objects WHERE sha512 = ? ", Array ($hash));
-                    // TODO, kontrola jestli je jeden vysledek a jestli neni path prazdna
-                    $file_to_delete = $objects[0]['path'].'/'.$hash;
-                    unlink($file_to_delete);
-                    // mazani z objects
-                    $this->container->db->where("sha512", $hash);
-                    if ($this->container->db->delete('t_stor_objects')) {
-                        $this->container->flash->addMessage('info', 'soubor '.$file_to_delete.' byl komplet smazan z links i object.');
-                    }
-                    else {
-                        $this->container->flash->addMessage('info', 'soubor '.$file_to_delete.' byl smazan z links, ale zrejme nejakou systemovou chybou zustal v objects a neodkazuje ted na nej zadny link.');
-                    }
-                }
-                else {
-                    $this->container->flash->addMessage('error', 'smazani se nepovedlo');
-                }
-            }
-            else if (count($links) > 1) {
-                $this->container->db->where("c_uid", $link_id);
-                if ($this->container->db->delete('t_stor_links')) {
-                    $this->container->flash->addMessage('info', 'link na soubor byl smazan, ale bylo jich vic, takze soubor zustava');
-                }
-                else {
-                    $this->container->flash->addMessage('error', 'smazani se nepovedlo');
-                }
-            }
-            else {
-                $this->container->flash->addMessage('error', 'hash souboru neexistuje, zahadna chyba');
-            }
+            $this->container->flash->addMessage('error', $returned_data['message']);
         }
         
         if (!empty($return_uri)) {  // pokud mazeme z jineho mista, a chceme se tam pak vratit, je v post promennych return_uri
@@ -279,5 +322,389 @@ class StorController extends Controller
         exit(); // ? nevim nevim
         
     }
+    
+    // update nazvu z popupoveho formu
+    public function uploaderUpdate($request, $response)
+    {
+        $link_id = (int) $request->getParam('file_id');
+        $actual_dir = $request->getParam('actual_dir');
+        //$return_uri = $request->getParam('return_uri');
+        
+        // nacteme si link
+        $this->container->db->where("c_uid", $link_id);
+        $link_data = $this->container->db->getOne('t_stor_links');
+        if ($this->container->db->count == 0) { // TODO, asi misto countu pouzit nejaky test $link_data
+            $this->container->flash->addMessage('error', 'pruser, soubor neexistuje, nevim na co jste klikli, ale jste tu spatne');
+        }
+        else {
+            // pokud mame prava na tento objekt
+            if ($this->container->permissions->have_action_on_object($link_data['c_inherit_table'], $link_data['c_inherit_object'], 'write')) {
+                // zmenime nazev na novy
+                $data = Array (
+                    'c_filename' => $request->getParam('new_filename')
+                );
+                $this->container->db->where("c_uid", $link_id);
+                if ($this->container->db->update('t_stor_links', $data)) {
+                    $this->container->flash->addMessage('info', 'soubor byl prejmenovan');
+                }
+                else {
+                    $this->container->flash->addMessage('error', 'prejmenovani se nepovedlo');
+                }
+            }
+            else {
+                $this->container->flash->addMessage('error', 'k prejmenovani nemate prava');
+            }
+        }
+        
+        // toto by melo byt vzdy nastaveno pri editaci, abychom mohli tu adresu zase vykreslit s uz zmenenym nazvem
+        if (!empty($actual_dir)) {
+            $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$actual_dir;
+        }
+        else {  // pro jistotu, kdyz to nebude nastaveno, jdeme na root
+            $redirect_url = $this->container->router->pathFor('stor.uploader');
+        }
+        
+        return $response->withRedirect($redirect_url);
+    }
+    
+    // copy nebo move
+    public function uploaderCopyMove($request, $response)
+    {
+        $link_id = (int) $request->getParam('file_id');
+        $actual_dir = $request->getParam('actual_dir'); // jen v uploaderu
+        $action_type = $request->getParam('action_type');
+        $target_dir = $request->getParam('target_dir');
+        $target_object_id = $request->getParam('target_object_id');
+        $set_new_owner = (int) $request->getParam('set_new_owner'); // 1 - system, 2 - prihlaseny, 3 - nemenit
+        $action_source = $request->getParam('action_source');   // jen v browseru
+        
+        // nacteme si link
+        $this->container->db->where("c_uid", $link_id);
+        $link_data = $this->container->db->getOne('t_stor_links');
+        if ($this->container->db->count == 0) { // TODO, asi misto countu pouzit nejaky test $link_data
+            $this->container->flash->addMessage('error', 'pruser, soubor neexistuje, nevim na co jste klikli, ale jste tu spatne');
+        }
+        else {
+            // nacteme prava na tabulku, TODO, meli bychom ale nacist prava na ten konkretni objekt, coz neni vyladene zatim
+            $allowed_global_actions = $this->container->permissions->read_global_privileges($link_data['c_inherit_table']);
+            $allowed_global_target_actions = $this->container->permissions->read_global_privileges($this->container->stor->app_tables[$target_dir]);
+            
+            // urceni ownera
+            if ($set_new_owner == 1) {  // system select
+                // pokud presunuju nebo kopiruju do private users, mel by byt owner vzdy ten user
+                if ($target_dir == 'users') {
+                    $new_owner = $target_object_id;
+                }
+                else {  // pokud je cil nejaky modul, tak u copy bych mel byt owner ja, a u move bud nemenit nebo ja
+                    $new_owner = $_SESSION['user_id'];
+                }
+            }
+            else if ($set_new_owner == 2) { $new_owner = $_SESSION['user_id']; }    // vzdy ja
+            else if ($set_new_owner == 3) { $new_owner = $link_data['c_owner']; }   // nemenit
+            
+            if ($action_type == 'copy') {
+                if (in_array('read', $allowed_global_actions) and in_array('write', $allowed_global_target_actions)) {
+                    $data = Array (
+                    "c_sha512" => $link_data['c_sha512'],
+                    "c_owner" => $new_owner,
+                    "c_filename" => $link_data['c_filename'],
+                    "c_inherit_table" => $this->container->stor->app_tables[$target_dir],
+                    "c_inherit_object" => $target_object_id
+                    );
+                    if ($this->container->db->insert ('t_stor_links', $data)) {
+                        $this->container->flash->addMessage('info', 'soubor byl zkopirovan');
+                    }
+                    else {
+                        $this->container->flash->addMessage('error', 'kopirovani se nepovedlo');
+                    }
+                }
+                else {
+                    $this->container->flash->addMessage('error', 'ke kopirovani nemate prava');
+                }
+            }
+            else if ($action_type == 'move') {
+                if (in_array('write', $allowed_global_actions) and in_array('write', $allowed_global_target_actions)) {
+                    $data = Array (
+                        'c_owner' => $new_owner,
+                        'c_inherit_table' => $this->container->stor->app_tables[$target_dir],
+                        'c_inherit_object' => $target_object_id
+                    );
+                    $this->container->db->where("c_uid", $link_id);
+                    if ($this->container->db->update('t_stor_links', $data)) {
+                        $this->container->flash->addMessage('info', 'soubor byl presunut');
+                    }
+                    else {
+                        $this->container->flash->addMessage('error', 'presunuti se nepovedlo');
+                    }
+                }
+                else {
+                    $this->container->flash->addMessage('error', 'k presunu nemate prava');
+                }
+            }
+        }
+        
+        if ($action_source == 'browser') {
+            $redirect_url = $this->container->router->pathFor('stor.browser').'?filter=/'.$target_dir.'/'.$target_object_id;
+        }
+        else {
+            // toto by melo byt vzdy nastaveno pri editaci, abychom mohli tu adresu zase vykreslit s uz zmenenym nazvem
+            if (!empty($actual_dir)) {
+                $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$actual_dir;
+            }
+            else {  // pro jistotu, kdyz to nebude nastaveno, jdeme na root
+                $redirect_url = $this->container->router->pathFor('stor.uploader');
+            }
+        }
+        
+        return $response->withRedirect($redirect_url);
+    }
+    
+    
+    /* browser with a filter */
+    
+    // vypis stranky s filtracnim browserem souboru, select2
+    public function storBrowserGui($request, $response, $args)
+    {
+        $vystup = '';
+        $preset_options = '';
+        
+        $preset_filter = $request->getParam('filter');
+        
+        // pokud je v getu nejaky filter
+        if (!empty($preset_filter)) {
+            $casti_filtru = explode(' ', $preset_filter);
+            foreach ($casti_filtru as $filter) {
+                $safe_filter = trim($filter);
+                if (!empty($filter)) {
+                    $preset_options .= '<option value="'.$safe_filter.'" selected>'.$safe_filter.'</option>';
+                }
+            }
+        }
+        
+        $additional_javascript = '
+    <script>
+    
+    // tuto funkci pouzijeme jen v pripade ze chceme ukladat historii a menit adresu. tj treba ne, kdyz jdeme back a forward a ne kdyz treba uploadujeme
+    function push_filter_state() {
+        var vybrano = $("#stor-files-select2-filter").val() || [];
+        var url_filter = vybrano.join(" ");
+        // prepiseme adresu (strcime tam objekt s obsahem selectu2)
+        if (typeof (history.pushState) != "undefined") {
+            if (url_filter == "") {
+                var new_url = "'.$this->container->router->pathFor('stor.browser').'";
+            }
+            else {
+                var new_url = "'.$this->container->router->pathFor('stor.browser').'?filter=" + url_filter;
+            }
+            history.pushState(vybrano, "", new_url);
+        }
+    }
+    
+    function filter_stor_files(orderby, direction, page) {
+        var vybrano = $("#stor-files-select2-filter").val() || [];
+        var upraveno = JSON.stringify(vybrano);
+        var url_filter = vybrano.join(" ");
+        
+        // osetrime, kdyz nebyly parametry
+        if (arguments.length === 0) {
+            var orderby = "name";
+            var direction = "asc";
+            var page = 1;
+        }
+        
+        // ted to posleme jako zestringovany json
+        
+        $.ajax({
+          url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.api.filtered.files').'",
+          type: "GET",
+          dataType: "text",
+          data: { filters: upraveno, orderby: orderby, direction: direction, page: page },
+          success: function(data) {
+            //alert(data);
+            $("#stor-files-output").html(data);
+            
+            // musime znova inicializovat rozklikavaci ozubena kola na konci radku, coz se normalne dela v app.js pri nacteni stranky
+            var $itemActions = $(".item-actions-dropdown");
+            $(document).on("click",function(e) {
+                if (!$(e.target).closest(".item-actions-dropdown").length) {
+                    $itemActions.removeClass("active");
+                }
+            });
+            $(".item-actions-toggle-btn").on("click",function(e){
+                e.preventDefault();
+                var $thisActionList = $(this).closest(".item-actions-dropdown");
+                $itemActions.not($thisActionList).removeClass("active");
+                $thisActionList.toggleClass("active");
+            });
+            
+            // obecna zkratka na 1 filtr. id a text jsou v atribtu data
+            $(".stor-shortcuts").on("click", function(e){
+                // preventujem link
+                e.preventDefault();
+                // smazeme co tam aktualne je vybrane a nevyvolame event change
+                $("#stor-files-select2-filter").val(null);
+                // nacteme si id a text z data
+                var short_id = $(this).data("id");
+                var short_text = $(this).data("text");
+                
+                // option se ma pridat, jen pokud uz tam neni, a vyvolame event change
+                if ($("#stor-files-select2-filter").find("option[value=\'" + short_id + "\']").length) {
+                    $("#stor-files-select2-filter").val(short_id).trigger("change");
+                } else {
+                    var option = new Option(short_text, short_id, false, true);
+                    $("#stor-files-select2-filter").append(option).trigger("change");
+                }
+                
+                $("#stor-files-select2-filter").trigger({
+                    type: "select2:select",
+                    params: {
+                        data: {"id":short_id, "text":short_text}
+                    }
+                });
+            });
+            
+            // dalsi zkratky- pokud by bylo treba nastavit vice filtru naraz, zatim neni treba
+            
+          },
+          error: function(xhr, status, err) {
+            alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+          }
+        });
+    }
+    
+    // funkce, kterou smazeme soubor ajaxem a obnovime vypis souboru podle zadaneho filtru
+    function delete_stor_file_ajax() {
+        var link_id = $("#delete_file_uid").val();
+        $.ajax({
+          url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.ajax.delete').'",
+          type: "POST",
+          dataType: "text",
+          data: { link_id: link_id },
+          success: function(data) {
+            // vyhodi nekde hlasku
+            
+            filter_stor_files();
+          }
+        });
+    }
+    
+    // funkce, kterou zeditujeme nazev souboru ajaxem a obnovime vypis souboru podle zadaneho filtru
+    function edit_stor_file_ajax() {
+        var link_id = $("#edit_file_uid").val();
+        var new_fname = $("#edit_file_fname").val();
+        $.ajax({
+          url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.ajax.update').'",
+          type: "POST",
+          dataType: "text",
+          data: { link_id: link_id, new_fname: new_fname },
+          success: function(data) {
+            // vyhodi nekde hlasku
+            
+            filter_stor_files();
+          }
+        });
+    }
+    
+    // cte existujici objekty do modalu pro copy move
+    function read_modal_objects() {
+        // zjistime si ktery cilovy dir je vybrany v selectu
+        var dirname = $("#stor_copy_move_target_dir").val();
+        
+        $.ajax({
+          url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.api.modal.objects').'",
+          dataType: "text",
+          type: "GET",
+          data: "dirname=" + dirname,
+          success: function(data) {
+            $("#stor_copy_move_target_object_id").html(data);
+          },
+          error: function(xhr, status, err) {
+            alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+          }
+        });
+    }
+    
+    // inicializujeme select 2 a tlacitko filtr
+    $(document).ready(function() {
+        
+        $("#stor-files-select2-filter").select2({
+          tags: true,
+          tokenSeparators: [" "],
+          minimumInputLength: 1,
+          createTag: function (params) {
+            // nevytvaret kdyz to zacina /, #, @
+            if (params.term.indexOf("/") === 0) {
+              return null;
+            }
+            if (params.term.indexOf("@") === 0) {
+              return null;
+            }
+            if (params.term.indexOf("#") === 0) {
+              return null;
+            }
+            
+            return {
+              id: params.term,
+              text: params.term
+            }
+          },
+          width: "100%",
+          ajax: {
+            url: "'.$this->container->router->pathFor('stor.api.filter.options').'",
+            dataType: "json"
+          }
+        });
+        
+        $("#stor-files-filter-button").on("click", function(){
+            filter_stor_files();
+            push_filter_state();
+        });
+        
+        // omezime push, aby se nedelal, kdyz probiha popstate (back, forward button)
+        $("#stor-files-select2-filter").on("change", function(e, delej_push){
+            filter_stor_files();
+            if (delej_push != "nepush") { push_filter_state(); }
+        });
+        
+        // zavolame to defaultne na prazdny filtr
+        filter_stor_files();
+        // iniciujeme prvotni objekty v copy move modalu
+        read_modal_objects();
+        
+    });
+    
+    // zachytime back button v browseru, pro pushnute adresy v historii
+    $(window).on("popstate", function(e) {
+        if (e.originalEvent.state !== null) {
+            // nacpeme ten stav to do selectu 2 (e.originalEvent.state obsahuje klice selectu oddelene carkou)
+            // protoze jsme stale na stejne strance, ty optiony uz tam jsou
+            var select2klice = e.originalEvent.state.toString().split(",");
+            $("#stor-files-select2-filter").val(select2klice).trigger("change", "nepush");
+        }
+        else {
+            $("#stor-files-select2-filter").val(null).trigger("change", "nepush");
+        }
+    });
+    
+    </script>
+        ';
+        
+        // priprava vyberu diru do copy move popupu
+        $stor_dirs_options = '';
+        foreach ($this->container->stor->app_dirs as $dir => $description) {
+            if ($dir == 'my_owned' or $dir == 'my_files') { continue; }
+            $stor_dirs_options .= '<option value="'.$dir.'">'.$description.'</option>';
+        }
+        
+        return $this->container->view->render($response, 'stor/stor-browser-gui.twig',
+        array(
+            'vystup' => $vystup,
+            'preset_options' => $preset_options,
+            'article_class' => 'items-list-page',
+            'additional_javascript' => $additional_javascript,
+            'stor_dirs_options' => $stor_dirs_options
+        ));
+    }
+    
     
 }

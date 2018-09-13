@@ -20,9 +20,10 @@
                 
                 <form method="post" action="{{ path_for('stor.uploader') }}" enctype="multipart/form-data">
                     <label>Select file to upload:</label>
-                    <input type="hidden" name="actual_dir" id="actual_dir" value="" />
+                    <input type="hidden" name="actual_dir" id="actual_dir" class="stor_hidden_actual_dir" value="" />
                     <input type="file" name="file" />
-                    <button type="submit">Upload</button>
+                    <button type="submit" id="can_upload_button" style="display: none;">Upload</button>
+                    <span id="cannot_upload_message" style="display: none;">Please, upload to objects only !</span>
                     {{ csrf.field | raw }}
                 </form>
                 
@@ -40,6 +41,7 @@
         </div>
     </div>
 </section>
+
 
 <div class="modal fade" id="confirm-modal">
     <div class="modal-dialog" role="document">
@@ -67,8 +69,75 @@
 
 <form id="stor_delete_file_form" method="post" action="{{ path_for('stor.uploader.delete') }}" style="display: none;">
     <input type="hidden" id="file_uid" name="file_uid" value="" />
-    <input type="hidden" id="actual_delete_dir" name="actual_delete_dir" value="" />
+    <input type="hidden" id="actual_delete_dir" name="actual_delete_dir" class="stor_hidden_actual_dir" value="" />
     {{ csrf.field | raw }}
 </form>
+
+<div class="modal fade" id="modal-edit-stor">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="{{ path_for('stor.uploader.update') }}">
+                <input id="stor_edit_form_fid" type="hidden" name="file_id" value="" />
+                <input id="stor_edit_form_actual_dir" class="stor_hidden_actual_dir" type="hidden" name="actual_dir" value="" />
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit file</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div><input style="width: 100%;" id="stor_edit_form_fname" type="text" name="new_filename" value="" /></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Change filename</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="modal-copy-move-stor">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="{{ path_for('stor.uploader.copy.move') }}">
+                <input id="stor_copy_move_form_fid" type="hidden" name="file_id" value="" />
+                <input id="stor_copy_move_form_actual_dir" class="stor_hidden_actual_dir" type="hidden" name="actual_dir" value="" />
+                <div class="modal-header">
+                    <h4 class="modal-title">Copy or Move File</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>owner of final copied or moved file</div>
+                    <div><select name="set_new_owner">
+                        <option value="1" selected>let system select</option>
+                        {% if auth.root %}
+                            <option value="2">set me as owner</option>
+                            <option value="3">do not change owner</option>
+                        {% endif %}
+                    </select></div>
+                    <div>target dir:</div>
+                    <div><select id="stor_copy_move_target_dir" name="target_dir" onchange="read_modal_objects();">
+                        {{ stor_dirs_options | raw }}
+                    </select></div>
+                    <div>target object id:</div>
+                    <div><select id="stor_copy_move_target_object_id" name="target_object_id"></select></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action_type" value="copy" class="btn btn-primary">Copy</button>
+                    <button type="submit" name="action_type" value="move" class="btn btn-primary">Move</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> Edit Role </h3>
+    <p class="title-description"> Edit page for role {{ role_name }} (id: {{ role_id }}) <a class="pull-right" href="{{ path_for('acl.developer') }}">go back</a> </p>
+</div>
+
+<section class="section">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Change name of role </h3>
+                </div>
+                
+                problem s mazanim a prejmenovavanim roli je v tom, ze nazev role bude umisten v ruznych json datech ruznych modulu, kde bude napsane kdo ma jakou roli vzhledem k tomu objektu
+                a techto dat bude nepocitane v nepocitane tabulkach
+                
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> Delete this role </h3>
+                </div>
+                
+                meli bychom tedy byt obezretni a nezakladat zbytecne role, abychom je pak nemuseli mazat
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

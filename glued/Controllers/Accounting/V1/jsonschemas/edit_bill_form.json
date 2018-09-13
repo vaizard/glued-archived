@@ -2,78 +2,153 @@
     "title": "Edit bill form",
     "type": "object",
     "properties":{
-        "files": {
-          "type": "array",
-          "title": "Multiple files",
-          "items": {
-            "type": "string",
-            "format": "data-url"
-          }
-        },
-        "dodavatel": {
-            "title": "Dodavatel",
+        "data": {
             "type": "object",
-            "properties": {
-                "nazev": {
-                    "type": "string",
-                    "title": "Název",
+            "properties":{                           
+                "currency": {
+                  "type": "string",
+                  "title": "Currency"
                 },
-                "ico": {
-                    "type": "string",
-                    "title": "IČ",
+                "price_vat": {
+                  "type": "string",
+                  "title": "Price with VAT"
+                },  
+                "price_novat": {
+                  "type": "string",
+                  "title": "Price without VAT"
                 },
-                "adresa": {
+                "doc_id": {
+                  "type": "string",
+                  "title": "Document ID"
+                },
+                "dt_taxable_supply": {
+                  "type": "string",
+                  "format": "date",
+                  "title": "Date taxable supply"
+                },                
+                "note": {
+                  "type": "string",
+                  "title": "Note"
+                },                  
+                "supplier": {
+                    "title": "Supplier",
+                    "type": "object",
+                    "properties": {
+                        "contact_id": {
+                            "type": "string",
+                            "title": "Id of link to our db"
+                        },
+                        "regid": {
+                            "type": "string",
+                            "title": "IČ"
+                        },                
+                        "vatid": {
+                            "type": "string",
+                            "title": "DIČ"
+                        },                                
+                        "name": {
+                            "type": "string",
+                            "title": "Name"
+                        },
+                        "address": {
+                            "type": "string",
+                            "title": "Address"
+                        }
+                    }
+                },
+                "distribution": {
+                  "type": "array",
+                  "title": "Distribution",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                        "price-novat": {
+                            "type": "string",
+                            "title": "Price without VAT"
+                        },
+                        "note": {
+                            "type": "string",
+                            "title": "Note"
+                        },
+                        "pixel_id": {
+                            "type": "string",
+                            "title": "ID of project"
+                        },
+                        "ext_order_id": {
+                          "type": "array",
+                          "title": "Extern order ID",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "title": "Name"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "title": "ID"
+                                }
+                            }
+                          }
+                        }                                
+                    }
+                  }
+                },                             
+                "vat": {
+                  "type": "array",
+                  "title": "VAT",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                        "vatval": {
+                            "type": "string",
+                            "title": "VAT percentage value"
+                        },
+                        "price": {
+                            "type": "string",
+                            "title": "Price"
+                        }
+                    }
+                  }
+                },
+                "ext_id": {
+                  "type": "array",
+                  "title": "Extern ID",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "title": "Name"
+                        },
+                        "id": {
+                            "type": "string",
+                            "title": "ID"
+                        }
+                    }
+                  }
+                },  
+                "files": {
+                  "type": "array",
+                  "title": "Multiple files",
+                  "items": {
                     "type": "string",
-                    "title": "Adresa",
-                }
+                    "format": "data-url"
+                  }
+                },
+                "_id": {
+                  "type": "string",
+                  "title": "Inner record id"
+                },                
+                "creator": {
+                  "type": "string",
+                  "title": "Creator"
+                },
+                "dt_created": {
+                  "type": "string",
+                  "title": "Date of creation"
+                }                
             }
-        },
-        "date-plneni": {
-          "type": "string",
-          "format": "date",
-          "title": "Datum zdanitelného plnění",
-        },
-        "bill-nr": {
-          "type": "string",
-          "title": "Číslo účtenky"
-        },
-        "generated-nr": {
-          "type": "string",
-          "title": "Generované číslo"
-        },
-        "prirazeni": {
-          "type": "array",
-          "title": "Přiřazení k zakázkám",
-          "items": {
-            "type": "object",
-            "properties": {
-                "zakazka-nr": {
-                    "type": "string",
-                    "title": "Číslo zakázky",
-                },
-                "sum": {
-                    "type": "string",
-                    "title": "Částka k zakázce",
-                },
-                "poznamka": {
-                    "type": "string",
-                    "title": "Poznámka k zakázce",
-                }
-            }
-          }
-        },
-        "poznamka": {
-          "type": "string",
-          "title": "Poznámka"
-        },
-        "wovat": {
-          "type": "string",
-          "title": "Cena bez DPH"
-        },
-        "vat": {
-          "type": "string",
-          "title": "Cena s DPH"
         }
-        
     }
 }

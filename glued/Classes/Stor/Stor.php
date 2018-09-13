@@ -8,11 +8,21 @@ class Stor
     protected $container;
     
     public $app_dirs = array(
-       "stor"    => 'Stor',
-       "my_files"   => 'My files',
+       "my_files"    => 'My private files',
+       "my_owned"    => 'My owned files',
+       "users"    => 'Users',
        "assets"    => 'Assets',
        "consumables"    => 'Consumables',
        "parts"    => 'Parts'
+    );
+    
+    // prevod path na tabulku, kvuli predzjisteni prav
+    // pozor, kazda z techto tabulek musi mit id nazvane c_uid a virtualni sloupec stor_name
+    public $app_tables = array(
+       "users"    => 't_users',
+       "assets"    => 't_assets_items',
+       "consumables"    => 't_consumables_items',
+       "parts"    => 't_parts_items'
     );
     
     // konstruktor
@@ -127,6 +137,75 @@ class Stor
         }
         $ret = round($raw,1).' '.$size_names[$name_id];
         return $ret;
+    }
+    
+    // funkce na smazani souboru, vraci pole s tim co se stalo 
+    public function delete_stor_file($link_id) {
+        
+        $data['success'] = false;
+        $data['message'] = '';
+        
+        // nacteme si link a jeho sha512
+        $this->container->db->where("c_uid", $link_id);
+        $link_data = $this->container->db->getOne('t_stor_links');
+        if ($this->container->db->count == 0) { // TODO, asi misto countu pouzit nejaky test $link_data
+            $data['success'] = false;
+            $data['message'] = 'pruser, soubor neexistuje, nevim na co jste klikli, ale jste tu spatne';
+        }
+        else {
+            $hash = $link_data['c_sha512'];
+            
+            // spocitame kolik mame linku s timto hasem
+            $this->container->db->where("c_sha512", $hash);
+            $links = $this->container->db->get('t_stor_links');
+            
+            //pokud mame jen jeden, smazeme i objekt
+            if (count($links) == 1) {
+                // nejdriv smazem z links
+                $this->container->db->where("c_uid", $link_id);
+                if ($this->container->db->delete('t_stor_links')) {
+                    // nacteme si z object cestu ke smazani souboru, i kdz, sla by odvodit, ale muze tam byt prave jiny driver a pak cesta neni dana hashem, TODO
+                    // zatim predpokladame driver fs, [0] znamena prvni prvek pole storage, coz je objekt takze za tim zase zaciname teckou
+                    // rawQuery v joshcam vraci vzdy pole, i kdyz je vysledek jen jeden
+                    $objects = $this->container->db->rawQuery(" SELECT `doc`->>'$.data.storage[0].path' AS path FROM t_stor_objects WHERE sha512 = ? ", Array ($hash));
+                    // TODO, kontrola jestli je jeden vysledek a jestli neni path prazdna
+                    $file_to_delete = $objects[0]['path'].'/'.$hash;
+                    unlink($file_to_delete);
+                    // mazani z objects
+                    $this->container->db->where("sha512", $hash);
+                    if ($this->container->db->delete('t_stor_objects')) {
+                        $data['success'] = true;
+                        $data['message'] = 'soubor '.$file_to_delete.' byl komplet smazan z links i object.';
+                    }
+                    else {
+                        // tady je jen polovicni success
+                        $data['success'] = true;
+                        $data['message'] = 'soubor '.$file_to_delete.' byl smazan z links, ale zrejme nejakou systemovou chybou zustal v objects a neodkazuje ted na nej zadny link.';
+                    }
+                }
+                else {
+                    $data['success'] = false;
+                    $data['message'] = 'smazani se nepovedlo';
+                }
+            }
+            else if (count($links) > 1) {
+                $this->container->db->where("c_uid", $link_id);
+                if ($this->container->db->delete('t_stor_links')) {
+                    $data['success'] = true;
+                    $data['message'] = 'link na soubor byl smazan, ale bylo jich vic, takze soubor zustava';
+                }
+                else {
+                    $data['success'] = false;
+                    $data['message'] = 'smazani se nepovedlo';
+                }
+            }
+            else {
+                $data['success'] = false;
+                $data['message'] = 'hash souboru neexistuje, zahadna chyba';
+            }
+        }
+        
+        return $data;
     }
     
 }

@@ -11,16 +11,31 @@ class AccountingCostsControllerApiV1 extends Controller
     {
         
         $senddata = $request->getParam('billdata');
+        $user_id = $_SESSION['user_id'];
         
-        $data = Array ("c_owner" => 1, "c_group" => 1, "c_unixperms" => 500,
+        // vlozime to jak to prislo z formu
+        // 500 = 111 110 100
+        $data = Array ("c_owner" => $user_id, "c_group" => 2, "c_unixperms" => 500,
                        "c_data" => $senddata
         );
-        
-        $insert = $this->container->db->insert('accounting_accepted', $data);
+        $insert = $this->container->db->insert('t_accounting_received', $data);
+        if ($insert) {
+            // prepiseme creator, dt_created, _id
+            $this->container->db->rawQuery("UPDATE t_accounting_received SET c_data = JSON_SET(c_data, '$.data._id', ?, '$.data.creator', ?, '$.data.dt_created', ?) WHERE c_uid = ? ", Array (strval($insert), strval($user_id), date("Y-m-d H:i:s"), $insert));
+            
+            if ($this->container->db->getLastErrno() === 0) {
+                $response->getBody()->write('ok');
+            }
+            else {
+                $response->getBody()->write('update failed: ' . $this->container->db->getLastError());
+            }
+        }
+        else {
+            $response->getBody()->write('error');
+        }
         
         // vratime prosty text
-       $response->getBody()->write('ok');
-       return $response;
+        return $response;
         
     }
     
@@ -31,7 +46,7 @@ class AccountingCostsControllerApiV1 extends Controller
         $senddata = $request->getParam('billdata');
         
         $this->container->db->where('c_uid', $args['id']);
-        $update = $this->container->db->update('accounting_accepted', Array ( 'c_data' => $senddata ));
+        $update = $this->container->db->update('t_accounting_received', Array ( 'c_data' => $senddata ));
         
         // vratime prosty text
        $response->getBody()->write('ok');
@@ -44,7 +59,7 @@ class AccountingCostsControllerApiV1 extends Controller
     {
         
         $this->container->db->where('c_uid', $args['id']);
-        $delete = $this->container->db->delete('accounting_accepted');
+        $delete = $this->container->db->delete('t_accounting_received');
         
         // vratime prosty text
        $response->getBody()->write('ok');

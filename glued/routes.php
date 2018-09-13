@@ -44,13 +44,27 @@ $app->group('', function () {
   $this->post('/permissions/newprivilege', 'PermissionsController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
   
   // stor
-  $this->get('/stor/uploader[/~/{dir}]', 'StorController:storUploadGui')->setName('stor.uploader');
+  $this->get('/stor/uploader[/~/{dir}[/{oid:[0-9]+}]]', 'StorController:storUploadGui')->setName('stor.uploader');
   $this->post('/stor/uploader', 'StorController:uploaderSave');
+  $this->get('/stor/browser', 'StorController:storBrowserGui')->setName('stor.browser');
   
   // GUI for assets, consumables a pod
   $this->get('/assets', 'StockController:stockGui')->setName('assets.gui');
   $this->get('/consumables', 'ConsumablesController:consumablesGui')->setName('consumables.gui');
   $this->get('/parts', 'PartsController:gui')->setName('parts.gui');
+  
+  // fbevents
+  $this->get('/fbevents/main', 'FBEventsController:fbeventsMain')->setName('fbevents.main');
+  $this->get('/fbevents/newpage', 'FBEventsController:addPageForm')->setName('fbevents.addpage');
+  $this->post('/fbevents/newpage', 'FBEventsController:addPageAction');
+  $this->get('/fbevents/page/{id}', 'FBEventsController:fbeventsPage')->setName('fbevents.page');
+  $this->post('/fbevents/page/{id}', 'FBEventsController:fbeventsPageUpdate');
+  $this->get('/fbevents/newtoken', 'FBEventsController:addTokenForm')->setName('fbevents.addtoken');
+  $this->post('/fbevents/newtoken', 'FBEventsController:addTokenAction');
+  $this->get('/fbevents/edittoken/{id}', 'FBEventsController:editTokenForm')->setName('fbevents.edittoken');
+  $this->post('/fbevents/edittoken/{id}', 'FBEventsController:editTokenAction');
+  
+  
   
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
@@ -61,19 +75,30 @@ $app->group('', function () {
   $this->get('/permissions/developer', 'PermissionsController:getAclDeveloper')->setName('acl.developer');
   $this->post('/permissions/developer', 'PermissionsController:postAddActionRole');
   
-  $this->get('/permissions/usergroups/{id}', 'PermissionsController:getUserGroups');
+  $this->get('/permissions/usergroups/{id}', 'PermissionsController:getUserGroups')->setName('acl.membership');
   $this->post('/permissions/usergroups', 'PermissionsController:postUserGroups')->setName('acl.update.membership');
-  $this->get('/permissions/userunix/{id}', 'PermissionsController:getUserUnix');
+  $this->get('/permissions/userunix/{id}', 'PermissionsController:getUserUnix')->setName('acl.userunix');
   $this->post('/permissions/userunix', 'PermissionsController:postUserUnix')->setName('acl.update.userunix');
-  $this->get('/permissions/userprivileges/{id}', 'PermissionsController:getUserPrivileges');    // privilgie uzivatele a form na pridani noveho
-  $this->get('/permissions/groupprivileges/{id}', 'PermissionsController:getGroupPrivileges');  // privilegia skupiny a form na pridani noveho
+  $this->get('/permissions/userprivileges/{id}', 'PermissionsController:getUserPrivileges')->setName('acl.userprivileges');    // privilegia uzivatele a form na pridani noveho
+  $this->get('/permissions/groupprivileges/{id}', 'PermissionsController:getGroupPrivileges')->setName('acl.groupprivileges');  // privilegia skupiny a form na pridani noveho
   $this->get('/permissions/roleprivileges', 'PermissionsController:getRolePrivileges')->setName('acl.roleprivileges');  // privilegia dalsich roli a form na pridani noveho
   $this->get('/permissions/implementedactions', 'PermissionsController:getImplementedActions')->setName('acl.implementedactions');  // prirazeni status akce abulka
-  $this->get('/permissions/tableprivileges/{tablename}', 'PermissionsController:getTableTablePrivileges');  // table privilegia na tabulku a form na pridani noveho
-  $this->get('/permissions/globalprivileges/{tablename}', 'PermissionsController:getGlobalTablePrivileges');  // global privilegia na tabulku a form na pridani noveho
+  $this->get('/permissions/tableprivileges/{tablename}', 'PermissionsController:getTableTablePrivileges')->setName('acl.tableprivileges');  // table privilegia na tabulku a form na pridani noveho
+  $this->get('/permissions/globalprivileges/{tablename}', 'PermissionsController:getGlobalTablePrivileges')->setName('acl.globalprivileges');  // global privilegia na tabulku a form na pridani noveho
+  
+  $this->get('/permissions/editaction/{id}', 'PermissionsController:getEditAction')->setName('acl.editaction');    // stranka s editaci jedne akce
+  $this->get('/permissions/editrole/{id}', 'PermissionsController:getEditRole')->setName('acl.editrole');    // stranka s editaci jedne role
   $this->post('/permissions/newimplementedaction', 'PermissionsController:postNewImplementedAction')->setName('acl.new.implemented.action'); // pridava novy zaznam do tabulky implemented_action
   
 })->add(new AuthMiddleware($container))->add(new RootMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
+
+
+// ajaxy s csrf checkem a pregenerovanim ocekavaneho csrf
+$app->group('', function () {
+  // ajax, ktery po odeslani filtru vraci soubory odpovidajici vyberu
+  // hodila by se get metoda, ale radeji pouziju post, protoze se posila pole vybranych filtru a nejsem si jisty jak to bude v getu fungovat
+  $this->get('/api/v1/stor/filter', 'StorControllerApiV1:showFilteredFiles')->setName('stor.api.filtered.files');
+})->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
 // another group of routes, where user have to be signed in, but no csrf check.
@@ -96,8 +121,26 @@ $app->group('', function () {
   $this->get('/parts/quicknew', 'PartsController:addQuickForm')->setName('parts.addquickform');
   $this->get('/parts/edit/{id:[0-9]+}', 'PartsController:editForm')->setName('parts.editform');
   
-  // testovaci mazaci stor, bez csrf, protoze form se pise v controleru a ne ve twigu
+  // STOR
+  // show stor file (or force download)
+  $this->get('/stor/get/{id:[0-9]+}[/{filename}]', 'StorController:serveFile')->setName('stor.serve.file');
+  // odeslani mazaciho stor formu, s csrf
   $this->post('/stor/uploader/delete', 'StorController:uploaderDelete')->setName('stor.uploader.delete');
+  // smazani souboru ajaxem
+  $this->post('/api/v1/stor/delete', 'StorControllerApiV1:ajaxDelete')->setName('stor.ajax.delete');
+  // editace nazvu souboru ajaxem
+  $this->post('/api/v1/stor/update', 'StorControllerApiV1:ajaxUpdate')->setName('stor.ajax.update');
+  // update editace stor file (nazev) TODO nemel by tu byt put, kdyz je to update?
+  $this->post('/stor/uploader/update', 'StorController:uploaderUpdate')->setName('stor.uploader.update');
+  $this->post('/stor/uploader/copymove', 'StorController:uploaderCopyMove')->setName('stor.uploader.copy.move');
+  // ajax ktery vypise soubory v adresari, protoze vypisujeme, dame tam get metodu
+  $this->get('/api/v1/stor/files', 'StorControllerApiV1:showFiles')->setName('stor.api.files');
+  // ajax co vypise vhodne idecka k vybranemu diru, pro copy move
+  $this->get('/api/v1/stor/modalobjects', 'StorControllerApiV1:showModalObjects')->setName('stor.api.modal.objects');
+  // ajax co vraci optiony v jsonu pro select 2 filtr
+  $this->get('/api/v1/stor/filteroptions', 'StorControllerApiV1:showFilterOptions')->setName('stor.api.filter.options');
+
+  
   
   // api veci (vraci json)
   $this->post('/api/v1/accounting/costs', 'AccountingCostsControllerApiV1:insertCostApi')->setName('accounting.api.new');
@@ -119,12 +162,9 @@ $app->group('', function () {
   
   // api permissions
   $this->delete('/api/v1/permissions/privileges/[{id}]', 'PermissionsControllerApiV1:deletePrivilegeApi')->setName('acl.api.privilege.delete');
-  
-  // show stor file (or force download)
-  $this->get('/stor/get/{id:[0-9]+}[/{filename}]', 'StorController:serveFile')->setName('stor.serve.file');
-  
-  // ajax ktery vypise soubory v adresari, protoze vypisujeme, dame tam get metodu
-  $this->get('/api/v1/stor/files', 'StorControllerApiV1:showFiles')->setName('stor.api.files');
+  $this->delete('/api/v1/permissions/impaction/[{id}]', 'PermissionsControllerApiV1:deleteImpActionApi')->setName('acl.api.impaction.delete');
+  $this->delete('/api/v1/permissions/action/[{id}]', 'PermissionsControllerApiV1:deleteActionApi')->setName('acl.api.action.delete');   // id neni byt soucasti name, protoze se pridava rucne v ajaxu za nej
+  $this->put('/api/v1/permissions/changeaction/[{id}]', 'PermissionsControllerApiV1:changeActionApi')->setName('acl.api.action.update');
   
   // barcode
   $this->get('/app/barcode/get-parametry', 'BarcodeController:barCode')->setName('barcode.code');
@@ -173,6 +213,7 @@ $app->get('/playground/pohadkar_jsv4/validationtest', '\Glued\Playground\Pohadka
 $app->get('/playground/pohadkar_jsv4/schematest', '\Glued\Playground\Pohadkar_Jsv4:schematest');
 $app->get('/playground/pohadkar_jsv4/schematest2', '\Glued\Playground\Pohadkar_Jsv4:schematest2');
 
+
 // pohadkar upload a prehled zipu (POZOR, funkci volam s jednou dvojteckou : aby tam bylo this)
 $app->get('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:uploadgui')->setName('o2gui')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->post('/playground/pohadkar_o2/gui', '\Glued\Playground\Pohadkar_o2:savezip')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
@@ -187,7 +228,16 @@ $app->get('/playground/pohadkar_platby/prikaz[/{id}]', '\Glued\Playground\Pohadk
 // pohadkar, moje testy
 $app->get('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_testy:form')->setName('innodb')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 $app->post('/playground/pohadkar_testy/innodb', '\Glued\Playground\Pohadkar_testy:test')->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
-
+// fb test sdk
+$app->get('/playground/pohadkar_testy/sdkindustry', '\Glued\Playground\Pohadkar_testy:sdkindustry')->setName('sdkindustry')->add(new AuthMiddleware($container));
+// test kombinace json schema formu a input masky
+$app->get('/playground/pohadkar_testy/schema-mask', '\Glued\Playground\Pohadkar_testy:schema_mask_test')->setName('input_mask_test');
+// test kombinace json schema a extras
+$app->get('/playground/pohadkar_testy/schema-extras', '\Glued\Playground\Pohadkar_testy:schema_extras_test')->setName('rjsf_extras_test');
+// test stackedit
+$app->get('/playground/pohadkar_testy/stackedit', '\Glued\Playground\Pohadkar_testy:stackedit_test')->setName('stackedit_test');
+// libovolny output, test ruznych veci udelanych v php
+$app->get('/playground/pohadkar_testy/output1', '\Glued\Playground\Pohadkar_testy:test_output1')->setName('test.output1');
 
 
 // Killua_Jsv4
