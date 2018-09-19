@@ -210,4 +210,22 @@ $container['FBEventsController'] = function ($container) {
     return new \Glued\Controllers\FBEvents\FBEventsController($container);
 };
 
+// fbevents controler, api
+$container['FBEventsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\FBEvents\FBEventsControllerApiV1($container);
+};
 
+// glued events controler
+$container['GEventsController'] = function ($container) {
+    return new \Glued\Controllers\GEvents\GEventsController($container);
+};
+
+// vectors controler
+$container['VectorsController'] = function ($container) {
+    return new \Glued\Controllers\Vectors\VectorsController($container);
+};
+
+// vectors controler, api
+$container['VectorsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Vectors\VectorsControllerApiV1($container);
+};

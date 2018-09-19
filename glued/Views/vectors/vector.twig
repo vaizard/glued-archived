@@ -1,0 +1,38 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+
+
+<div class="title-block">
+    <h3 class="title"> Detail info of Vector ID: {{ event.c_uid }} </h3>
+</div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-block">
+            <div class="card-title-block">
+                <h3 class="title">
+                    <a href="{{ path_for('vectors.main') }}" class="pull-right">back to all vectors</a>
+                </h3>
+            </div>
+            <section class="example">
+                <div class="table-responsive">
+                
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <td>Source Vector JSON</td>
+                          <td><pre><code>{{ source_json | raw }}</code></pre></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

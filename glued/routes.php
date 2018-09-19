@@ -63,8 +63,19 @@ $app->group('', function () {
   $this->post('/fbevents/newtoken', 'FBEventsController:addTokenAction');
   $this->get('/fbevents/edittoken/{id}', 'FBEventsController:editTokenForm')->setName('fbevents.edittoken');
   $this->post('/fbevents/edittoken/{id}', 'FBEventsController:editTokenAction');
+  $this->get('/fbevents/editpage/{id}', 'FBEventsController:editPageForm')->setName('fbevents.editpage');
+  $this->post('/fbevents/editpage/{id}', 'FBEventsController:editPageAction');
+  $this->get('/fbevents/event/{id}', 'FBEventsController:fbeventsEvent')->setName('fbevents.event');
+  $this->get('/fbevents/allevents', 'FBEventsController:fbeventsAllEvents')->setName('fbevents.allevents');
+  $this->post('/fbevents/vectorize/{id}', 'FBEventsController:fbeventVectorize')->setName('fbevents.vectorize');
+  $this->get('/fbevents/fblogin', 'FBEventsController:fblogin')->setName('fbevents.fblogin');
   
+  // google events
+  $this->get('/gevents/main', 'GEventsController:geventsMain')->setName('gevents.main');
   
+  // vectors
+  $this->get('/vectors/main', 'VectorsController:vectorsMain')->setName('vectors.main');
+  $this->get('/vectors/vector/{id}', 'VectorsController:Vector')->setName('vectors.vector');
   
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
@@ -182,7 +193,8 @@ $app->group('', function () {
 
 })->add(new GuestMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
-// APIs
+
+// vnejsi APIs, tj clovek asi nebude prihlasen, kdyz se na to bude dotazovat, ale teoreticky byt muze
 
 $app->group('', function () {
   $this->get('/api/0.1/test[/{id}]', '\Glued\Controllers\Api\v0_1\TestController::get');
@@ -195,14 +207,20 @@ $app->group('', function () {
   $this->put('/api/0.1/timepixels[/{id}]', '\Glued\Controllers\Api\v0_1\TimePixelsController::put');
   $this->post('/api/0.1/timepixels[/]', 'TimeController:post');
   $this->delete('/api/0.1/timepixels[/{id}]', 'TimeController:delete');
+  
+  // Vectors API
+  $this->get('/api/v1/vectors/event/{ids:[0-9,-]+}', 'VectorsControllerApiV1:showEvent');
+  $this->get('/api/v1/vectors/event/list/', 'VectorsControllerApiV1:showList'); // parametry budou v getu
+  
 });
 
 
-// doesnt matter if signed or not
+// doesnt matter if signed or not. info pages
 $app->group('', function () {
     
     $this->get('/development/tools', 'HomeController:showTools')->setName('development.tools');
-    
+    $this->get('/fbevents/privacy-policy', 'FBEventsController:privacyPolicy')->setName('fbevents.privacy');
+    $this->get('/fbevents/terms-services', 'FBEventsController:termsAndServices')->setName('fbevents.terms');
 });
 
 

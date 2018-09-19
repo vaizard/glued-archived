@@ -1,0 +1,48 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+
+<div class="title-block">
+    <h3 class="title"> Editing Page: {{ page_data.c_fb_name }}, ID: {{ page_id }}</h3>
+</div>
+
+<div class="row">
+
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+          <div class="panel-heading clearfix">
+            <a href="{{ path_for('fbevents.main') }}" class="pull-right">back</a>
+          </div>
+          <div class="panel-body">
+                
+                <form action="{{ path_for('fbevents.editpage', { 'id': page_id }) }}" method="post">
+                    
+                  <div class="form-group">
+                    <label for="polozka1">Use token profile</label>
+                    <select name="token_id" class="form-control" id="polozka1">
+                        {{ token_options | raw }}
+                    </select>
+                  </div>
+                    
+                  <div class="form-group">
+                    <label for="polozka4">How much months to the past download events?</label>
+                    <select name="max_months" class="form-control" id="polozka4">
+                        {{ options | raw }}
+                    </select>
+                  </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
+            
+          </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
