@@ -1,0 +1,32 @@
+{% extends 'templates/glued-fb-js-sdk.twig' %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+          <div class="panel-heading clearfix">
+            <a href="{{ path_for('fbevents.main') }}" class="pull-right">back</a>
+          </div>
+          <div class="panel-body">
+                
+                <h3>vse okolo fb loginu a ziskani user access tokenu</h3>
+                
+                <fb:login-button scope="public_profile" onlogin="checkLoginState();"></fb:login-button>
+                
+                <h4>your login status</h4>
+                <div id="status"></div>
+                <h4>your permissions granted to this App</h4>
+                <div id="permissions"></div>
+                <h4>access token</h4>
+                <div><input type="button" onclick="nactiToken();" value="nacti" />
+                <div id="fb_token" style="overflow-wrap: break-word;"></div>
+                
+          </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

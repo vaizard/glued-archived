@@ -1,0 +1,108 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+
+
+<div class="title-block">
+    <h3 class="title"> Detail info of Event ID: {{ event.c_uid }} </h3>
+</div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-block">
+            <div class="card-title-block">
+                <h3 class="title">
+                    <form class="form-inline pull-left" method="post" action="{{ path_for('fbevents.vectorize', { 'id': event.c_uid }) }}">
+                        {{ vector_info | raw }}
+                        {{ csrf.field | raw  }}
+                    </form>
+                    <a href="{{ path_for('fbevents.main') }}" class="pull-right">back to all pages</a>
+                </h3>
+            </div>
+            <section class="example">
+                <div class="table-responsive">
+                
+                    <table class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                          <th style="width: 150px;">Info</th>
+                          <th>Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>FB Pages</td>
+                          <td>{{ fb_pages | raw }}</td>
+                        </tr>
+                        <tr>
+                          <td>FB ID</td>
+                          <td>{{ event_json.id }}</td>
+                        </tr>
+                        <tr>
+                          <td>Name</td>
+                          <td>{{ event_json.name }}</td>
+                        </tr>
+                        <tr>
+                          <td>Counts</td>
+                          <td>Attending: {{ event_json.attending_count }}, Maybe: {{ event_json.maybe_count }}, Interested: {{ event_json.interested_count }}, Declined: {{ event_json.declined_count }}</td>
+                        </tr>
+                        <tr>
+                          <td>Start - End</td>
+                          <td>{{ event_json.start_time }} - {{ event_json.end_time }}</td>
+                        </tr>
+                        <tr>
+                          <td>Location</td>
+                          <td>{{ event_json.place.name }}, {{ event_json.place.location.street }} {{ event_json.place.location.city }}</td>
+                        </tr>
+                        <tr>
+                          <td>Description</td>
+                          <td>{{ event_json.description | raw }}</td>
+                        </tr>
+                        <tr>
+                          <td>Cover image</td>
+                          <td><img src="{{ event_json.cover.source }}" width="100%" /></td>
+                        </tr>
+                        <tr>
+                          <td>Owner</td>
+                          <td>{{ event_json.owner.name }}</td>
+                        </tr>
+                        <tr>
+                          <td>Category</td>
+                          <td>{{ event_json.category }}</td>
+                        </tr>
+                        <tr>
+                          <td>Parent group</td>
+                          <td>{{ event_json.parent_group }}</td>
+                        </tr>
+                        <tr>
+                          <td>Is canceled?</td>
+                          <td>{{ event_json.is_canceled }}</td>
+                        </tr>
+                        <tr>
+                          <td>Is page owned?</td>
+                          <td>{{ event_json.is_page_owned }}</td>
+                        </tr>
+                        <tr>
+                          <td>Tickets</td>
+                          <td>uri: {{ event_json.ticket_uri }}, start sales time: {{ event_json.ticket_uri_start_sales_time }}</td>
+                        </tr>
+                        <tr>
+                          <td>Event times</td>
+                          <td>times of multiinstance events: {{ event_json.event_times }}</td>
+                        </tr>
+                        <tr>
+                          <td>Source JSON from FB</td>
+                          <td><pre><code>{{ source_json | raw }}</code></pre></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
