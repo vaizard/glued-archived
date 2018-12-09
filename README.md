@@ -36,7 +36,7 @@ Contributions welcomed, just fork Glued an make your first PR! Below a bunch of 
 Currently Glued relies a lot on
 
 - bootstrap 4
-- modular-admin-html
+- modular-admin-html (resp. our fork https://github.com/vaizard/modular-admin-glued)
 - jquery
 - rjsf
 
