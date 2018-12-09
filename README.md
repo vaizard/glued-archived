@@ -46,5 +46,5 @@ Currently Glued relies a lot on
 git clone https://github.com/modularcode/modular-admin-html.git
 cd modular-admin-html
 npm install             # pull in dependencies
-npm build               # create the static build (content in /dist directory)
+npm run build           # create the static build (content in /dist directory)
 ```
