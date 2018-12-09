@@ -26,3 +26,25 @@
   - all public files (css, images, js, etc.)
 - extras (nginx configuration and db dump)
 - logs (make sure its writable by php)
+
+## Contribute
+
+Contributions welcomed, just fork Glued an make your first PR! Below a bunch of tips to help you start.
+
+### UI 
+
+Currently Glued relies a lot on
+
+- bootstrap 4
+- modular-admin-html
+- jquery
+- rjsf
+
+#### Hack modular-admin-html
+
+```
+git clone https://github.com/modularcode/modular-admin-html.git
+cd modular-admin-html
+npm install             # pull in dependencies
+npm build               # create the static build (content in /dist directory)
+```
