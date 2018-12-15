@@ -48,3 +48,17 @@ cd modular-admin-html
 npm install             # pull in dependencies
 npm run build           # create the static build (content in /dist directory)
 ```
+
+#### Hack rjsf & addons
+
+```
+git clone http://github.com/mozilla-services/react-jsonschema-form
+cd react-jsonschema-form
+npm install
+npm run dist
+
+git clone https://github.com/RxNT/react-jsonschema-form-extras
+cd react-jsonschema-form-extras
+npm install
+npm run dist
+```
