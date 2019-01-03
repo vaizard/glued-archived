@@ -97,7 +97,7 @@
         {{ additional_javascript | raw }}
         {% endif %}
         
-        <script src="https://unpkg.com/stackedit-js@1.0.5/docs/lib/stackedit.min.js"></script>
+        <script src="https://unpkg.com/stackedit-js@1.0.7/docs/lib/stackedit.min.js"></script>
         
         <script type="text/javascript">
         
@@ -127,12 +127,12 @@
         var markdown = htmlEl.innerHTML;
         
         function doOpen(background) {
-          const stackedit = new Stackedit();
-          stackedit.on('fileChange', function onFileChange(file) {
+          const stackedit2 = new Stackedit();
+          stackedit2.on('fileChange', function onFileChange(file) {
             //markdown = file.content.text;
             htmlCil.innerHTML = file.content.html;
           });
-          stackedit.openFile({
+          stackedit2.openFile({
             name: 'HTML with StackEdit',
             content: {
               text: markdown
@@ -141,6 +141,37 @@
         }
         
         doOpen(true);
+        
+        
+        // editace textu v divu
+        function proved_editaci_stackeditu(zdroj_mark, cil_html) {
+            var zdroj3 = $('#' + zdroj_mark).text();
+            var vysledne_html;
+            
+            const stackedit3 = new Stackedit();
+            
+            // Open the iframe
+            stackedit3.openFile({
+                name: 'editovany_text', // with an optional filename
+                content: {
+                    text: zdroj3
+                }
+            });
+            
+            // Listen to StackEdit events and apply the changes to the textarea.
+            stackedit3.on('fileChange', (file) => {
+                $('#' + zdroj_mark).text(file.content.text);
+                $('#' + cil_html).html(file.content.html);
+            });
+            
+            // listen to close
+            stackedit3.on('close', (file) => {
+                alert('tak jste to zeditovali, gratulujeme');
+            });
+            
+        }
+        
+        
         
         </script>
         

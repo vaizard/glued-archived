@@ -31,7 +31,9 @@ class Permissions
        "timepixels",
        "t_assets_items",
        "t_consumables_items",
-       "t_parts_items"
+       "t_parts_items",
+       "t_wiki",
+       "t_contacts"
     );
 
     private $statuses = array(

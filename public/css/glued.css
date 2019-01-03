@@ -1,4 +1,5 @@
 
+/* ruzne drobne veci */
 
 .span-to-link {
     cursor: pointer;
@@ -9,6 +10,20 @@
     text-decoration: underline;
 }
 
+.frontend-button {
+    border: 1px solid #64798d;
+    color: #64798d;
+    border-radius: 0.2rem;
+}
+
+.frontend-button:hover {
+    border: 1px solid #3a4651;
+    color: #3a4651;
+}
+
+.hiddenIframe {
+    display: none;
+}
 
 /* OPRAVY DASHBOARDU */
 

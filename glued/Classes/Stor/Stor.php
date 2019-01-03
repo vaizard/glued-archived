@@ -13,7 +13,8 @@ class Stor
        "users"    => 'Users',
        "assets"    => 'Assets',
        "consumables"    => 'Consumables',
-       "parts"    => 'Parts'
+       "parts"    => 'Parts',
+       "helper"    => 'Helper'
     );
     
     // prevod path na tabulku, kvuli predzjisteni prav
@@ -22,7 +23,8 @@ class Stor
        "users"    => 't_users',
        "assets"    => 't_assets_items',
        "consumables"    => 't_consumables_items',
-       "parts"    => 't_parts_items'
+       "parts"    => 't_parts_items',
+       "helper"    => 't_helper'
     );
     
     // konstruktor
@@ -137,6 +139,26 @@ class Stor
         }
         $ret = round($raw,1).' '.$size_names[$name_id];
         return $ret;
+    }
+    
+    // funkce ktera nacte adresu souboru z jeho link id
+    public function read_stor_file_info($link_id) {
+        
+        // nacteme sha512
+        $this->container->db->where ("c_uid", $link_id);
+        $file_link = $this->container->db->getOne("t_stor_links");
+        
+        // nacteme path
+        $sloupce = array("doc->>'$.data.storage[0].path' as path");
+        $this->container->db->where("sha512", $file_link['c_sha512']);
+        $file_data = $this->container->db->getOne("t_stor_objects", $sloupce);
+        
+        $fullpath = $file_data['path'].'/'.$file_link['c_sha512'];
+        
+        $data['filename'] = $file_link['c_filename'];
+        $data['fullpath'] = $fullpath;
+        
+        return $data;
     }
     
     // funkce na smazani souboru, vraci pole s tim co se stalo 
