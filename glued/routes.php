@@ -39,6 +39,7 @@ $app->group('', function () {
   $this->get('/upload', 'UploadController:get')->setName('upload');
   $this->post('/upload', 'UploadController:post')->setName('upload');
   $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
+  $this->get('/contacts/main', 'ContactsController:contactsMain')->setName('contacts.main');
   
   $this->get('/permissions/my', 'PermissionsController:getMyAcl')->setName('acl.my');
   $this->post('/permissions/newprivilege', 'PermissionsController:postNewPrivilege')->setName('acl.new.privilege'); // pridava privilegium ruznych typu z ruznych stranek
@@ -76,6 +77,17 @@ $app->group('', function () {
   // vectors
   $this->get('/vectors/main', 'VectorsController:vectorsMain')->setName('vectors.main');
   $this->get('/vectors/vector/{id}', 'VectorsController:Vector')->setName('vectors.vector');
+  
+  // wikis
+  $this->get('/wiki/admin', 'WikiController:wikisGui')->setName('wiki.admin');
+  $this->get('/wiki/newwiki', 'WikiController:addWikiForm')->setName('wiki.addwiki');
+  $this->post('/wiki/newwiki', 'WikiController:addWikiAction');
+  $this->post('/wiki/newarticle', 'WikiController:addArticleAction')->setName('wiki.addarticle');   // nema to vubec get, protoze se pridava z modal popupu
+  
+  // import data
+  $this->get('/import/data/step1', 'ImportDataController:importFormStep1')->setName('import.data.step1');
+  $this->post('/import/data/step2', 'ImportDataController:importFormStep2')->setName('import.data.step2');
+  $this->post('/import/data/result', 'ImportDataController:importFormResult')->setName('import.data.result');
   
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
@@ -120,6 +132,9 @@ $app->group('', function () {
   // strankove veci (vraci html)
   $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
   $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
+  $this->get('/contacts/new', 'ContactsController:addContactForm')->setName('contacts.addcontactform');
+  $this->get('/contacts/[{id}]', 'ContactsController:editContactForm')->setName('contacts.editcontactform');
+  
   
   // generovane formulare pro assets, cosumables a pod
   $this->get('/assets/new', 'StockController:addStockForm')->setName('assets.addform');
@@ -153,10 +168,15 @@ $app->group('', function () {
 
   
   
-  // api veci (vraci json)
+  // api veci accounting (vraci json)
   $this->post('/api/v1/accounting/costs', 'AccountingCostsControllerApiV1:insertCostApi')->setName('accounting.api.new');
   $this->put('/api/v1/accounting/costs/[{id}]', 'AccountingCostsControllerApiV1:editCostApi')->setName('accounting.api.edit');
   $this->delete('/api/v1/accounting/costs/[{id}]', 'AccountingCostsControllerApiV1:deleteCostApi')->setName('accounting.api.delete');
+  
+  // api veci contacts (vraci json)
+  $this->post('/api/v1/contacts', 'ContactsControllerApiV1:insertContactApi')->setName('contacts.api.new');
+  $this->put('/api/v1/contacts/[{id}]', 'ContactsControllerApiV1:editContactApi')->setName('contacts.api.edit');
+  $this->delete('/api/v1/contacts/[{id}]', 'ContactsControllerApiV1:deleteContactApi')->setName('contacts.api.delete');
   
   // api k ukladani formularu pro assets, consumables a pod
   $this->post('/api/v1/assets', 'StockControllerApiV1:insertStockApi')->setName('assets.api.new');
@@ -179,6 +199,9 @@ $app->group('', function () {
   
   // barcode
   $this->get('/app/barcode/get-parametry', 'BarcodeController:barCode')->setName('barcode.code');
+  
+  // wiki, preulozeni clanku
+  $this->put('/wiki/api/article', 'WikiController:articleApiChange')->setName('wiki.article.change');
   
 })->add(new AuthMiddleware($container));
 
@@ -215,13 +238,18 @@ $app->group('', function () {
 });
 
 
-// doesnt matter if signed or not. info pages
+// doesnt matter if signed or not. info pages or wiki pages. could be form, so csrf check
 $app->group('', function () {
-    
+    // info
     $this->get('/development/tools', 'HomeController:showTools')->setName('development.tools');
     $this->get('/fbevents/privacy-policy', 'FBEventsController:privacyPolicy')->setName('fbevents.privacy');
     $this->get('/fbevents/terms-services', 'FBEventsController:termsAndServices')->setName('fbevents.terms');
-});
+    
+    // wiki
+    $this->get('/wiki/{wikiurl}/', 'WikiController:mainPage')->setName('wiki.page.main');   // main page
+    $this->get('/wiki/{wikiurl}/{articleurl}/', 'WikiController:articlePage')->setName('wiki.page.article');   // article page
+    
+})->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
 // PLAYGROUND

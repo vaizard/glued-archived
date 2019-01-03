@@ -291,7 +291,7 @@ class Pohadkar_testy extends Controller
     }
     
     
-    // test ktery jen enco vypise
+    // test ktery jen neco vypise
     public function test_output1($request, $response)
     {
         $vystup = '<h3>test promennych ve tride Auth_user</h3>';
@@ -302,6 +302,17 @@ class Pohadkar_testy extends Controller
         $vystup .= '<div>root: '.$this->container->auth_user->root.'</div>';
         $vystup .= '<div>user_id: '.$this->container->auth_user->user_id.'</div>';
         $vystup .= '<div>authentication_id: '.$this->container->auth_user->authentication_id.'</div>';
+        
+        
+        // dalsi test dekodovani json schematu na pole targetu
+        $json_schema = file_get_contents(__DIR__.'/V1/jsonschemas/new_consumables_form.json');
+        $json_array = json_decode($json_schema, true);
+        
+        $targety = $this->container->core->json_schema_targets($json_array['properties']);
+        
+        $vystup .= '<h3>test dekodovani json schematu</h3>';
+        
+        $vystup .= implode(', ', $targety);
         
         return $this->container->view->render($response, 'playground/simple_output.twig', array('vystup' => $vystup));
     }

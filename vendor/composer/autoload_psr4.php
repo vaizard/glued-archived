@@ -12,8 +12,10 @@ return array(
     'Slim\\Csrf\\' => array($vendorDir . '/slim/csrf/src'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
     'Respect\\Validation\\' => array($vendorDir . '/respect/validation/library'),
+    'Psr\\SimpleCache\\' => array($vendorDir . '/psr/simple-cache/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
+    'PhpOffice\\PhpSpreadsheet\\' => array($vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'League\\OAuth2\\Server\\' => array($vendorDir . '/league/oauth2-server/src'),
     'League\\Event\\' => array($vendorDir . '/league/event/src'),
@@ -22,4 +24,5 @@ return array(
     'Glued\\' => array($baseDir . '/glued'),
     'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
     'Facebook\\' => array($vendorDir . '/facebook/graph-sdk/src/Facebook'),
+    'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
 );

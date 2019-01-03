@@ -1,0 +1,88 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+{{ additional_javascript | raw }}
+
+<div class="title-block">
+    <h3 class="title"> Import data - step 2 </h3>
+</div>
+
+<div class="col-md-12">
+    <form action="{{ path_for('import.data.step2') }}" method="post">
+        <input type="hidden" name="layout" value="{{ layout }}" />
+        <input type="hidden" name="file_id" value="{{ file_id }}" />
+        <input type="hidden" name="schema_name" value="{{ schema_name }}" />
+        
+        <div class="row form-group">
+            <div class="col-5">
+                you can preset one of saved settings
+            </div>
+            <div class="col-5">
+                <select name="setting_id" class="form-control">
+                    {{ settings_options | raw }}
+                </select>
+            </div>
+            <div class="col-2">
+                <button type="submit" name="submit_action" value="preset" class="btn btn-primary">Preset</button>
+            </div>
+        </div>
+        {{ csrf.field | raw  }}
+    </form>
+</div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-block">
+            <div class="card-title-block">
+                <h3 class="title">data from file {{ file_name }} into schema {{ schema_name }}</h3>
+            </div>
+            <section class="example">
+                <form action="{{ path_for('import.data.result') }}" method="post">
+                    <input type="hidden" name="layout" value="{{ layout }}" />
+                    <input type="hidden" name="file_id" value="{{ file_id }}" />
+                    <input type="hidden" name="schema_name" value="{{ schema_name }}" />
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    {% if layout == 1 %}
+                                        <th>File Column</th>
+                                        <th>JSON schema target</th>
+                                    {% elseif layout == 2 %}
+                                        <th>JSON schema target</th>
+                                        <th>File Column</th>
+                                    {% endif %}
+                                    <th>Array index 1</th>
+                                    <th>Array index 2</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{ columns_output | raw }}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="row form-group">
+                        <div class="col-3">
+                            <button type="submit" name="submit_action" value="import" class="btn btn-primary">Import data</button>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" name="setting_name" class="form-control" placeholder="name of setting">
+                        </div>
+                        <div class="col-3">
+                            <button type="submit" name="submit_action" value="save" class="btn btn-primary">Save setting</button>
+                        </div>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
+                
+            </section>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

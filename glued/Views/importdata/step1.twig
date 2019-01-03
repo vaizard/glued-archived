@@ -1,0 +1,61 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+{{ additional_javascript | raw }}
+
+<div class="title-block">
+    <h3 class="title"> Import data - step 1 </h3>
+</div>
+
+<section class="example">
+    <div class="row">
+        
+        <div class="col-md-6">
+            <div class="card card-block">
+                <div class="title-block">
+                    <h3 class="title"> select file and schema | or <a href="/glued/public/stor/browser?filter=/helper/1">upload file</a></h3>
+                </div>
+                
+                <form action="{{ path_for('import.data.step2') }}" method="post">
+                    
+                    <div class="form-group">
+                        <label for="polozka1">File</label>
+                        <select name="file_id" class="form-control" id="polozka1">
+                            {{ file_options | raw }}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="polozka3">Schema</label>
+                        <select name="schema_name" class="form-control" id="polozka3">
+                            <option>bill</option>
+                            <option>assets</option>
+                            <option>parts</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="polozka4">Layout</label>
+                        <select name="layout" class="form-control" id="polozka4">
+                            <option value="1" selected>for every column from file select path</option>
+                            <option value="2">for every path from schema select column</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" name="submit_action" value="blank" class="btn btn-primary">Show step 2 form</button>
+                    </div>
+                    
+                    {{ csrf.field | raw  }}
+                </form>
+            </div>
+        </div>
+    
+    </div>
+</section>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+{{ additional_javascript | raw }}
+
+<div class="title-block">
+    <h3 class="title"> Contacts </h3>
+</div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-block">
+            <div class="card-title-block">
+                <h3 class="title">Existing contacts<a href="{{ path_for('contacts.addcontactform') }}" class="pull-right" style="margin: 0 20px;">add new contact</a> </h3>
+            </div>
+            <section class="example">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Tel.</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ costs_output | raw }}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

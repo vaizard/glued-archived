@@ -6,6 +6,14 @@
 $container = $app->getContainer();
 
 
+// CLASSES
+
+
+// glued core class
+$container['core'] = function ($container) {
+    return new \Glued\Classes\Core\Core($container);
+};
+
 // glued authentication class
 $container['auth'] = function ($container) {
     return new \Glued\Classes\Auth\Auth($container);
@@ -110,6 +118,9 @@ $container['logger'] = function ($c) {
 $container['validator'] = function ($container) {
    return new Glued\Classes\Validation\Validator;
 };
+
+
+// CONTROLERS
 
 
 // glued home view
@@ -229,3 +240,25 @@ $container['VectorsController'] = function ($container) {
 $container['VectorsControllerApiV1'] = function ($container) {
     return new \Glued\Controllers\Vectors\VectorsControllerApiV1($container);
 };
+
+// wiki controller
+$container['WikiController'] = function ($container) {
+    return new \Glued\Controllers\Wiki\WikiController($container);
+};
+
+// glued contacts module, html output controler
+$container['ContactsController'] = function ($container) {
+    return new \Glued\Controllers\Contacts\ContactsController($container);
+};
+
+// glued contacts module, api version controler
+$container['ContactsControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Contacts\ContactsControllerApiV1($container);
+};
+
+// import data controller
+$container['ImportDataController'] = function ($container) {
+    return new \Glued\Controllers\ImportData\ImportDataController($container);
+};
+
+

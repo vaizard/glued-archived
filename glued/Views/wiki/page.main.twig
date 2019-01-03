@@ -1,0 +1,89 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="title-block">
+    <h3 class="title"> Wiki: {{ wiki_data.c_name }}</h3>
+</div>
+
+<div class="subtitle-block">
+    <h3 class="subtitle"> Articles
+        {% if right_add %}
+            <a href="#" class="btn btn-sm frontend-button pull-right" data-toggle="modal" data-target="#new-wiki-article-modal">
+                <span>Create New Article</span>
+            </a>
+        {% endif %}
+    </h3>
+</div>
+
+<section class="section">
+{{ subarticles_output | raw }}
+</section>
+
+
+<div class="subtitle-block">
+    <h3 class="subtitle"> Main Article
+        {% if right_edit %}
+            <span class="btn btn-sm frontend-button pull-right" onclick="proved_editaci_clanku('stackedit_text', 'stackedit_html');">
+                <span>Edit</span>
+            </span>
+        {% endif %}
+    </h3>
+</div>
+
+<section class="section" id="stackedit_html">
+{{ main_article.c_html | raw }}
+</section>
+<div id="stackedit_text" style="display: none;">{{ main_article.c_text | raw }}</div>
+
+
+{% if right_add %}
+    <div class="modal fade" id="new-wiki-article-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">create New Article</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ path_for('wiki.addarticle') }}" method="post">
+                        <input type="hidden" name="wiki_uid" value="{{ wiki_data.c_uid }}" />
+                        <input type="hidden" name="wiki_url" value="{{ wiki_data.c_url }}" />
+                        
+                      <div class="form-group">
+                        <label for="polozka1">Title of Article</label>
+                        <input type="text" name="title" class="form-control" id="polozka1" />
+                      </div>
+                        
+                      <div class="form-group">
+                        <label for="polozka2">Url</label>
+                        <input type="text" name="url" class="form-control" id="polozka2" />
+                      </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Create article</button>
+                        </div>
+                        
+                        {{ csrf.field | raw  }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+{% endif %}
+
+
+{% if right_edit %}
+<iframe name="resetIDB" class="hiddenIframe" src="https://japex.vaizard.xyz/void.html"></iframe>
+{% endif %}
+
+{% endblock %}
