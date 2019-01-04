@@ -1,5 +1,4 @@
 {
-    "title": "New bill form",
     "type": "object",
     "properties":{
         "data": {
