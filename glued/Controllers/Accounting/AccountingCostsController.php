@@ -89,8 +89,8 @@ class AccountingCostsController extends Controller
         // odebrano   "required" : [ "wovat", "vat" ],
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
-        // schema celeho formulare
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_bill_form.json');
+        // schema celeho formulare pro novy zaznam
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/cost.json');
         
         // zakladni data, jedna polozka procentualni dane
         $json_formdata_output = '
@@ -153,8 +153,8 @@ class AccountingCostsController extends Controller
         // odebrano   "required" : [ "wovat", "vat" ],
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
-        // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/edit_bill_form.json');
+        // schema editacniho formulare je stejne jako schema pro novy zaznam
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/cost.json');
         
         // zakladni data pro editaci
         $json_formdata_output = $data['c_data'];
