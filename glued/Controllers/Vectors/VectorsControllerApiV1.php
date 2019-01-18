@@ -5,6 +5,9 @@ use Glued\Controllers\Controller;
 
 class VectorsControllerApiV1 extends Controller
 {
+    
+    // nejprve pro pristup zvenci k vektorum
+    
     // nase vnitrni funkce, ktera zajistuje bezpecny vypis json dat
     private function respond($response,$content = '', $httpStatus = 200, $contentType = 'application/json')
     {
@@ -93,5 +96,39 @@ class VectorsControllerApiV1 extends Controller
         
         return $this->respond($response, $final_json);
     }
+    
+    
+    // zpracovani pridavani vektoru
+    
+    // api for add new vector (parametr args neni potreba, post promenna bude v request)
+    public function insertVectorApi($request, $response)
+    {
+        
+        $senddata = $request->getParam('billdata');
+        $user_id = $_SESSION['user_id'];
+        
+        // vlozime to jak to prislo z formu
+        $data = Array ("c_data" => $senddata);
+        $insert = $this->container->db->insert('t_vectors', $data);
+        if ($insert) {
+            // prepiseme uid a casy
+            $this->container->db->rawQuery("UPDATE t_vectors SET c_data = JSON_SET(c_data, '$.data.uid', ?, '$.data.dt_created', ?) WHERE c_uid = ? ", Array (strval($insert), date("Y-m-d H:i:s"), $insert));
+            
+            if ($this->container->db->getLastErrno() === 0) {
+                $response->getBody()->write('ok');
+            }
+            else {
+                $response->getBody()->write('update failed: ' . $this->container->db->getLastError());
+            }
+        }
+        else {
+            $response->getBody()->write('error');
+        }
+        
+        // vratime prosty text
+        return $response;
+        
+    }
+    
     
 }

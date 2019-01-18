@@ -129,14 +129,15 @@ $app->group('', function () {
 // or pages with js generated forms
 $app->group('', function () {
   
-  // strankove veci (vraci html)
+  // strankove veci (vraci html), json schema formy bud pro novy nebo pro editaci
   $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
   $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
   $this->get('/contacts/new', 'ContactsController:addContactForm')->setName('contacts.addcontactform');
   $this->get('/contacts/[{id}]', 'ContactsController:editContactForm')->setName('contacts.editcontactform');
+  $this->get('/vectors/new', 'VectorsController:addVectorForm')->setName('vectors.addvectorform');
   
   
-  // generovane formulare pro assets, cosumables a pod
+  // generovane formulare pro assets, cosumables a parts
   $this->get('/assets/new', 'StockController:addStockForm')->setName('assets.addform');
   $this->get('/assets/quicknew', 'StockController:addQuickForm')->setName('assets.addquickform');
   $this->get('/assets/edit/{id:[0-9]+}', 'StockController:editStockForm')->setName('assets.editform');
@@ -146,6 +147,7 @@ $app->group('', function () {
   $this->get('/parts/new', 'PartsController:addForm')->setName('parts.addform');
   $this->get('/parts/quicknew', 'PartsController:addQuickForm')->setName('parts.addquickform');
   $this->get('/parts/edit/{id:[0-9]+}', 'PartsController:editForm')->setName('parts.editform');
+  
   
   // STOR
   // show stor file (or force download)
@@ -177,6 +179,10 @@ $app->group('', function () {
   $this->post('/api/v1/contacts', 'ContactsControllerApiV1:insertContactApi')->setName('contacts.api.new');
   $this->put('/api/v1/contacts/[{id}]', 'ContactsControllerApiV1:editContactApi')->setName('contacts.api.edit');
   $this->delete('/api/v1/contacts/[{id}]', 'ContactsControllerApiV1:deleteContactApi')->setName('contacts.api.delete');
+  
+  // api veci vectors (vraci json)
+  $this->post('/api/v1/vectors', 'VectorsControllerApiV1:insertVectorApi')->setName('vectors.api.new');
+  
   
   // api k ukladani formularu pro assets, consumables a pod
   $this->post('/api/v1/assets', 'StockControllerApiV1:insertStockApi')->setName('assets.api.new');

@@ -1,0 +1,205 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "object",
+      "properties": {
+        "left_column": {
+           "type": "object",
+           "title": "Metadata",
+           "properties": {      
+              "dt_taxable": {
+                "type": "string",
+                "format": "date",
+                "title": "Date taxable supply"
+              },
+              "dt_due": {
+                "type": "string",
+                "format": "date",
+                "title": "Date taxable supply"
+              },
+              "inv_nr": {
+                "type": "string",
+                "title": "Invoice number"
+              },
+              "note": {
+                "type": "string",
+                "title": "Note"
+              },
+              "ext_id": {
+                "type": "array",
+                "title": "Links",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id1": {
+                      "type": "string",
+                      "title": "ID1"
+                    },
+                    "id2": {
+                      "type": "string",
+                      "title": "ID2"
+                    },
+                    "svc": {
+                      "type": "string",
+                      "title": "Service name",
+                      "default": "DEEF"
+                    }
+                  }
+                }
+              },              
+              "supplier": {
+                "title": "Supplier",
+                "type": "object",
+                "properties": {
+                  "contact_id": {
+                    "type": "string",
+                    "title": "Id of link to our db"
+                  },
+                  "name": {
+                    "type": "string",
+                    "title": "Name"                    
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "title": "Name",
+                    "enum": ["legal","private"],
+                    "default": "legal"
+                  },                  
+                  "regid": {
+                    "type": "string",
+                    "title": "IČ"
+                  },
+                  "vatid": {
+                    "type": "string",
+                    "title": "DIČ"
+                  },
+                  "dob": {
+                    "type": "string",
+                    "title": "Date of birth"
+                  },
+                  "address": {
+                    "type": "string",
+                    "title": "Address"
+                  }
+                }
+              }           
+           }
+        },
+        "right_column": {
+           "type": "object",
+           "title": "Input groups",
+           "properties": {
+              "acc_total_novat": {
+                "type": "number",
+                "title": "Price without VAT"
+              },
+              "acc_total_vat": {
+                "type": "number",
+                "title": "Price with VAT"
+              },
+              "acc_curr": {
+                "type": "string",
+                "title": "Accounting currency",
+                "default": "CZK"
+              },
+              "inv_total_novat": {
+                "type": "number",
+                "title": "Price without VAT"
+              },
+              "inv_total_vat": {
+                "type": "number",
+                "title": "Price with VAT"
+              },
+              "inv_curr": {
+                "type": "string",
+                "title": "Transaction currency"
+              },
+              "xr": {
+                "type": "string",
+                "title": "Exchange rate"
+              },
+              "managerial_acc": {
+                "type": "array",
+                "title": "Managerial accounting",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "price-novat": {
+                      "type": "string",
+                      "title": "Price fraction (without VAT)"
+                    },
+                    "price-fract": {
+                      "type": "string",
+                      "title": "Percentile fraction"
+                    },
+                    "note": {
+                      "type": "string",
+                      "title": "Note"
+                    },
+                    "acc_group": {
+                      "type": "string",
+                      "title": "Account group"
+                    },
+                    "pixel_id": {
+                      "type": "string",
+                      "title": "Project ID"
+                    }
+                  }
+                }
+              },
+              "financial_acc": {
+                "type": "array",
+                "title": "Financial accounting",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "price-novat": {
+                      "type": "string",
+                      "title": "Price fraction (without VAT)"
+                    },
+                    "price-fract": {
+                      "type": "string",
+                      "title": "Percentile fraction"
+                    },
+                    "note": {
+                      "type": "string",
+                      "title": "Note"
+                    },
+                    "acc_group": {
+                      "type": "string",
+                      "title": "Account group"
+                    },
+                    "pixel_id": {
+                      "type": "string",
+                      "title": "Project ID"
+                    }
+                  }
+                }
+              },
+              "files": {
+                "type": "array",
+                "title": "Attachments",
+                "items": {
+                  "type": "string",
+                  "format": "data-url"
+                }
+              }           
+           }
+        },
+        "_id": {
+          "type": "string",
+          "title": "Inner record id"
+        },
+        "creator": {
+          "type": "string",
+          "title": "Creator"
+        },
+        "dt_created": {
+          "type": "string",
+          "title": "Date of creation"
+        }
+      }
+    }
+  }
+}

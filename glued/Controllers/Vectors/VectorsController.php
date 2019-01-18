@@ -34,7 +34,6 @@ class VectorsController extends Controller
     }
     
     
-
     // show info about one vector
     public function Vector($request, $response, $args)
     {
@@ -55,5 +54,55 @@ class VectorsController extends Controller
         );
     }
     
+    
+    // show form for add new vector
+    public function addVectorForm($request, $response)
+    {
+        $form_output = '';
+        
+        // zvlastni pravidla pro vygenerovani jednotlivych prvku
+        // odebrano   "required" : [ "wovat", "vat" ],
+        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/form_ui.json');
+        
+        // schema celeho formulare pro novy zaznam
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/vector.json');
+        
+        // zakladni data, nic (mame tam nejake defaulty ve schematu, ktere se snad nastavi)
+        $json_formdata_output = '
+{
+}
+        ';
+        
+        // vnitrek onsubmit funkce
+        //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
+        $json_onsubmit_output = '
+    $.ajax({
+      url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('vectors.api.new').'",
+      dataType: "text",
+      type: "POST",
+      data: "billdata=" + JSON.stringify(formData.formData),
+      success: function(data) {
+        
+        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+        
+      },
+      error: function(xhr, status, err) {
+        alert(status + err + data);
+        ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+      }
+    });
+        ';
+        
+        return $this->container->view->render($response, 'vectors/addvector.twig', array(
+            'form_output' => $form_output,
+            'json_schema_output' => $json_schema_output,
+            'json_uischema_output' => $json_uischema_output,
+            'json_formdata_output' => $json_formdata_output,
+            'json_onsubmit_output' => $json_onsubmit_output,
+            'json_formdata_render_custom_array' => '1'
+        ));
+    }
     
 }
