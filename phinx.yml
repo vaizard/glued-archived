@@ -27,7 +27,7 @@ environments:
         adapter: mysql
         host: localhost
         name: test_db
-        user: japex
+        user: root
         pass: ''
         port: 3306
         charset: utf8
