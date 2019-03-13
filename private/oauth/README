@@ -1,5 +1,0 @@
-Glued's uploads will be written to this directory.
-openssl genrsa -out private.key 4096
-openssl rsa -in private.key -pubout -out public.key
-chmod 600 private.key
-chown root:root private.key
