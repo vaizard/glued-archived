@@ -1,104 +1,345 @@
 {
     "data": {
-        currency: {
-          classNames: "col-md-2 pull-left pad-left"
-        },        
-        price_vat: {
-          classNames: "col-md-2 pull-left",
-          "ui:widget": "myCustomWidget"
-        },
-        price_novat: {
-          classNames: "col-md-2 pull-left"
-        },
-        doc_id: {
-          classNames: "col-md-2 pull-left"
-        },
-        dt_taxable_supply: {
-          classNames: "col-md-2 pull-left"
-        },        
-        note: {
-          classNames: "col-md-2 pull-left pad-right"
-        },                
-        "supplier": {
-            classNames: "col-md-12 pull-left",
-            "contact_id": {
-              "ui:widget": "hidden"
-            },
-            regid: {
-              classNames: "col-md-3 pull-left"
-            },
-            vatid: {
-              classNames: "col-md-3 pull-left"
-            },            
-            name: {
-              classNames: "col-md-3 pull-left"
-            },            
-            address: {
-              classNames: "col-md-3 pull-left"
-            }              
-        },
-        "distribution": {
-            classNames: "col-md-12 pull-left",
-            "ui:options":  {
-              orderable: false
-            },            
-            "items": {
-              "price-novat": {
-                classNames: "col-md-4 pull-left"
-              },
-              "pixel_id": {
-                classNames: "col-md-4 pull-left"
-              },              
-              "note": {
-                classNames: "col-md-4 pull-left"
-              },
-              "ext_order_id": {
-                classNames: "col-md-12 pull-left",
+        "left_column": {
+            classNames: "col-md-6 pull-left",
+            "ui:order": [
+              "dt_taxable",
+              "dt_due",
+              "inv_nr",
+              "note",                                 
+              "ext_id",
+              "supplier"                  
+            ],          
+            dt_taxable: {
+              classNames: "col-md-6 pull-left",
+              "ui:widget": "dateGroupWidget",
+              "ui:options": {
+                label: false,
+                "textik": "Taxable"
+              }
+            },    
+            dt_due: {
+              classNames: "col-md-6 pull-left",
+              "ui:widget": "dateGroupWidget",
+              "ui:options": {
+                label: false,
+                "textik": "Due"
+              }
+            }, 
+            inv_nr: {
+              classNames: "col-md-6 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Invoice nr., or silimar",
+              "ui:options": {
+                label: false,
+                "textik": "Nr."
+              }
+            }, 
+            note: {
+              classNames: "col-md-6 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Description",
+              "ui:options": {
+                label: false,
+                "textik": "Dscr."
+              }
+            }, 
+            ext_id: {
+                "ui:title": "vlastni link titulek",
+                classNames: "col-md-12 pull-left disable-bottomized",
                 "ui:options":  {
                   orderable: false
-                },                
+                },            
                 "items": {
-                  "name": {
-                    classNames: "col-md-6 pull-left"
+                  "id1": {
+                    classNames: "col-md-4 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "id 1",
+                    "ui:options": {
+                      label: false,
+                      "textik": "1"
+                    }
                   },
-                  "id": {
-                    classNames: "col-md-6 pull-left"
-                  }                  
-                }
-              }              
-            }
-        },                       
-        vat: {
-            classNames: "col-md-6 pull-left",
-            "ui:options":  {
-              orderable: false
-            },            
-            "items": {
-              "vatval": {
-                classNames: "col-md-6 pull-left"
-              },
-              "price": {
-                classNames: "col-md-6 pull-left"
-              }              
-            }          
+                  "id2": {
+                    classNames: "col-md-4 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "id 2",
+                    "ui:options": {
+                      label: false,
+                      "textik": "2"
+                    }
+                  },
+                  "svc": {
+                    classNames: "col-md-4 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:options": {
+                      label: false,
+                      "textik": "SW"
+                    }
+                  }                            
+                }          
+            },
+            "supplier": {
+                classNames: "col-md-12 pull-left",
+                "ui:order": [
+                  "name",
+                  "entity_type",
+                  "address",
+                  "dob",                                 
+                  "regid",
+                  "vatid",
+                  "*"                  
+                ],                                 
+                "contact_id": {
+                  "ui:widget": "hidden"
+                },
+                name: {
+                  classNames: "col-md-9 pull-left",
+                  "ui:widget": "nrGroupWidget",
+                  "ui:placeholder": "Supplier name",
+                  "ui:options": {
+                    label: false,
+                    "textik": "Name"
+                  }
+                },
+                entity_type: {
+                  classNames: "col-md-3 pull-left nas-small-select",                  
+                  "ui:options": { label: false }
+                },                 
+                address: {
+                  classNames: "col-md-12 pull-left",
+                  "ui:widget": "nrGroupWidget",
+                  "ui:placeholder": "Supplier address",
+                  "ui:options": {
+                    label: false,
+                    "textik": "Address"
+                  }
+                },
+                dob: {
+                  classNames: "col-md-12 pull-left",
+                  "ui:widget": "nrGroupWidget",
+                  "ui:placeholder": "Date of birth",
+                  "ui:options": {
+                    label: false,
+                    "textik": "DOB"
+                  }
+                },                                 
+                regid: {
+                  classNames: "col-md-6 pull-left",
+                  "ui:widget": "nrGroupWidget",
+                  "ui:placeholder": "IČO",
+                  "ui:options": {
+                    label: false,
+                    "textik": "ID"
+                  }
+                },
+                vatid: {
+                  classNames: "col-md-6 pull-left",
+                  "ui:widget": "nrGroupWidget",
+                  "ui:placeholder": "DIČ",
+                  "ui:options": {
+                    label: false,
+                    "textik": "VAT-ID"
+                  }
+                }                                   
+            }        
         },
-        ext_id: {
+        "right_column": {
             classNames: "col-md-6 pull-left",
-            "ui:options":  {
-              orderable: false
-            },            
-            "items": {
-              "name": {
-                classNames: "col-md-6 pull-left"
-              },
-              "id": {
-                classNames: "col-md-6 pull-left"
-              }              
-            }          
-        },
-        "files": {
-          classNames: "col-md-12 pull-left"
-        },           
+            "ui:order": [
+              "acc_total_novat",
+              "acc_total_vat",
+              "acc_curr",          
+              "inv_total_novat",          
+              "inv_total_vat",
+              "xr",          
+              "inv_curr",                     
+              "managerial_acc",                  
+              "financial_acc",          
+              "files"              
+            ],
+            acc_total_novat: {
+              classNames: "col-md-4 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Cost excl. VAT",
+              "ui:options": {
+                label: false,
+                "textik": "Ex"
+              }
+            },
+            acc_total_vat: {
+              classNames: "col-md-4 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Cost incl. VAT",
+              "ui:options": {
+                label: false,
+                "textik": "In"
+              }
+            },                    
+            acc_curr: {
+              classNames: "col-md-4 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:options": {
+                label: false,
+                "textik": "Main"
+              }
+            },        
+            inv_total_novat: {
+              classNames: "col-md-4 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Cost excl. VAT, alt. currency",
+              "ui:options": {
+                label: false,
+                "textik": "Ex"
+              }
+            },
+            inv_total_vat: {
+              classNames: "col-md-4 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Cost excl. VAT, alt. currency",
+              "ui:options": {
+                label: false,
+                "textik": "In"
+              }
+            },
+            xr: {
+              classNames: "col-md-2 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Exchange rate",
+              "ui:options": {
+                label: false,
+                "textik": ""
+              }
+            },                    
+            inv_curr: {
+              classNames: "col-md-2 pull-left",
+              "ui:widget": "nrGroupWidget",
+              "ui:placeholder": "Alt currency",
+              "ui:options": {
+                label: false,
+                "textik": ""
+              }
+            },
+            "managerial_acc": {
+                classNames: "col-md-12 pull-left disable-bottomized",
+                "items": {
+                  "ui:order": [
+                    "pixel_id",
+                    "acc_group",
+                    "price-novat",
+                    "price-fract",
+                    "note",
+                    "*"                  
+                  ],                   
+                  "pixel_id": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Project id / name",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }
+                  },
+                  "acc_group": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "acc group",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }
+                  },                  
+                  "price-novat": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Cost",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }
+                  },
+                  "price-fract": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Cost %",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }
+                  },
+                  "note": {
+                    classNames: "col-md-12 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Note",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }
+                  }                                                                                  
+                }                                         
+            },
+            "financial_acc": {
+                classNames: "col-md-12 pull-left disable-bottomized",
+                "items": {
+                  "ui:order": [
+                    "pixel_id",
+                    "acc_group",
+                    "price-novat",
+                    "price-fract",
+                    "note",
+                    "*"                  
+                  ],                   
+                  "pixel_id": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Order id / name",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }                   
+                  },
+                  "acc_group": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "acc group",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }                   
+                  },                  
+                  "price-novat": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Cost",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }                   
+                  },
+                  "price-fract": {
+                    classNames: "col-md-3 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Cost %",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }                   
+                  },
+                  "note": {
+                    classNames: "col-md-12 pull-left",
+                    "ui:widget": "nrGroupWidget",
+                    "ui:placeholder": "Note",
+                    "ui:options": {
+                      label: false,
+                      "textik": ""
+                    }                    
+                  }                                                                                  
+                }                              
+            },
+            "files": {
+                classNames: "col-md-12 pull-left"                
+            }                     
+        }, 
         "creator": {
           "ui:widget": "hidden"
         },

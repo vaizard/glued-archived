@@ -79,3 +79,8 @@ div.checkbox {
 .bottomized {
     margin-top: 32px;
 }
+
+/* v nekterych formech nejsou labely a tak by melo byt toto tlacitko hned nahore */
+.disable-bottomized .bottomized {
+    margin-top: 0px;
+}

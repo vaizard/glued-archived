@@ -1,0 +1,160 @@
+{
+    "type": "object",
+    "properties":{
+        "data": {
+            "type": "object",
+            "properties":{
+                        "_v": {
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "uid": {
+                          "type": "integer"
+                        },
+                        "classification": {
+                          "type": "string",
+                          "default": "event"
+                        },
+                        "tzid": {
+                          "type": "string",
+                          "default": "Europe/Prague"
+                        },
+                        "dt_created": {
+                          "type": "string"
+                        },                        
+                        "dt_modified": {
+                          "type": "string"
+                        },                         
+                        "sequence": {
+                            "type": "integer",
+                            "default": 1
+                        },
+                        "attr": {
+                            "type": "object",
+                            "properties":{
+                                "feed": {
+                                  "type": "boolean"
+                                }                                
+                            }                              
+                        },
+                        "status": {
+                            "type": "object",
+                            "properties":{
+                                "privacy": {
+                                  "type": "string"
+                                },
+                                "published": {
+                                  "type": "boolean"
+                                },
+                                "dt_infeed": {
+                                  "type": "string"
+                                }                                                                                                
+                            }                              
+                        },                        
+                        "summary": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {
+                                      "type": "string"
+                                    },
+                                    "lang": {
+                                      "type": "string",
+                                      "default": "cz"
+                                    },
+                                    "sequence": {
+                                      "type": "integer",
+                                      "default": 1
+                                    }
+                                }
+                            }
+                        },
+                        "description": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {
+                                      "type": "string"
+                                    },
+                                    "lang": {
+                                      "type": "string",
+                                      "default": "cz"
+                                    },
+                                    "sequence": {
+                                      "type": "integer",
+                                      "default": 1
+                                    }
+                                }
+                            }
+                        },                        
+                        "dt_start": {
+                          "type": "string",
+                          "format": "date"
+                        },                        
+                        "dt_end": {
+                          "type": "string",
+                          "format": "date"
+                        },  
+                        "location": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "place": {
+                                      "type": "object",
+                                      "properties": {
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "id": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                          }                                                                                    
+                                      }
+                                    },
+                                    "geo": {
+                                      "type": "object",
+                                      "properties": {
+                                          "lat": {
+                                            "type": "string"
+                                          },
+                                          "lon": {
+                                            "type": "string"
+                                          },
+                                          "alt": {
+                                            "type": "string"
+                                          }                                                                                                                              
+                                      }
+                                    },
+                                    "adr": {
+                                      "type": "object",
+                                      "properties": {
+                                          "locacity": {
+                                            "type": "string"
+                                          },
+                                          "code": {
+                                            "type": "string"
+                                          },
+                                          "country": {
+                                            "type": "string"
+                                          },
+                                          "street": {
+                                            "type": "string"
+                                          }                                                                                                                                                                        
+                                      }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        
+                        
+                        
+            }
+        }
+    }
+}

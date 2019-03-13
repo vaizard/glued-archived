@@ -1,0 +1,16 @@
+{
+    "data": {
+        "_v": {
+          "ui:widget": "hidden"
+        },
+        "uid": {
+          "ui:widget": "hidden"
+        },
+        "dt_created": {
+          "ui:widget": "hidden"
+        },
+        "dt_modified": {
+          "ui:widget": "hidden"
+        }
+    }
+}

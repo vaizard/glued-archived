@@ -40,6 +40,11 @@
     .array-item-move-down:after {
         content: "Down";
     }
+    
+    .nas-small-select select {
+        height: calc(1.8125rem + 2px) !important;
+    }
+    
     </style>
     
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
@@ -78,8 +83,29 @@ const MyCustomWidget = (props) => {
   );
 };
 
+const NrGroupWidget = (props) => {
+  return (
+<div className="input-group input-group-sm">
+    <span className="input-group-addon">{props.options.textik}</span>
+    <input type="text" className="form-control" value={props.value} placeholder={props.placeholder} required={props.required} onChange={(event) => props.onChange(event.target.value)} />
+</div>
+  );
+};
+
+const DateGroupWidget = (props) => {
+  return (
+<div className="input-group input-group-sm">
+    <span className="input-group-addon">{props.options.textik}</span>
+    <input type="date" className="form-control" value={props.value} placeholder={props.placeholder} required={props.required} onChange={(event) => props.onChange(event.target.value)} />
+</div>
+  );
+};
+
+
 const widgets = {
-  myCustomWidget: MyCustomWidget
+  myCustomWidget: MyCustomWidget,
+  nrGroupWidget: NrGroupWidget,
+  dateGroupWidget: DateGroupWidget
 };
 
 function ArrayFieldTemplate(props) {
@@ -87,14 +113,14 @@ function ArrayFieldTemplate(props) {
     <div className={props.className}>
       <div className="title-and-add clearfix">
             <legend>{props.title}</legend>
-            <button onClick={props.onAddClick} type="button" className="btn btn-info"> + </button>
+            <button onClick={props.onAddClick} type="button" className="btn btn-info btn-oval btn-sm"> + {props.title}</button>
       </div>
       {props.items &&
         props.items.map(element => (
           <div key={element.index} className="row">
             <div className="col-md-10">{element.children}</div>
             <div className="col-md-2">
-                <button onClick={element.onDropIndexClick(element.index)} className="btn btn-danger bottomized">
+                <button onClick={element.onDropIndexClick(element.index)} className="btn btn-danger btn-sm bottomized">
                   x
                 </button>
             </div>

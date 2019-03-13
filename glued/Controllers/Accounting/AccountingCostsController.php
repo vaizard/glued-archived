@@ -90,19 +90,20 @@ class AccountingCostsController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
         // schema celeho formulare pro novy zaznam
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/cost.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/cost_columns.json');
         
         // zakladni data, jedna polozka procentualni dane
         $json_formdata_output = '
 {
     "data":{
-        "currency": "CZK",
-        "vat": [
-            {
-              "vatval": "21",
-              "price": ""
-            }
-        ]
+        "right_column": {
+          "managerial_acc": [
+            {}
+          ],
+          "financial_acc": [
+            {}
+          ]
+        }
     }
 }
         ';
@@ -118,7 +119,7 @@ class AccountingCostsController extends Controller
       data: "billdata=" + JSON.stringify(formData.formData),
       success: function(data) {
         
-        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+        ReactDOM.render((<div><h1>Form data</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre><h2>Final data</h2><pre>{data}</pre></div>), 
                  document.getElementById("main"));
         
       },
@@ -154,10 +155,45 @@ class AccountingCostsController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/bill_form_ui.json');
         
         // schema editacniho formulare je stejne jako schema pro novy zaznam
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/cost.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/cost_columns.json');
         
         // zakladni data pro editaci
         $json_formdata_output = $data['c_data'];
+        
+        // upravime data, do kterych pridame levy a pravy sloupec
+        $formdata = json_decode($json_formdata_output, true);
+        $additional_data['left_column'] = array();
+        $additional_data['right_column'] = array();
+        $left_keys = array("dt_taxable",
+              "dt_due",
+              "inv_nr",
+              "note",
+              "ext_id",
+              "supplier"  );
+        $right_keys = array("acc_total_novat",
+              "acc_total_vat",
+              "acc_curr",
+              "inv_total_novat",
+              "inv_total_vat",
+              "xr",
+              "inv_curr",
+              "managerial_acc",
+              "financial_acc",
+              "files");
+        foreach ($left_keys as $key) {
+            if (isset($formdata['data'][$key])) {
+                $additional_data['left_column'][$key] = $formdata['data'][$key];
+                unset($formdata['data'][$key]);
+            }
+        }
+        foreach ($right_keys as $key) {
+            if (isset($formdata['data'][$key])) {
+                $additional_data['right_column'][$key] = $formdata['data'][$key];
+                unset($formdata['data'][$key]);
+            }
+        }
+        $new_data['data'] = array_merge($formdata['data'], $additional_data);
+        $json_formdata_output_upravena = json_encode($new_data);
         
         // vnitrek onsubmit funkce
         //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
@@ -169,7 +205,7 @@ class AccountingCostsController extends Controller
       data: "billdata=" + JSON.stringify(formData.formData),
       success: function(data) {
         
-        ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+        ReactDOM.render((<div><h1>Form data</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre><h2>Final data</h2><pre>{data}</pre></div>), 
                  document.getElementById("main"));
         
       },
@@ -186,7 +222,7 @@ class AccountingCostsController extends Controller
             'form_output' => $form_output,
             'json_schema_output' => $json_schema_output,
             'json_uischema_output' => $json_uischema_output,
-            'json_formdata_output' => $json_formdata_output,
+            'json_formdata_output' => $json_formdata_output_upravena,
             'json_onsubmit_output' => $json_onsubmit_output,
             'cost_id' => $args['id'],
             'json_formdata_render_custom_array' => '1'

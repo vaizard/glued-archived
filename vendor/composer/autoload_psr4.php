@@ -7,6 +7,12 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
+    'Symfony\\Component\\Filesystem\\' => array($vendorDir . '/symfony/filesystem'),
+    'Symfony\\Component\\Debug\\' => array($vendorDir . '/symfony/debug'),
+    'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
+    'Symfony\\Component\\Config\\' => array($vendorDir . '/symfony/config'),
     'Slim\\Views\\' => array($vendorDir . '/slim/twig-view/src'),
     'Slim\\Flash\\' => array($vendorDir . '/slim/flash/src'),
     'Slim\\Csrf\\' => array($vendorDir . '/slim/csrf/src'),
@@ -16,6 +22,7 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'PhpOffice\\PhpSpreadsheet\\' => array($vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet'),
+    'Phinx\\' => array($vendorDir . '/robmorgan/phinx/src/Phinx'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'League\\OAuth2\\Server\\' => array($vendorDir . '/league/oauth2-server/src'),
     'League\\Event\\' => array($vendorDir . '/league/event/src'),
@@ -25,4 +32,11 @@ return array(
     'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
     'Facebook\\' => array($vendorDir . '/facebook/graph-sdk/src/Facebook'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
+    'Cake\\Utility\\' => array($vendorDir . '/cakephp/utility'),
+    'Cake\\Log\\' => array($vendorDir . '/cakephp/log'),
+    'Cake\\Datasource\\' => array($vendorDir . '/cakephp/datasource'),
+    'Cake\\Database\\' => array($vendorDir . '/cakephp/database'),
+    'Cake\\Core\\' => array($vendorDir . '/cakephp/core'),
+    'Cake\\Collection\\' => array($vendorDir . '/cakephp/collection'),
+    'Cake\\Cache\\' => array($vendorDir . '/cakephp/cache'),
 );

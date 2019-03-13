@@ -2,8 +2,11 @@
 /logs/*
 !/logs/empty
 /glued/settings.php
+/phinx.yml
 /private/oauth/public.key
-private/oauth/private.key
+/private/oauth/private.key
 
 /private/import/O2cz/*
 !/private/import/O2cz/README
+
+/private/stor/*
