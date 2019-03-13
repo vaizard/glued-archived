@@ -1,12 +1,30 @@
+###
+### do not ignore
+###
+
 !.gitignore
+
+
+###
+### ignore files in /logs, but keep the folder
+###
+
 /logs/*
-!/logs/empty
-/glued/settings.php
-/phinx.yml
-/private/oauth/public.key
-/private/oauth/private.key
-
 /private/import/O2cz/*
-!/private/import/O2cz/README
-
+/private/oauth/*
 /private/stor/*
+
+!/logs/.keep
+!/private/import/O2cz/.keep
+!/private/oauth/.keep
+!/private/stor/.keep
+
+
+###
+### ignore
+###
+
+/phinx.yml
+/glued/settings.php
+
+
