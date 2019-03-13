@@ -6,7 +6,7 @@ use Glued\Controllers\Controller;
 class ContactsController extends Controller
 {
     
-    // shows basic page with all costs
+    // shows basic page with all contacts
     public function contactsMain($request, $response)
     {
         $costs_output = '';
@@ -79,7 +79,7 @@ class ContactsController extends Controller
             'additional_javascript' => $additional_javascript));
     }
     
-    // show form for add new cost
+    // show form for add new contact
     public function addContactForm($request, $response)
     {
         $form_output = '';
@@ -89,7 +89,7 @@ class ContactsController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/contact_form_ui.json');
         
         // schema celeho formulare
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_contact_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/contact.json');
         
         // zakladni data, jedna polozka procentualni dane
         $json_formdata_output = '
@@ -132,7 +132,7 @@ class ContactsController extends Controller
         ));
     }
     
-    // show form for edit existing cost
+    // show form for edit existing contact
     public function editContactForm($request, $response, $args)
     {
         
@@ -146,7 +146,7 @@ class ContactsController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/contact_form_ui.json');
         
         // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/edit_contact_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/contact.json');
         
         // zakladni data pro editaci
         $json_formdata_output = $data['c_data'];
