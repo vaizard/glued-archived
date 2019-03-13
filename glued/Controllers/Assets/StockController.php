@@ -78,7 +78,7 @@ class StockController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/form_ui.json');
         
         // schema celeho formulare
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_assets_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/assets.json');
         
         // zakladni data, momentalne nic, ale musi tam byt aspon prazdny json objekt, tedy ty slozene zavorky
         $json_formdata_output = '{"data":{"ts_created":"'.time().'","ts_updated":"'.time().'"}}';
@@ -128,7 +128,7 @@ class StockController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/form_ui_quick.json');
         
         // schema celeho formulare
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/new_assets_form.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/assets.json');
         
         // zakladni data, momentalne nic, ale musi tam byt aspon prazdny json objekt, tedy ty slozene zavorky
         $json_formdata_output = '{"data":{"ts_created":"'.time().'","ts_updated":"'.time().'"}}';
@@ -211,7 +211,7 @@ class StockController extends Controller
             $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/form_ui.json');
             
             // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
-            $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/edit_assets_form.json');
+            $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/assets.json');
             
             // zakladni data pro editaci
             $json_formdata_output = $data['c_data'];

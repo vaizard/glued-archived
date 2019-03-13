@@ -1,5 +1,4 @@
 {
-    "title": "New assets form",
     "type": "object",
     "properties":{
         "data": {
