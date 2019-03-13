@@ -1,5 +1,4 @@
 {
-    "title": "New contact form",
     "type": "object",
     "properties":{
         "data": {
