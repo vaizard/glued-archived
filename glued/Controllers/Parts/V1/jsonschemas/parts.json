@@ -1,5 +1,4 @@
 {
-    "title": "Edit consumables form",
     "type": "object",
     "properties":{
         "data": {
@@ -26,6 +25,10 @@
                           "type": "string",
                           "title": "Item description"
                         },
+                        "item_no": {
+                          "type": "string",
+                          "title": "Item #"
+                        },
                         "item_notes": {
                           "type": "string",
                           "title": "Notes"
@@ -44,33 +47,47 @@
                                       "title": "Stock",
                                       "default": 0
                                     },
-                                    "level": {
-                                      "type": "string",
-                                      "title": "Level"
-                                    },
-                                    "stock_green": {
-                                      "type": "integer",
-                                      "title": "Stock green",
-                                      "default": 0
-                                    },
-                                    "stock_blue": {
-                                      "type": "integer",
-                                      "title": "Stock blue",
-                                      "default": 0
-                                    },
-                                    "stock_yellow": {
-                                      "type": "integer",
-                                      "title": "Stock yellow",
-                                      "default": 0
-                                    },
-                                    "stock_red": {
-                                      "type": "integer",
-                                      "title": "Stock red",
-                                      "default": 0
-                                    },
                                     "stock_unit": {
                                       "type": "string",
                                       "title": "Stock unit"
+                                    }
+                                }
+                            }
+                        },
+                        "purchases": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "supplier": {
+                                      "type": "string",
+                                      "title": "Supplier"
+                                    },
+                                    "quantity": {
+                                      "type": "integer",
+                                      "title": "Quantity",
+                                      "default": 0
+                                    },
+                                    "unit": {
+                                      "type": "string",
+                                      "title": "Unit"
+                                    },
+                                    "warranty": {
+                                      "type": "string",
+                                      "title": "Warranty"
+                                    },
+                                    "date": {
+                                      "type": "string",
+                                      "format": "date",
+                                      "title": "Date",
+                                    },
+                                    "invoice_no": {
+                                      "type": "string",
+                                      "title": "Invoice #"
+                                    },
+                                    "purchase_id": {
+                                      "type": "string",
+                                      "title": "Purchase id"
                                     }
                                 }
                             }
