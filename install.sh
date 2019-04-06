@@ -77,5 +77,5 @@ popd > /dev/null
 
 eecho ""
 eecho "***********************"
-eecho ""
-eecho "DONE!"
+eecho "*** INSTALL DONE! *****"
+eecho "***********************"
