@@ -23,7 +23,9 @@ return [
         
         // glued globals
         'glued' => [
-            'hostname' => 'glued.example.com'
+            'hostname' => 'glued.example.com',
+            'session_default_timeout' => 7200,
+            'session_min_timeout' => 300
         ],
         
     ],
