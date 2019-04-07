@@ -73,9 +73,12 @@ $container['view'] = function ($container) {
         'email' => $container->auth_user->email,
         'root' => $container->auth_user->root
     ]);
-
+    
+    $basePath = rtrim(str_ireplace("index.php", "", $container["request"]->getUri()->getBasePath()), "/");
+    
     $view->getEnvironment()->addGlobal('flash', $container->flash);
-
+    $view->getEnvironment()->addGlobal('public_path', $basePath);
+    
     return $view;
 };
 

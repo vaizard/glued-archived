@@ -33,15 +33,11 @@ class MyNewMigration extends AbstractMigration
     public function change()
     {
         
-        // create a klice
+        // create, klice, autoincrementy
         $count = $this->execute("
 
 SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";
 SET time_zone = \"+00:00\";
-
---
--- Databáze: `glued_db`
---
 
 -- --------------------------------------------------------
 
@@ -417,6 +413,7 @@ CREATE TABLE `t_wiki_articles` (
   `c_data` json DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 --
 -- Klíèe pro exportované tabulky
 --
@@ -425,26 +422,6 @@ CREATE TABLE `t_wiki_articles` (
 -- Klíèe pro tabulku `platby_mzdy`
 --
 ALTER TABLE `platby_mzdy`
-  ADD PRIMARY KEY (`id`);
-
---
--- Klíèe pro tabulku `rel_timepixels_users`
---
-ALTER TABLE `rel_timepixels_users`
-  ADD KEY `timepixel_id` (`timepixel_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Klíèe pro tabulku `sh_pokus`
---
-ALTER TABLE `sh_pokus`
-  ADD PRIMARY KEY (`id1`,`id2`),
-  ADD KEY `hodnota` (`hodnota`);
-
---
--- Klíèe pro tabulku `timepixels`
---
-ALTER TABLE `timepixels`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -605,10 +582,133 @@ ALTER TABLE `t_wiki`
 ALTER TABLE `t_wiki_articles`
   ADD PRIMARY KEY (`c_uid`);
 
+
+--
+-- AUTO_INCREMENT pro tabulky
+--
+
+--
+-- AUTO_INCREMENT pro tabulku `platby_mzdy`
+--
+ALTER TABLE `platby_mzdy`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
+-- AUTO_INCREMENT pro tabulku `t_accounting_account_groups`
+--
+ALTER TABLE `t_accounting_account_groups`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+--
+-- AUTO_INCREMENT pro tabulku `t_accounting_received`
+--
+ALTER TABLE `t_accounting_received`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_action`
+--
+ALTER TABLE `t_action`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+--
+-- AUTO_INCREMENT pro tabulku `t_assets_items`
+--
+ALTER TABLE `t_assets_items`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_authentication`
+--
+ALTER TABLE `t_authentication`
+  MODIFY `c_uid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_consumables_items`
+--
+ALTER TABLE `t_consumables_items`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_contacts`
+--
+ALTER TABLE `t_contacts`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_facebook_events`
+--
+ALTER TABLE `t_facebook_events`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_facebook_pages`
+--
+ALTER TABLE `t_facebook_pages`
+  MODIFY `c_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_facebook_tokens`
+--
+ALTER TABLE `t_facebook_tokens`
+  MODIFY `c_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_helper`
+--
+ALTER TABLE `t_helper`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
+-- AUTO_INCREMENT pro tabulku `t_implemented_action`
+--
+ALTER TABLE `t_implemented_action`
+  MODIFY `c_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_implemented_roles`
+--
+ALTER TABLE `t_implemented_roles`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+--
+-- AUTO_INCREMENT pro tabulku `t_imported_data`
+--
+ALTER TABLE `t_imported_data`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_imported_settings`
+--
+ALTER TABLE `t_imported_settings`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_parts_items`
+--
+ALTER TABLE `t_parts_items`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_privileges`
+--
+ALTER TABLE `t_privileges`
+  MODIFY `c_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_stor_links`
+--
+ALTER TABLE `t_stor_links`
+  MODIFY `c_uid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_users`
+--
+ALTER TABLE `t_users`
+  MODIFY `c_uid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_vectors`
+--
+ALTER TABLE `t_vectors`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_wiki`
+--
+ALTER TABLE `t_wiki`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT pro tabulku `t_wiki_articles`
+--
+ALTER TABLE `t_wiki_articles`
+  MODIFY `c_uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+        
         ");
         
         
-        // defaultni data
+        // defaultni data, insert
         $count = $this->execute("
 --
 -- Vypisuji data pro tabulku `t_accounting_account_groups`
