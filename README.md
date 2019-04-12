@@ -2,11 +2,14 @@
 
 ## Installation
 
-- clone this repo so that its accessible under https://yourserver.com/glued/
-- example nginx default site conf is provided. handle with care so that you don't break other things on your server
-- database dump is provided, expects mysql 8.0 or newer.
-- copy glued/settings.php.example to glued/settings.php, modify the latter.
-- look into https://yourserver.com/glued/public/ 
+Run
+
+```
+bash <(curl https://raw.githubusercontent.com/vaizard/glued/master/install.sh)
+```
+
+and follow the on-screen instructions. Once the installation succeeds, go to
+https://example.com/glued/public/ 
 
 ## Structure
 
