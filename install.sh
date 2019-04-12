@@ -24,7 +24,15 @@ eecho "***********************"
 eecho ""
 
 eprintf "*** Install glued? (y/n): "
-read resp
+
+if [ -t 1 ] ; then 
+  read resp
+  eecho "--- Terminal installation"
+else
+  read -u 3 resp
+  eecho "--- Streamed installation"
+  streamed="-u 3"
+fi
 
 if [ "$resp" != "y" ] ; then 
   eexit "exitting"
