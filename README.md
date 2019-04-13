@@ -36,19 +36,20 @@ Contributions welcomed, just fork Glued an make your first PR! Below a bunch of 
 
 ### UI 
 
-Currently Glued relies a lot on
+Currently Glued relies on
 
-- bootstrap 4
-- modular-admin-html (resp. our fork https://github.com/vaizard/modular-admin-glued)
+- bootstrap 4.3
+- [glued-modular-admin](https://github.com/vaizard/glued-modular-admin) (a fork of https://github.com/modularcode/modular-admin-html)
 - jquery
 - rjsf
 
 #### Hack modular-admin-html
 
 ```
-git clone https://github.com/modularcode/modular-admin-html.git
+git clone https://github.com/vaizard/glued-modular-admin.git
 cd modular-admin-html
 npm install             # pull in dependencies
+npm audit fix           # security fixes
 npm run build           # create the static build (content in /dist directory)
 ```
 
