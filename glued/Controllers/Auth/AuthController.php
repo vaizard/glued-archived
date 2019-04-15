@@ -84,12 +84,20 @@ class AuthController extends Controller
         // DEBUG
         // var_dump($request->getParams());
         
+        // defaultne je ve skupine 2, users
+        $default_group = 2;
+        // pokud je to ovsem prvni zakladany user, musi dostat i root prava, tedy musi byt ve skupinach root a user,  1 + 2 = 3
+        $aspon_jeden = $this->container->db->get('t_users', 1);
+        if ($this->container->db->count == 0) { $default_group = 3; }
+        
+        
         // insert $data into db with transaction, 2 tables
         $this->container->db->startTransaction();
         
         // do t_users vlozime zakladni zaznam, a funkce nam vraci zalozene id
         $data1 = Array (
-            "c_screenname"     => $request->getParam('name')
+            "c_screenname"     => $request->getParam('name'),
+            "c_group_mememberships" => $default_group
         );
         $new_user_id = $this->container->db->insert ('t_users', $data1);
         
@@ -102,7 +110,7 @@ class AuthController extends Controller
                 "c_username"     => $request->getParam('email'),
                 "c_pasword"  => password_hash($request->getParam('password'), PASSWORD_DEFAULT),
             );
-            $new_autentication_id = $this->container->db->insert ('t_authentication', $data2);
+            $new_autentication_id = $this->container->db->insert('t_authentication', $data2);
             
             if ($new_autentication_id) {
                 $this->container->logger->info("Auth: user ".$request->getParam('email')." created");
