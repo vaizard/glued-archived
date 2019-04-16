@@ -47,6 +47,9 @@ fi
 
 pushd glued > /dev/null
 
+  eecho "--- Ensure phinx.yml is assumed unchanged by git"
+  git update-index --assume-unchanged phinx.yml
+
 
 eecho "--- Ensuring private and public keys are present"
 if [ ! -f ./private/oauth/private.key ]; then
