@@ -4,22 +4,22 @@ paths:
 
 environments:
     default_migration_table: phinxlog
-    default_database: development
+    default_database: production
     production:
         adapter: mysql
-        host: localhost
-        name: production_db
-        user: root
-        pass: ''
+        host: 127.0.0.1
+        name: glued
+        user: glued
+        pass: 'CBahHWTLkXbAbn6ZNaVx6DSqzdiB7BUv'
         port: 3306
         charset: utf8
 
     development:
         adapter: mysql
-        host: localhost
+        host: 127.0.0.1
         name: development_db
         user: root
-        pass: ''
+        pass: '*****'
         port: 3306
         charset: utf8
 

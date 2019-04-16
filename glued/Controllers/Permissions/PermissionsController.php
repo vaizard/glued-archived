@@ -14,7 +14,7 @@ class PermissionsController extends Controller
         $my_user_data = $this->container->auth->user();
         $my_groups = $this->container->permissions->user_groups($my_user_data);
         if (in_array('root', $my_groups)) {
-            $developer_link = '<a class="pull-right" href="'.$this->container->router->pathFor('acl.developer').'">for Developer</a><a class="pull-right" style="margin: 0 25px;" href="'.$this->container->router->pathFor('acl.crossroad').'">for Root</a>';
+            $developer_link = '<a class="pull-right" style="margin: 0 0 0 25px;" href="'.$this->container->router->pathFor('acl.crossroad').'">Systemwide permissions</a><a class="pull-right" style="margin: 0 0 0 25px" href="'.$this->container->router->pathFor('acl.developer').'">Developer tools</a>';
         }
         
         
