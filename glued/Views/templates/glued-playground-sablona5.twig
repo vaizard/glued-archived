@@ -9,9 +9,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="apple-touch-icon" href="apple-touch-icon.png">
         <!-- Place favicon.ico in the root directory -->
-        <link rel="stylesheet" href="{{ base_url() }}/dashboard/css/vendor.css">
-        <link rel="stylesheet" href="{{ base_url() }}/dashboard/css/app.css">
-        <link rel="stylesheet" href="{{ base_url() }}/css/glued.css">
+        <link rel="stylesheet" href="{{ public_path }}/dashboard/css/vendor.css">
+        <link rel="stylesheet" href="{{ public_path }}/dashboard/css/app.css">
+        <link rel="stylesheet" href="{{ public_path }}/css/glued.css">
         
     <title>Glued</title>
     
@@ -90,8 +90,8 @@
                 <div class="color-secondary"></div>
             </div>
         </div>
-        <script src="{{ base_url() }}/dashboard/js/vendor.js"></script>
-        <script src="{{ base_url() }}/dashboard/js/app.js"></script>
+        <script src="{{ public_path }}/dashboard/js/vendor.js"></script>
+        <script src="{{ public_path }}/dashboard/js/app.js"></script>
         
         {% if additional_javascript is defined %}
         {{ additional_javascript | raw }}
