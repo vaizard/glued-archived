@@ -156,29 +156,195 @@ $(function() {
 		$el.addClass('visible');
 	}, 1000);
 })
+//LoginForm validation
+$(function() {
+	if (!$('#login-form').length) {
+        return false;
+    }
 
+    var loginValidationSettings = {
+	    rules: {
+	        username: {
+	            required: true,
+	            email: true
+	        },
+	        password: "required",
+	        agree: "required"
+	    },
+	    messages: {
+	        username: {
+	            required: "Please enter username",
+	            email: "Please enter a valid email address"
+	        },
+	        password:  "Please enter password",
+	        agree: "Please accept our policy"
+	    },
+	    invalidHandler: function() {
+			animate({
+				name: 'shake',
+				selector: '.auth-container > .card'
+			});
+		}
+	}
 
+	$.extend(loginValidationSettings, config.validations);
+
+    $('#login-form').validate(loginValidationSettings);
+})
+//ResetForm validation
+$(function() {
+	if (!$('#reset-form').length) {
+        return false;
+    }
+
+    var resetValidationSettings = {
+	    rules: {
+	        email1: {
+	            required: true,
+	            email: true
+	        }
+	    },
+	    messages: {
+	        email1: {
+	            required: "Please enter email address",
+	            email: "Please enter a valid email address"
+	        }
+	    },
+	    invalidHandler: function() {
+			animate({
+				name: 'shake',
+				selector: '.auth-container > .card'
+			});
+		}
+	}
+
+	$.extend(resetValidationSettings, config.validations);
+
+    $('#reset-form').validate(resetValidationSettings);
+})
+//SignupForm validation
+$(function() {
+	if (!$('#signup-form').length) {
+        return false;
+    }
+
+    var signupValidationSettings = {
+	    rules: {
+	    	firstname: {
+	    		required: true,
+	    	},
+	    	lastname: {
+	    		required: true,
+	    	},
+	        email: {
+	            required: true,
+	            email: true
+	        },
+	        password: {
+				required: true,
+				minlength: 8
+	        },
+	        retype_password: {
+				required: true,
+				minlength: 8,
+				equalTo: "#password"
+			},
+			agree: {
+				required: true,
+			}
+	    },
+	    groups: {
+	    	name: "firstname lastname",
+			pass: "password retype_password",
+		},
+		errorPlacement: function(error, element) {
+			if (
+				element.attr("name") == "firstname" || 
+				element.attr("name") == "lastname" 
+			) {
+				error.insertAfter($("#lastname").closest('.row'));
+				element.parents("div.form-group")
+				.addClass('has-error');
+			} 
+			else if (
+				element.attr("name") == "password" || 
+				element.attr("name") == "retype_password" 
+			) {
+				error.insertAfter($("#retype_password").closest('.row'));
+				element.parents("div.form-group")
+				.addClass('has-error');
+			}
+			else if (element.attr("name") == "agree") {
+				error.insertAfter("#agree-text");
+			}
+			else {
+				error.insertAfter(element);
+			}
+		},
+	    messages: {
+	    	firstname: "Please enter firstname and lastname",
+	    	lastname: "Please enter firstname and lastname",
+	        email: {
+	            required: "Please enter email",
+	            email: "Please enter a valid email address"
+	        },
+	        password: {
+	        	required: "Please enter password fields.",
+	        	minlength: "Passwords should be at least 8 characters."
+	        },
+	        retype_password: {
+	        	required: "Please enter password fields.",
+	        	minlength: "Passwords should be at least 8 characters."
+	        },
+	        agree: "Please accept our policy"
+	    },
+	    invalidHandler: function() {
+			animate({
+				name: 'shake',
+				selector: '.auth-container > .card'
+			});
+		}
+	}
+
+	$.extend(signupValidationSettings, config.validations);
+
+    $('#signup-form').validate(signupValidationSettings);
+});
 $(function() {
 
 	$(".wyswyg").each(function() {
 
-		var $toolbar = $(this).find(".toolbar");
 		var $editor = $(this).find(".editor");
-
+		var $toolbar = $(this).find(".toolbar");
 
 		var editor = new Quill($editor.get(0), {
-			theme: 'snow'
+			theme: 'snow',
+			// modules: {
+			// 	toolbar: toolbarOptions
+			// }
+			modules: {
+				toolbar: $toolbar.get(0)
+			}
 		});
 
-		editor.addModule('toolbar', {
-			container: $toolbar.get(0)     // Selector for toolbar container
-		});
+		// var $toolbar = $(this).find(".toolbar");
+		// var $editor = $(this).find(".editor");
+
+
+		// var editor = new Quill($editor.get(0), {
+		// 	theme: 'snow'
+		// });
+
+		// editor.addModule('toolbar', {
+		// 	container: $toolbar.get(0)     // Selector for toolbar container
+		// });
 
 
 
 	});
-	
+
 });
+
 $(function () {
 
 	$('#sidebar-menu, #customize-menu').metisMenu({
@@ -518,16 +684,15 @@ $(function() {
                     borderWidth:0,
                     hoverable: true //IMPORTANT! this is needed for tooltip to work,
 
-                },
-                tooltip: true,
-                tooltipOpts: {
-                    content: "%s for %x was %y",
+				},
+				tooltip: {
+					show: true,
+					content: "%s for %x was %y",
                     xDateFormat: "%y-%m-%d",
-
                     onHover: function(flotItem, $tooltipEl) {
                         // console.log(flotItem, $tooltipEl);
                     }
-                }
+				}
 
             });
         }
@@ -547,6 +712,7 @@ $(function() {
     });
 
 });
+
 $(function() {
     
     if (!$('#morris-one-line-chart').length) {
@@ -976,7 +1142,7 @@ $(function() {
 $(function(){
 
 	// set sortable options
-	$('.images-container').sortable({
+	var sortable = new Sortable($('.images-container').get(0), {
 		animation: 150,
 		handle: ".control-btn.move",
 		draggable: ".image-container",
@@ -1007,6 +1173,7 @@ $(function(){
 	})
 
 })
+
 $(function() {
 
     if (!$('#select-all-items').length) {
