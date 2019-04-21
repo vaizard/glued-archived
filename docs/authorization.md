@@ -21,10 +21,22 @@ can perform an <ACTION> on an <OBJECT>.
 
 - `t_action` (actions/api verbs definitions)
 - `t_authentication` (stores user passwords and other access credentials)
-  - :warning: c_uid, c_user_id, c_type, c_username, c_pasword, c_domain, c_limits, c_status)
 - `t_implemented_action` (stores what actions are allowed in case of a status of an object)
 - `t_privileges` (gives privileges)
 - `t_users` (lists users)
+
+`t_authentication`
+
+| column       | value | description |
+|--------------|-------|-------------|
+| `c_uid`      |       | unique key  |
+| `c_user_id`  | int   | user id     |
+| `c_type`     | 
+| `c_username` | 
+| `c_password` | 
+| `c_domain`   | 
+| `c_limits`   | 
+| `c_status`   | 
 
 ### Privileges denormailzation
 
