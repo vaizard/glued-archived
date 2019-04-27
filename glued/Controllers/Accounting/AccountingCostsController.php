@@ -10,19 +10,35 @@ class AccountingCostsController extends Controller
     public function getCosts($request, $response)
     {
         $costs_output = '';
-        $sloupce = array("c_uid", "c_data->>'$.data.doc_id' as doc_id", "c_data->>'$.data.supplier.name' as name", "c_data->>'$.data.price_vat' as price_vat", "c_data->>'$.data.currency' as currency");
+        $sloupce = array("c_uid", "c_data", "c_data->>'$.data.doc_id' as doc_id", "c_data->>'$.data.supplier.name' as name", "c_data->>'$.data.price_vat' as price_vat", "c_data->>'$.data.currency' as currency");
         $this->container->db->orderBy("c_uid","asc");
         $bills = $this->container->db->get('t_accounting_received', null, $sloupce);
         if (count($bills) > 0) {
             foreach ($bills as $data) {
+                // dekodujeme si data
+                $json_data = json_decode($data['c_data'], true);
+                // zjistime spojene concat managerial_accounting.project_name
+                $project = '';
+                $project_pole = array();
+                if (isset($json_data['data']['managerial_acc'])) {
+                    $pole_accountu = $json_data['data']['managerial_acc'];
+                    foreach ($pole_accountu as $ma) {
+                        $project_pole[] = $ma['pixel_id'];
+                    }
+                    $project = implode(', ', $project_pole);
+                }
+                
                 $costs_output .= '
                     <tr id="cost_row_'.$data['c_uid'].'">
                         <th scope="row">'.$data['c_uid'].'</th>
                         <td>'.$data['doc_id'].'</td>
                         <td>'.$data['name'].'</td>
+                        <td>'.$project.'</td>
                         <td>'.$data['price_vat'].' '.$data['currency'].'</td>
-                        <td><a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'">edit</a></td>
-                        <td><span style="cursor: pointer; color: red;" onclick="delete_cost('.$data['c_uid'].');">delete</span></td>
+                        <td>
+                            <a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'"><i class="fa fa-edit"></i></a>
+                            <i class="fa fa-trash" style="cursor: pointer; color: red;" onclick="delete_cost('.$data['c_uid'].');"></i>
+                        </td>
                     </tr>
                 ';
             }
