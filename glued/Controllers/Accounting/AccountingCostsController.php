@@ -10,7 +10,7 @@ class AccountingCostsController extends Controller
     public function getCosts($request, $response)
     {
         $costs_output = '';
-        $sloupce = array("c_uid", "c_data", "c_data->>'$.data.doc_id' as doc_id", "c_data->>'$.data.supplier.name' as name", "c_data->>'$.data.price_vat' as price_vat", "c_data->>'$.data.currency' as currency");
+        $sloupce = array("c_uid", "c_data", "c_data->>'$.data.inv_nr' as inv_nr", "c_data->>'$.data.supplier.name' as name", "c_data->>'$.data.acc_total_vat' as acc_total_vat", "c_data->>'$.data.acc_curr' as acc_curr");
         $this->container->db->orderBy("c_uid","asc");
         $bills = $this->container->db->get('t_accounting_received', null, $sloupce);
         if (count($bills) > 0) {
@@ -19,7 +19,6 @@ class AccountingCostsController extends Controller
                 $json_data = json_decode($data['c_data'], true);
                 // zjistime spojene concat managerial_accounting.project_name
                 $project = '';
-                $project_title = '';
                 $mana_groups = '';
                 
                 $project_pole = array();
@@ -35,12 +34,11 @@ class AccountingCostsController extends Controller
                         $vector_data = $this->container->db->getOne('t_vectors', $vector_sloupce);
                         if ($this->container->db->count == 1) {
                             $project_names_pole[] = $vector_data['name'];
-                            $project_pole[] = '<a href="'.$this->container->router->pathFor('vectors.vector', array('id' => $ma['pixel_id'])).'">'.$ma['pixel_id'].'</a>';
+                            $project_pole[] = '<a href="'.$this->container->router->pathFor('vectors.vector', array('id' => $ma['pixel_id'])).'" title="'.$vector_data['name'].'">'.$ma['pixel_id'].'</a>';
                             $mana_groups_pole[] = $ma['acc_group'];
                         }
                     }
                     $project = implode(', ', $project_pole);
-                    $project_title = implode(', ', $project_names_pole);
                     $mana_groups = implode(', ', $mana_groups_pole);
                 }
                 
@@ -50,12 +48,12 @@ class AccountingCostsController extends Controller
                 $costs_output .= '
                     <tr id="cost_row_'.$data['c_uid'].'">
                         <th scope="row">'.$data['c_uid'].'</th>
-                        <td>'.$data['doc_id'].'</td>
+                        <td>'.$data['inv_nr'].'</td>
                         <td>'.$data['name'].'</td>
-                        <td>'.$data['price_vat'].' '.$data['currency'].'</td>
-                        <td title="'.$project_title.'">'.$project.'</td>
+                        <td>'.$data['acc_total_vat'].' '.$data['acc_curr'].'</td>
+                        <td>'.$project.'</td>
                         <td>'.$mana_groups.'</td>
-                        <td>'.$json_data['data']['ext_id'][0]['svc'].', '.$json_data['data']['ext_id'][0]['id1'].', '.$json_data['data']['ext_id'][0]['id2'].'</td>
+                        <td>'.$json_data['data']['ext_id'][0]['svc'].'/'.$json_data['data']['ext_id'][0]['id1'].'/'.$json_data['data']['ext_id'][0]['id2'].'</td>
                         <td title="'.$json_data['data']['note'].'">'.$osekane_note.'</td>
                         <td>
                             <a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'"><i class="fa fa-edit"></i></a>

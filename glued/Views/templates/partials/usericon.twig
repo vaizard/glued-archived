@@ -8,7 +8,7 @@
                 <span class="name"> {{ auth.user.c_screenname }} </span>
             </a>
             <div class="dropdown-menu profile-dropdown-menu" aria-labelledby="dropdownMenu1">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{{ path_for('auth.profile') }}">
                     <i class="fa fa-user icon"></i> Profile </a>
                 <a class="dropdown-item" href="#">
                     <i class="fa fa-bell icon"></i> Notifications </a>
