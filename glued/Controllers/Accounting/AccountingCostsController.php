@@ -19,22 +19,44 @@ class AccountingCostsController extends Controller
                 $json_data = json_decode($data['c_data'], true);
                 // zjistime spojene concat managerial_accounting.project_name
                 $project = '';
+                $project_title = '';
+                $mana_groups = '';
+                
                 $project_pole = array();
+                $project_names_pole = array();
+                $mana_groups_pole = array();
                 if (isset($json_data['data']['managerial_acc'])) {
                     $pole_accountu = $json_data['data']['managerial_acc'];
                     foreach ($pole_accountu as $ma) {
-                        $project_pole[] = $ma['pixel_id'];
+                        // pixel id je id z tabulky vektoru
+                        $vektor_id = (int) $ma['pixel_id'];
+                        $vector_sloupce = array("c_uid", "c_data->>'$.data.summary[0].data' as name");
+                        $this->container->db->where("c_uid", $vektor_id);
+                        $vector_data = $this->container->db->getOne('t_vectors', $vector_sloupce);
+                        if ($this->container->db->count == 1) {
+                            $project_names_pole[] = $vector_data['name'];
+                            $project_pole[] = '<a href="'.$this->container->router->pathFor('vectors.vector', array('id' => $ma['pixel_id'])).'">'.$ma['pixel_id'].'</a>';
+                            $mana_groups_pole[] = $ma['acc_group'];
+                        }
                     }
                     $project = implode(', ', $project_pole);
+                    $project_title = implode(', ', $project_names_pole);
+                    $mana_groups = implode(', ', $mana_groups_pole);
                 }
+                
+                $osekane_note = $json_data['data']['note'];
+                if (strlen($osekane_note) > 25) { $osekane_note = substr($osekane_note, 0, 25); }
                 
                 $costs_output .= '
                     <tr id="cost_row_'.$data['c_uid'].'">
                         <th scope="row">'.$data['c_uid'].'</th>
                         <td>'.$data['doc_id'].'</td>
                         <td>'.$data['name'].'</td>
-                        <td>'.$project.'</td>
                         <td>'.$data['price_vat'].' '.$data['currency'].'</td>
+                        <td title="'.$project_title.'">'.$project.'</td>
+                        <td>'.$mana_groups.'</td>
+                        <td>'.$json_data['data']['ext_id'][0]['svc'].', '.$json_data['data']['ext_id'][0]['id1'].', '.$json_data['data']['ext_id'][0]['id2'].'</td>
+                        <td title="'.$json_data['data']['note'].'">'.$osekane_note.'</td>
                         <td>
                             <a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'"><i class="fa fa-edit"></i></a>
                             <i class="fa fa-trash" style="cursor: pointer; color: red;" onclick="delete_cost('.$data['c_uid'].');"></i>
