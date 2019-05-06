@@ -32,6 +32,7 @@ $app->group('', function () {
 
   // $app isn't in scope inside here, we use $this instead
   // we could use $app only if we'd have to call "function () use ($app)"
+  $this->get('/auth/profile', 'AuthController:getProfile')->setName('auth.profile');
   $this->get('/auth/settings', 'AuthController:getSettings')->setName('auth.settings');
   $this->post('/auth/password/change', 'AuthController:postChangePassword')->setName('auth.password.change');
   $this->post('/auth/identification/change', 'AuthController:postChangeIdentification')->setName('auth.identification.change');

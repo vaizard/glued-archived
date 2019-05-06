@@ -241,6 +241,14 @@ class AuthController extends Controller
         
     }
     
+    // vypis profilu
+    public function getProfile($request, $response)
+    {
+        return $this->container->view->render($response, 'auth/profile.twig');
+    }
+    
+    
+    
     
 
 }
