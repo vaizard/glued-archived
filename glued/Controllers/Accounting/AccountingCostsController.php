@@ -45,6 +45,14 @@ class AccountingCostsController extends Controller
                 $osekane_note = $json_data['data']['note'];
                 if (strlen($osekane_note) > 25) { $osekane_note = substr($osekane_note, 0, 25); }
                 
+                // slozeni ext
+                $ext_pole = array();
+                if (!empty($json_data['data']['ext_id'][0]['svc'])) { $ext_pole[] = $json_data['data']['ext_id'][0]['svc']; }
+                if (!empty($json_data['data']['ext_id'][0]['id1'])) { $ext_pole[] = $json_data['data']['ext_id'][0]['id1']; }
+                if (!empty($json_data['data']['ext_id'][0]['id2'])) { $ext_pole[] = $json_data['data']['ext_id'][0]['id2']; }
+                if (count($ext_pole) > 0) { $ext_vystup = implode('/', $ext_pole); }
+                else { $ext_vystup = ''; }
+                
                 $costs_output .= '
                     <tr id="cost_row_'.$data['c_uid'].'">
                         <th scope="row">'.$data['c_uid'].'</th>
@@ -53,7 +61,7 @@ class AccountingCostsController extends Controller
                         <td>'.$data['acc_total_vat'].' '.$data['acc_curr'].'</td>
                         <td>'.$project.'</td>
                         <td>'.$mana_groups.'</td>
-                        <td>'.$json_data['data']['ext_id'][0]['svc'].'/'.$json_data['data']['ext_id'][0]['id1'].'/'.$json_data['data']['ext_id'][0]['id2'].'</td>
+                        <td>'.$ext_vystup.'</td>
                         <td title="'.$json_data['data']['note'].'">'.$osekane_note.'</td>
                         <td>
                             <a href="'.$this->container->router->pathFor('accounting.editcostform').$data['c_uid'].'"><i class="fa fa-edit"></i></a>
