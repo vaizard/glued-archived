@@ -244,7 +244,76 @@ class AuthController extends Controller
     // vypis profilu
     public function getProfile($request, $response)
     {
-        return $this->container->view->render($response, 'auth/profile.twig');
+        
+        $vystup = '';
+        $vystup2 = '';
+        
+        $json_string = '
+        {
+          "data": {
+            "left_column": {
+              "ext_id": [
+                {
+                  "id2": "5",
+                  "svc": "DEEF"
+                }
+              ],
+              "supplier": {
+                "entity_type": "private"
+              }
+            },
+            "right_column": {
+              "acc_curr": "",
+              "managerial_acc": [
+                {}
+              ],
+              "financial_acc": [
+                {
+                  "pixel_id": "1"
+                }
+              ]
+            },
+            "_id": "42",
+            "creator": "1",
+            "dt_created": "2019-01-09 21:50:09"
+          }
+        }';
+        
+        $json_objekt = json_decode($json_string);
+        
+        $vystup .= '<div>json retezec:<br />'.$json_string.'</div>';
+        $vystup .= '<div style="margin-top: 25px;">odpovidajici objekt:<br />'.print_r($json_objekt, true).'</div>';
+        
+        // ********************
+        
+        // zkopirujeme
+        $levy_objekt = $json_objekt->data->left_column;
+        $pravy_objekt = $json_objekt->data->right_column;
+        
+        // z puvodniho to smazeme
+        unset($json_objekt->data->left_column);
+        unset($json_objekt->data->right_column);
+        
+        $vystup .= '<div style="margin-top: 25px;">zkopirovany levy sloupec jako objekt:<br />'.print_r($levy_objekt, true).'</div>';
+        $vystup .= '<div style="margin-top: 25px;">zkopirovany pravy sloupec jako objekt:<br />'.print_r($pravy_objekt, true).'</div>';
+        
+        
+        // jako zaklad pouzijeme to puvodni pole
+        $vystup2 .= '<div>pouzijeme osekany puvodni objekt:<br />'.print_r($json_objekt, true).'</div>';
+        
+        // pridame tam prvky tech dvou objektu
+        foreach($levy_objekt as $k => $v) { $json_objekt->data->$k = $v; }
+        foreach($pravy_objekt as $k => $v) { $json_objekt->data->$k = $v; }
+        
+        $vystup2 .= '<div style="margin-top: 25px;">naplnime ho kopiemi levy a pravy sloupec:<br />'.print_r($json_objekt, true).'</div>';
+        
+        $json_vysledek = json_encode($json_objekt);
+        
+        $vystup2 .= '<div style="margin-top: 25px;">vysledny json retezec:<br />'.$json_vysledek.'</div>';
+        
+        
+        
+        return $this->container->view->render($response, 'auth/profile.twig', array('vystup' => $vystup, 'vystup2' => $vystup2));
     }
     
     

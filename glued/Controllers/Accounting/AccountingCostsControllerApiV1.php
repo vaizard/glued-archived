@@ -14,13 +14,15 @@ class AccountingCostsControllerApiV1 extends Controller
         $user_id = $_SESSION['user_id'];
         
         // upravime send data, co je v left_column a v right_column dame o uroven nahoru
-        $send_data_array = json_decode($senddata, true);
-        $left_data = $send_data_array['data']['left_column'];
-        $right_data = $send_data_array['data']['right_column'];
-        unset($send_data_array['data']['left_column']);
-        unset($send_data_array['data']['right_column']);
-        $new_data['data'] = array_merge($send_data_array['data'], $left_data, $right_data);
-        $senddata_upravena = json_encode($new_data);
+        // musime to upravovat jako objekt
+        $send_data_object = json_decode($senddata);
+        $left_data = $send_data_object->data->left_column;
+        $right_data = $send_data_object->data->right_column;
+        unset($send_data_object->data->left_column);
+        unset($send_data_object->data->right_column);
+        foreach($left_data as $k => $v) { $send_data_object->data->$k = $v; }
+        foreach($right_data as $k => $v) { $send_data_object->data->$k = $v; }
+        $senddata_upravena = json_encode($send_data_object);
         
         // vlozime to jak to prislo z formu
         // 500 = 111 110 100
@@ -55,13 +57,15 @@ class AccountingCostsControllerApiV1 extends Controller
         $senddata = $request->getParam('billdata');
         
         // upravime send data, co je v left_column a v right_column dame o uroven nahoru
-        $send_data_array = json_decode($senddata, true);
-        $left_data = $send_data_array['data']['left_column'];
-        $right_data = $send_data_array['data']['right_column'];
-        unset($send_data_array['data']['left_column']);
-        unset($send_data_array['data']['right_column']);
-        $new_data['data'] = array_merge($send_data_array['data'], $left_data, $right_data);
-        $senddata_upravena = json_encode($new_data);
+        // musime to upravovat jako objekt
+        $send_data_object = json_decode($senddata);
+        $left_data = $send_data_object->data->left_column;
+        $right_data = $send_data_object->data->right_column;
+        unset($send_data_object->data->left_column);
+        unset($send_data_object->data->right_column);
+        foreach($left_data as $k => $v) { $send_data_object->data->$k = $v; }
+        foreach($right_data as $k => $v) { $send_data_object->data->$k = $v; }
+        $senddata_upravena = json_encode($send_data_object);
         
         $this->container->db->where('c_uid', $args['id']);
         $update = $this->container->db->update('t_accounting_received', Array ( 'c_data' => $senddata_upravena ));
