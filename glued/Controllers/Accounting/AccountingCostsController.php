@@ -205,9 +205,14 @@ class AccountingCostsController extends Controller
         $json_formdata_output = $data['c_data'];
         
         // upravime data, do kterych pridame levy a pravy sloupec
-        $formdata = json_decode($json_formdata_output, true);
-        $additional_data['left_column'] = array();
-        $additional_data['right_column'] = array();
+        // musime to udelat jako objekt
+        $formdata = json_decode($json_formdata_output);
+        
+        // pridame si tam ty sloupce
+        $formdata->data->left_column = new \stdClass();
+        $formdata->data->right_column = new \stdClass();
+        
+        // definujem si klice
         $left_keys = array("dt_taxable",
               "dt_due",
               "inv_nr",
@@ -224,20 +229,23 @@ class AccountingCostsController extends Controller
               "managerial_acc",
               "financial_acc",
               "files");
+        
+        // presunem to
         foreach ($left_keys as $key) {
-            if (isset($formdata['data'][$key])) {
-                $additional_data['left_column'][$key] = $formdata['data'][$key];
-                unset($formdata['data'][$key]);
+            if (isset($formdata->data->$key)) {
+                $formdata->data->left_column->$key = $formdata->data->$key;
+                unset($formdata->data->$key);
             }
         }
         foreach ($right_keys as $key) {
-            if (isset($formdata['data'][$key])) {
-                $additional_data['right_column'][$key] = $formdata['data'][$key];
-                unset($formdata['data'][$key]);
+            if (isset($formdata->data->$key)) {
+                $formdata->data->right_column->$key = $formdata->data->$key;
+                unset($formdata->data->$key);
             }
         }
-        $new_data['data'] = array_merge($formdata['data'], $additional_data);
-        $json_formdata_output_upravena = json_encode($new_data);
+        
+        // prevedem to zpet na json retezec
+        $json_formdata_output_upravena = json_encode($formdata);
         
         // vnitrek onsubmit funkce
         //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
