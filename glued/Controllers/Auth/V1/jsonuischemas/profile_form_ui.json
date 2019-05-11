@@ -1,0 +1,27 @@
+{
+    "data": {
+        "fn": {
+          "ui:widget": "hidden"
+        },
+        "adr": {
+            "geo": {
+                "ui:widget": "hidden"            
+            }
+        },
+        "wallet": {
+          "ui:widget": "hidden"
+        },
+        "rel": {
+          "ui:widget": "hidden"
+        },
+        "files": {
+          "ui:widget": "hidden"
+        },
+        "cc": {
+          classNames: "hideFormBlock"
+        },
+        "roles": {
+          classNames: "hideFormBlock"
+        }                                            
+    }
+}

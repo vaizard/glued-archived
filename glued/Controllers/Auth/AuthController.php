@@ -244,79 +244,110 @@ class AuthController extends Controller
     // vypis profilu
     public function getProfile($request, $response)
     {
+        $user_id = $this->container->auth_user->user_id;
+        $this->container->db->where("c_uid", $user_id);
+        $data = $this->container->db->getOne('t_users');
         
-        $vystup = '';
-        $vystup2 = '';
-        
-        $json_string = '
+        /**
+         * JSON data to html table
+         * 
+         * @param object $data
+         * 
+         */
+        function jsonToTable ($data)
         {
-          "data": {
-            "left_column": {
-              "ext_id": [
-                {
-                  "id2": "5",
-                  "svc": "DEEF"
+            $table = '
+            <table class="json-table" width="100%">
+            ';
+            foreach ($data as $key => $value) {
+                $table .= '
+                <tr valign="top">
+                ';
+                if ( ! is_numeric($key)) {
+                    $table .= '
+                    <td>
+                        <strong>'. $key .':</strong>
+                    </td>
+                    <td>
+                    ';
+                } else {
+                    $table .= '
+                    <td colspan="2">
+                    ';
                 }
-              ],
-              "supplier": {
-                "entity_type": "private"
-              }
-            },
-            "right_column": {
-              "acc_curr": "",
-              "managerial_acc": [
-                {}
-              ],
-              "financial_acc": [
-                {
-                  "pixel_id": "1"
+                if (is_object($value) || is_array($value)) {
+                    $table .= jsonToTable($value);
+                } else {
+                    $table .= $value;
                 }
-              ]
-            },
-            "_id": "42",
-            "creator": "1",
-            "dt_created": "2019-01-09 21:50:09"
-          }
-        }';
+                $table .= '
+                    </td>
+                </tr>
+                ';
+            }
+            $table .= '
+            </table>
+            ';
+            return $table;
+        }
         
-        $json_objekt = json_decode($json_string);
+        if (empty($data['profile_data'])) { $profile_output = '<p>profil zatím nebyl editován</p>'; }
+        else { $profile_output = jsonToTable(json_decode($data['profile_data'])->data); }
         
-        $vystup .= '<div>json retezec:<br />'.$json_string.'</div>';
-        $vystup .= '<div style="margin-top: 25px;">odpovidajici objekt:<br />'.print_r($json_objekt, true).'</div>';
-        
-        // ********************
-        
-        // zkopirujeme
-        $levy_objekt = $json_objekt->data->left_column;
-        $pravy_objekt = $json_objekt->data->right_column;
-        
-        // z puvodniho to smazeme
-        unset($json_objekt->data->left_column);
-        unset($json_objekt->data->right_column);
-        
-        $vystup .= '<div style="margin-top: 25px;">zkopirovany levy sloupec jako objekt:<br />'.print_r($levy_objekt, true).'</div>';
-        $vystup .= '<div style="margin-top: 25px;">zkopirovany pravy sloupec jako objekt:<br />'.print_r($pravy_objekt, true).'</div>';
-        
-        
-        // jako zaklad pouzijeme to puvodni pole
-        $vystup2 .= '<div>pouzijeme osekany puvodni objekt:<br />'.print_r($json_objekt, true).'</div>';
-        
-        // pridame tam prvky tech dvou objektu
-        foreach($levy_objekt as $k => $v) { $json_objekt->data->$k = $v; }
-        foreach($pravy_objekt as $k => $v) { $json_objekt->data->$k = $v; }
-        
-        $vystup2 .= '<div style="margin-top: 25px;">naplnime ho kopiemi levy a pravy sloupec:<br />'.print_r($json_objekt, true).'</div>';
-        
-        $json_vysledek = json_encode($json_objekt);
-        
-        $vystup2 .= '<div style="margin-top: 25px;">vysledny json retezec:<br />'.$json_vysledek.'</div>';
-        
-        
-        
-        return $this->container->view->render($response, 'auth/profile.twig', array('vystup' => $vystup, 'vystup2' => $vystup2));
+        return $this->container->view->render($response, 'auth/profile.twig', array('profile_output' => $profile_output));
     }
     
-    
+    // editace profilu, json form
+    public function editProfile($request, $response)
+    {
+        $user_id = $this->container->auth_user->user_id;
+        $this->container->db->where("c_uid", $user_id);
+        $data = $this->container->db->getOne('t_users');
+        
+        // zde je mozne zadat nejaky vystup okolo formu
+        $form_output = '';
+        
+        // zvlastni pravidla pro vygenerovani jednotlivych prvku
+        $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/profile_form_ui.json');
+        
+        // schema celeho editacniho formulare.je prebrane z adresare contact
+        $json_schema_output = file_get_contents(__DIR__.'/../Contacts/V1/jsonschemas/contact.json');
+        
+        // zakladni data pro editaci
+        if (!empty($data['profile_data'])) { $json_formdata_output = $data['profile_data']; }
+        else { $json_formdata_output = '{"data":{}}'; }
+        
+        // vnitrek onsubmit funkce
+        //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
+        $json_onsubmit_output = '
+    $.ajax({
+      url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('auth.profile.api.edit').$args['id'].'",
+      dataType: "text",
+      type: "PUT",
+      data: "billdata=" + JSON.stringify(formData.formData),
+      success: function(data) {
+        
+        ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+        
+      },
+      error: function(xhr, status, err) {
+        alert(status + err + data);
+        ReactDOM.render((<div><h1>Something goes wrong ! not saving.</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+                 document.getElementById("main"));
+      }
+    });
+        ';
+        
+        return $this->container->view->render($response, 'auth/editprofile.twig', array(
+            'form_output' => $form_output,
+            'json_schema_output' => $json_schema_output,
+            'json_uischema_output' => $json_uischema_output,
+            'json_formdata_output' => $json_formdata_output,
+            'json_onsubmit_output' => $json_onsubmit_output,
+            'json_formdata_render_custom_array' => '1'
+        ));
+    }
     
     
 

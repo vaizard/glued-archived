@@ -136,7 +136,7 @@ $app->group('', function () {
   $this->get('/contacts/new', 'ContactsController:addContactForm')->setName('contacts.addcontactform');
   $this->get('/contacts/[{id}]', 'ContactsController:editContactForm')->setName('contacts.editcontactform');
   $this->get('/vectors/new', 'VectorsController:addVectorForm')->setName('vectors.addvectorform');
-  
+  $this->get('/auth/profile/edit', 'AuthController:editProfile')->setName('auth.profile.edit');
   
   // generovane formulare pro assets, cosumables a parts
   $this->get('/assets/new', 'StockController:addStockForm')->setName('assets.addform');
@@ -169,7 +169,8 @@ $app->group('', function () {
   // ajax co vraci optiony v jsonu pro select 2 filtr
   $this->get('/api/v1/stor/filteroptions', 'StorControllerApiV1:showFilterOptions')->setName('stor.api.filter.options');
 
-  
+  // api profil
+  $this->put('/api/v1/profile', 'AuthControllerApiV1:editProfileApi')->setName('auth.profile.api.edit');
   
   // api veci accounting (vraci json)
   $this->post('/api/v1/accounting/costs', 'AccountingCostsControllerApiV1:insertCostApi')->setName('accounting.api.new');

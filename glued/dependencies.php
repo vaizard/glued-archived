@@ -137,6 +137,11 @@ $container['AuthController'] = function ($container) {
     return new \Glued\Controllers\Auth\AuthController($container);
 };
 
+// glued authentication controler, api
+$container['AuthControllerApiV1'] = function ($container) {
+    return new \Glued\Controllers\Auth\AuthControllerApiV1($container);
+};
+
 // glued Permissions controler, html output
 $container['PermissionsController'] = function ($container) {
     return new \Glued\Controllers\Permissions\PermissionsController($container);

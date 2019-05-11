@@ -1,0 +1,21 @@
+{% extends 'templates/glued.twig' %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">you are editing your profile<a href="{{ path_for('auth.profile') }}" class="pull-right">back</a></div>
+          <div class="panel-body">
+            {{ form_output | raw }}
+            <div id="main"></div>
+          </div>
+        </div>
+      
+    
+    </div>
+
+</div>
+
+{% endblock %}

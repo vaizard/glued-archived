@@ -11,10 +11,10 @@
     <div class="row sameheight-container">
         
         <div class="col-md-6">
-            {{ vystup | raw }}
+            {{ profile_output | raw }}
         </div>
         <div class="col-md-6">
-            {{ vystup2 | raw }}
+            <a href="{{ path_for('auth.profile.edit') }}" class="pull-right" style="margin: 0 20px;">edit your profile</a>
         </div>
         
     </div>
