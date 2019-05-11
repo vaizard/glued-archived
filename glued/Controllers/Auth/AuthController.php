@@ -248,7 +248,51 @@ class AuthController extends Controller
         $this->container->db->where("c_uid", $user_id);
         $data = $this->container->db->getOne('t_users');
         
-        $profile_output = print_r($data['profile_data'], true);
+        /**
+         * JSON data to html table
+         * 
+         * @param object $data
+         * 
+         */
+        function jsonToTable ($data)
+        {
+            $table = '
+            <table class="json-table" width="100%">
+            ';
+            foreach ($data as $key => $value) {
+                $table .= '
+                <tr valign="top">
+                ';
+                if ( ! is_numeric($key)) {
+                    $table .= '
+                    <td>
+                        <strong>'. $key .':</strong>
+                    </td>
+                    <td>
+                    ';
+                } else {
+                    $table .= '
+                    <td colspan="2">
+                    ';
+                }
+                if (is_object($value) || is_array($value)) {
+                    $table .= jsonToTable($value);
+                } else {
+                    $table .= $value;
+                }
+                $table .= '
+                    </td>
+                </tr>
+                ';
+            }
+            $table .= '
+            </table>
+            ';
+            return $table;
+        }
+        
+        if (empty($data['profile_data'])) { $profile_output = '<p>profil zatím nebyl editován</p>'; }
+        else { $profile_output = jsonToTable(json_decode($data['profile_data'])->data); }
         
         return $this->container->view->render($response, 'auth/profile.twig', array('profile_output' => $profile_output));
     }
