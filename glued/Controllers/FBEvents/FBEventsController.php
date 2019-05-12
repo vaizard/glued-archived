@@ -46,7 +46,8 @@ class FBEventsController extends Controller
         return $this->container->view->render($response, 'fbevents/gui.twig',
             array(
                 'pages_output' => $pages_output,
-                'tokens_output' => $tokens_output
+                'tokens_output' => $tokens_output,
+                'ui_menu_active' => 'fbevents'
             )
         );
     }

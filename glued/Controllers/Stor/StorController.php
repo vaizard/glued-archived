@@ -132,7 +132,8 @@ class StorController extends Controller
             'vystup' => $vystup,
             'article_class' => 'items-list-page',
             'additional_javascript' => $additional_javascript,
-            'stor_dirs_options' => $stor_dirs_options
+            'stor_dirs_options' => $stor_dirs_options,
+            'ui_menu_active' => 'stor.uploader'
         ));
     }
     
@@ -702,7 +703,8 @@ class StorController extends Controller
             'preset_options' => $preset_options,
             'article_class' => 'items-list-page',
             'additional_javascript' => $additional_javascript,
-            'stor_dirs_options' => $stor_dirs_options
+            'stor_dirs_options' => $stor_dirs_options,
+            'ui_menu_active' => 'stor.browser'
         ));
     }
     

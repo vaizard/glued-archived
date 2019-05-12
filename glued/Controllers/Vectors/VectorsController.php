@@ -28,7 +28,8 @@ class VectorsController extends Controller
         
         return $this->container->view->render($response, 'vectors/gui.twig',
             array(
-                'vectors_output' => $vectors_output
+                'vectors_output' => $vectors_output,
+                'ui_menu_active' => 'vectors'
             )
         );
     }
