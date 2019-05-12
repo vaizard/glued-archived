@@ -10,7 +10,9 @@ class GEventsController extends Controller
     public function geventsMain($request, $response)
     {
         // zatim tu nic nebude
-        return $this->container->view->render($response, 'gevents/gui.twig');
+        return $this->container->view->render($response, 'gevents/gui.twig', array(
+            'ui_menu_active' => 'gevents'
+        ));
     }
     
 }

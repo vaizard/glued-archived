@@ -56,7 +56,11 @@ class ConsumablesController extends Controller
     </script>
         ';
         */
-        return $this->container->view->render($response, 'consumables/gui.twig', array('costs_output' => $costs_output, 'additional_javascript' => $additional_javascript));
+        return $this->container->view->render($response, 'consumables/gui.twig', array(
+            'costs_output' => $costs_output,
+            'additional_javascript' => $additional_javascript,
+            'ui_menu_active' => 'consumables'
+        ));
     }
     
     

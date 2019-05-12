@@ -22,7 +22,10 @@ class ImportDataController extends Controller
             }
         }
         
-        return $this->container->view->render($response, 'importdata/step1.twig', array('file_options' => $file_options));
+        return $this->container->view->render($response, 'importdata/step1.twig', array(
+            'file_options' => $file_options,
+            'ui_menu_active' => 'importdata'
+        ));
     }
     
     

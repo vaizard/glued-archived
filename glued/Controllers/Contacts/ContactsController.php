@@ -76,7 +76,9 @@ class ContactsController extends Controller
             'modal_acl_table' => $modal_acl_table,
             'modal_acl_global' => $modal_acl_global,
             'costs_output' => $costs_output,
-            'additional_javascript' => $additional_javascript));
+            'additional_javascript' => $additional_javascript,
+            'ui_menu_active' => 'contacts'
+        ));
     }
     
     // show form for add new contact

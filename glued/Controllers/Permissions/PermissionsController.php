@@ -74,7 +74,8 @@ class PermissionsController extends Controller
                 'developer_link' => $developer_link,
                 'vystup_users' => $vystup_users,
                 'vystup_groups' => $vystup_groups,
-                'prislusnost_groups' => $prislusnost_groups
+                'prislusnost_groups' => $prislusnost_groups,
+                'ui_menu_active' => 'permissions.my'
             ));
     }
     

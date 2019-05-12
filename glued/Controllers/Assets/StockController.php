@@ -65,7 +65,11 @@ class StockController extends Controller
     </script>
         ';
         */
-        return $this->container->view->render($response, 'assets/gui.twig', array('costs_output' => $costs_output, 'additional_javascript' => $additional_javascript));
+        return $this->container->view->render($response, 'assets/gui.twig', array(
+            'costs_output' => $costs_output,
+            'additional_javascript' => $additional_javascript,
+            'ui_menu_active' => 'assets'
+        ));
     }
     
     

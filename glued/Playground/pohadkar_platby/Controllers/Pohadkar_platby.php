@@ -1,5 +1,8 @@
 <?php
 
+// POZOR tento controler se uz nepouziva !
+// slouzil jen pro test pouziti controleru z jine slozky a view k nemu taky z jine slozky
+
 namespace Glued\Playground\pohadkar_platby\Controllers;
 use Glued\Controllers\Controller;
 
@@ -25,12 +28,16 @@ class Pohadkar_platby extends Controller
             }
         }
         else {
-            $vystup .= '<p>žádné platby nejsou vložené</p>';
+            $vystup .= '<p>žádné platby nejsou vložené uuu</p>';
         }
         
         
         
-        return $this->container->view->render($response, '../Playground/pohadkar_platby/Views/platby.twig', array('vystup' => $vystup));
+        return $this->container->view->render($response, '../Playground/pohadkar_platby/Views/platby.twig', array(
+            'cokoliv' => 'xxx',
+            'vystup' => $vystup,
+            'ui_menu_active' => 'playground.platby'
+        ));
     }
     
     

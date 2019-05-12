@@ -59,7 +59,9 @@ class Pohadkar_platby extends Controller
             'modal_acl_table' => $modal_acl_table,
             'modal_acl_global' => $modal_acl_global,
             'vystup' => $vystup,
-            'odkaz_create' => $odkaz_create));
+            'odkaz_create' => $odkaz_create,
+            'ui_menu_active' => 'playground.platby'
+        ));
     }
     
     

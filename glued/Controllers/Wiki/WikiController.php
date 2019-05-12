@@ -33,7 +33,10 @@ class WikiController extends Controller
             $wiki_output = '';
         }
         
-        return $this->container->view->render($response, 'wiki/admin.twig', array('wiki_output' => $wiki_output));
+        return $this->container->view->render($response, 'wiki/admin.twig', array(
+            'wiki_output' => $wiki_output,
+            'ui_menu_active' => 'wiki'
+        ));
     }
     
     // show form for add new wiki

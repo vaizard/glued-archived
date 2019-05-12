@@ -35,7 +35,10 @@ class Pohadkar_o2 extends Controller
         
         
         
-        return $this->container->view->render($response, 'o2.twig', array('vystup' => $vystup));
+        return $this->container->view->render($response, 'o2.twig', array(
+            'vystup' => $vystup,
+            'ui_menu_active' => 'playground.o2'
+        ));
     }
     
     // funkce ktera vypise analyzu jednoho diru
