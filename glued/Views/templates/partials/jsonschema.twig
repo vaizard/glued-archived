@@ -94,11 +94,18 @@ const DateGroupWidget = (props) => {
   );
 };
 
+const FloatingLabelWidget = (props) => {
+  return (
+    <input type="text" id={props.id} className="form-control underlined" value={props.value} placeholder={props.placeholder} required={props.required} onChange={(event) => props.onChange(event.target.value)} />
+  );
+};
+
 
 const widgets = {
   myCustomWidget: MyCustomWidget,
   nrGroupWidget: NrGroupWidget,
-  dateGroupWidget: DateGroupWidget
+  dateGroupWidget: DateGroupWidget,
+  floatingLabelWidget: FloatingLabelWidget
 };
 
 function ArrayFieldTemplate(props) {
@@ -124,7 +131,21 @@ function ArrayFieldTemplate(props) {
 }
 
 ReactDOM.render((<Form onChange={onChange} onSubmit={onSubmit} uiSchema={uiSchema} schema={schema} formData={formData} ArrayFieldTemplate={ArrayFieldTemplate} widgets={widgets}></Form>),
-    document.getElementById("main"));
+    document.getElementById("main"),  function() {
+        $(".form-label-group input").focus(function() {
+            $(this).addClass("activated").siblings("label").addClass("labelisima");
+        });
+        $(".form-label-group input").blur(function() {
+            if ($(this).val() == "") {
+                $(this).removeClass("activated").siblings("label").removeClass("labelisima");
+            }
+        });
+        $(".form-label-group input").each(function() {
+            if ($(this).val() != "") {
+                $(this).addClass("activated").siblings("label").addClass("labelisima");
+            }
+        });
+});
 
 {% else %}
 

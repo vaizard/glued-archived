@@ -1,5 +1,148 @@
 {
     "data": {
-    
+        "n": {
+            "honorific_prefix": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },        
+            "given_name": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "additional_name": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "family_name": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },            
+            "honorific_suffix": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            }
+        },
+        "fn": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"        
+        },
+        "nickname": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"        
+        },
+        "adr": {
+            "street_address": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },        
+            "extended_address": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "locacity": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "region": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },            
+            "postal_code": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "post_office_box": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "country_name": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },            
+            "geo": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            }                     
+        },
+        "email": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        },
+        "tel": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        },        
+        "url": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        },        
+        "note": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        },
+        "bank": {
+            "account": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },        
+            "code": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "iban": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "route": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },            
+            "name": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "address": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            }        
+        },
+        "rel": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        },        
+        "files": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        },        
+        "wallet": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        },        
+        "cc": {
+            "type": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },        
+            "number": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "name": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },
+            "exp": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            },            
+            "cvv": {
+              "ui:widget" : "floatingLabelWidget",
+              classNames : "form-label-group"
+            }       
+        },
+        "lang": {
+            "ui:widget" : "floatingLabelWidget",
+            classNames : "form-label-group"         
+        }                                        
     }
 }

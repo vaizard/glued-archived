@@ -19,7 +19,7 @@
                     </header>
                     <div class="auth-content">
                         <p class="text-center">LOGIN TO CONTINUE</p>
-                        <form id="login-form" action="{{ path_for('auth.signin') }}" method="post" novalidate="">
+                        <form id="" action="{{ path_for('auth.signin') }}" method="post" novalidate="">
                             <div class="form-group{{ validationerrors.email ? ' has-error' : ''}}">
                                 <label for="username">Email</label>
                                 <input type="email" class="form-control underlined" name="email" id="email" placeholder="Enter email address" value="{{ old.email }}" required>
