@@ -91,7 +91,7 @@ class ContactsController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/contact_form_ui.json');
         
         // schema celeho formulare
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/contact.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/contact_columns.json');
         
         // zakladni data, jedna polozka procentualni dane
         $json_formdata_output = '
@@ -112,7 +112,7 @@ class ContactsController extends Controller
       data: "billdata=" + JSON.stringify(formData.formData),
       success: function(data) {
         
-        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+        ReactDOM.render((<div><h1>Thank you</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre><h2>Final data</h2><pre>{data}</pre></div>), 
                  document.getElementById("main"));
         
       },
@@ -148,10 +148,69 @@ class ContactsController extends Controller
         $json_uischema_output = file_get_contents(__DIR__.'/V1/jsonuischemas/contact_form_ui.json');
         
         // schema celeho editacniho formulare. je to prakticky shodne schema jako formular pro novy bill, krome title
-        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/contact.json');
+        $json_schema_output = file_get_contents(__DIR__.'/V1/jsonschemas/contact_columns.json');
         
         // zakladni data pro editaci
         $json_formdata_output = $data['c_data'];
+        
+        // upravime data, do kterych pridame levy a pravy sloupec
+        // musime to udelat jako objekt
+        $formdata = json_decode($json_formdata_output);
+        
+        // pridame si tam ty sloupce
+        $formdata->data->left_column = new \stdClass();
+        $formdata->data->right_column = new \stdClass();
+        
+        // definujem si klice, ktere patri do leveho a praveho sloupce
+        $left_keys = array(
+            "kind",
+            "n",
+            "fn",
+            "nickname",
+            "adr",
+            "comm",
+            "bank",
+            "id",
+            "rel",
+            "files",
+            "wallet",
+            "cc",
+            "roles",
+            "lang"
+        );
+        $right_keys = array(
+            "email",
+            "gender",
+            "tel",
+            "url",
+            "focus",
+            "note",
+            "timeline"
+        );
+        
+        // presunem to
+        foreach ($left_keys as $key) {
+            if (isset($formdata->data->$key)) {
+                $formdata->data->left_column->$key = $formdata->data->$key;
+                unset($formdata->data->$key);
+            }
+        }
+        foreach ($right_keys as $key) {
+            if (isset($formdata->data->$key)) {
+                $formdata->data->right_column->$key = $formdata->data->$key;
+                unset($formdata->data->$key);
+            }
+        }
+        
+        // v korenu zustavaji vsechny nevyjmenovane sloupce (typicky skryte)
+        // takze napr _id, creator, dt_created
+        
+        // prevedem to zpet na json retezec
+        $json_formdata_output_upravena = json_encode($formdata);
+        
+        
+        
+        
         
         // vnitrek onsubmit funkce
         //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
@@ -163,7 +222,7 @@ class ContactsController extends Controller
       data: "billdata=" + JSON.stringify(formData.formData),
       success: function(data) {
         
-        ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre></div>), 
+        ReactDOM.render((<div><h1>Record was updated succesfully</h1><pre>{JSON.stringify(formData.formData, null, 2) }</pre><h2>Final data</h2><pre>{data}</pre></div>), 
                  document.getElementById("main"));
         
       },
@@ -180,7 +239,7 @@ class ContactsController extends Controller
             'form_output' => $form_output,
             'json_schema_output' => $json_schema_output,
             'json_uischema_output' => $json_uischema_output,
-            'json_formdata_output' => $json_formdata_output,
+            'json_formdata_output' => $json_formdata_output_upravena,
             'json_onsubmit_output' => $json_onsubmit_output,
             'cost_id' => $args['id'],
             'json_formdata_render_custom_array' => '1'

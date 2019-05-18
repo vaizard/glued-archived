@@ -20,15 +20,20 @@
       </div>
 
       <div class="form-label-group">
-        <input type="text" id="inputEmail" class="form-control" placeholder="placeholder 1" required="">
-        <label for="inputEmail">toto je label 1</label>
+        <input type="text" id="inputEmail" class="form-control underlined" placeholder="" required="">
+        <label for="inputEmail" class="control-label">toto je label 1</label>
       </div>
 
       <div class="form-label-group">
-        <input type="text" id="inputPassword" class="form-control" placeholder="placeholder 2" required="">
+        <input type="text" id="inputPassword" class="form-control"  required="">
         <label for="inputPassword">toto je label 2</label>
       </div>
-
+    
+      <div class="form-label-group">
+        <label for="xxx" class="control-label">label 3 nad inputem</label>
+        <input type="text" id="xxx" class="form-control underlined" placeholder="" required="" onfocus="$(this).siblings('label').addClass('labelisima');" >
+      </div>
+    
     </form>
     
 </div>
