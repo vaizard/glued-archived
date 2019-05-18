@@ -47,10 +47,6 @@ fi
 
 pushd glued > /dev/null
 
-  eecho "--- Ensure phinx.yml is assumed unchanged by git"
-  git update-index --assume-unchanged phinx.yml
-
-
 eecho "--- Ensuring private and public keys are present"
 if [ ! -f ./private/oauth/private.key ]; then
    openssl genrsa -out ./private/oauth/private.key 2048
@@ -75,12 +71,16 @@ if [ ! -f ./glued/settings.php ]; then
 else
   pushd glued > /dev/null
   eecho "\$config = require '_preflight.php';" | php -a
-  [[ $(echo "\$config = require '_preflight.php';" | php -a | grep 'ERROR') ]] && eexit "settings.php misconfigured"
+  [[ $(echo "\$config = require '_preflight.php';" | php -a | grep 'ERROR') ]] && eexit "settings.php present, but misconfigured"
   popd > /dev/null
 fi
 
 eecho "--- Testing if phinx.yml production environment is set up"
-[[ $(php vendor/bin/phinx test -e production | grep 'success') ]] || eexit "prc"
+if [ ! -f ./phinx.yml ]; then
+  eexit "! phinx.yml not present. Copy settings.example.php and set it up."
+else
+  [[ $(php vendor/bin/phinx test -e production | grep 'success') ]] || eexit "phinx.yml present, but misconfigured"
+fi
 
 eecho "--- Setting up the database"
 php vendor/bin/phinx migrate -e production
