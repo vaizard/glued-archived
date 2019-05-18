@@ -67,7 +67,7 @@ composer install
 
 eecho "--- Testing if glued/settings.php is set up"
 if [ ! -f ./glued/settings.php ]; then
-  eexit "! settings.php not present. Copy settings.example.php and set it up."
+  eexit "! settings.php not present. Copy settings.php.example to settings.php and set it up."
 else
   pushd glued > /dev/null
   eecho "\$config = require '_preflight.php';" | php -a
@@ -77,7 +77,7 @@ fi
 
 eecho "--- Testing if phinx.yml production environment is set up"
 if [ ! -f ./phinx.yml ]; then
-  eexit "! phinx.yml not present. Copy settings.example.php and set it up."
+  eexit "! phinx.yml not present. Copy phinx.yml.example to phinx.yml and set it up."
 else
   [[ $(php vendor/bin/phinx test -e production | grep 'success') ]] || eexit "phinx.yml present, but misconfigured"
 fi
