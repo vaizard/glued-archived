@@ -283,4 +283,103 @@ class AccountingCostsController extends Controller
         ));
     }
     
+    // manage groups gui, list all definitions
+    public function getDefinitions($request, $response)
+    {
+        $groups_output = '';
+        $sloupce = array("c_definition_id", "COUNT(*) as pocet");
+        $this->container->db->groupBy("c_definition_id");
+        $this->container->db->orderBy("c_definition_id","asc");
+        $groups = $this->container->db->get('t_accounting_account_groups', null, $sloupce);
+        if (count($groups) > 0) {
+            foreach ($groups as $data) {
+                // musime si nacist aspon jeden full radek, kvuli c_definition_name
+                $this->container->db->where("c_definition_id", $data['c_definition_id']);
+                $data1 = $this->container->db->getOne('t_accounting_account_groups');
+                
+                $groups_output .= '
+                    <tr>
+                        <th scope="row"></th>
+                        <td>'.$data['c_definition_id'].'</td>
+                        <td>'.$data1['c_definition_name'].'</td>
+                        <td>'.$data['pocet'].'</td>
+                        <td>
+                            <a href="'.$this->container->router->pathFor('accounting.list.definition', ['id' => $data['c_definition_id']]).'">list</a>
+                        </td>
+                    </tr>
+                ';
+            }
+        }
+        else {
+            $groups_output .= '
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="4">no ids at the moment</td>
+                </tr>
+            ';
+        }
+        
+        
+        $additional_javascript = '
+    <script>
+
+    </script>
+        ';
+        
+        return $this->container->view->render($response, 'accounting/groups.twig', array(
+            'groups_output' => $groups_output,
+            'additional_javascript' => $additional_javascript,
+            'ui_menu_active' => 'accounting.costs'
+        ));
+    }
+    
+    // list groups in one definition
+    public function listDefinition($request, $response, $args)
+    {
+        $groups_output = '';
+        $this->container->db->where("c_definition_id", $args['id']);
+        $this->container->db->orderBy("c_group_number","asc");
+        $groups = $this->container->db->get('t_accounting_account_groups');
+        if (count($groups) > 0) {
+            foreach ($groups as $data) {
+                $groups_output .= '
+                    <tr>
+                        <th scope="row"></th>
+                        <td>'.$data['c_definition_id'].'</td>
+                        <td>'.$data['c_definition_name'].'</td>
+                        <td>'.$data['c_group_number'].'</td>
+                        <td>'.$data['c_group_description'].'</td>
+                        <td>
+                            <a href="'.$this->container->router->pathFor('accounting.list.definition', ['id' => $data['c_definition_id']]).'">edit</a>
+                        </td>
+                    </tr>
+                ';
+            }
+        }
+        else {
+            $groups_output .= '
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="4">no ids at the moment</td>
+                </tr>
+            ';
+        }
+        
+        
+        $additional_javascript = '
+    <script>
+
+    </script>
+        ';
+        
+        return $this->container->view->render($response, 'accounting/definition.twig', array(
+            'definition' => $args['id'],
+            'groups_output' => $groups_output,
+            'additional_javascript' => $additional_javascript,
+            'ui_menu_active' => 'accounting.costs'
+        ));
+    }
+    
+    
+    
 }

@@ -40,6 +40,8 @@ $app->group('', function () {
   $this->get('/upload', 'UploadController:get')->setName('upload');
   $this->post('/upload', 'UploadController:post')->setName('upload');
   $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
+  $this->get('/accounting/account-groups', 'AccountingCostsController:getDefinitions')->setName('accounting.groups');
+  $this->get('/accounting/account-definition/{id}', 'AccountingCostsController:listDefinition')->setName('accounting.list.definition');
   $this->get('/contacts/main', 'ContactsController:contactsMain')->setName('contacts.main');
   
   $this->get('/permissions/my', 'PermissionsController:getMyAcl')->setName('acl.my');
