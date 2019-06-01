@@ -251,6 +251,9 @@ class StorController extends Controller
         if ($upload_type == 'browser') {
             $redirect_url = $this->container->router->pathFor('stor.browser').'?filter=/'.$actual_dir.'/'.$actual_object;
         }
+        else if ($upload_type == 'general') {   // obecny form nekde jinde mimo stor, posle si vlastni zpatecni adresu
+            $redirect_url = $request->getParam('return_url');
+        }
         else {
             if (!empty($actual_dir)) {
                 $redirect_url = $this->container->router->pathFor('stor.uploader').'/~/'.$raw_path;

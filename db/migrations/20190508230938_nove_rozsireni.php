@@ -33,7 +33,11 @@ class NoveRozsireni extends AbstractMigration
     public function change()
     {
         $table = $this->table('t_users');
-        $table->addColumn('profile_data', 'json', ['after' => 'stor_name', 'null' => true, 'default' => null])
-              ->update();
+        $table->addColumn('profile_data', 'json', ['after' => 'stor_name', 'null' => true, 'default' => null])->update();
+        
+        $count = $this->execute("
+        ALTER TABLE `t_accounting_received` ADD `stor_name` varchar(255) COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS (json_unquote(json_extract(`c_data`,'$.data.inv_nr'))) VIRTUAL AFTER `c_data`;
+        ");
+        
     }
 }

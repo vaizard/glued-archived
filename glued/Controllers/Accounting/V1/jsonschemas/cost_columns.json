@@ -176,15 +176,7 @@
                     }
                   }
                 }
-              },
-              "files": {
-                "type": "array",
-                "title": "Attachments",
-                "items": {
-                  "type": "string",
-                  "format": "data-url"
-                }
-              }           
+              }         
            }
         },
         "_id": {
