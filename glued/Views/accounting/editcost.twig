@@ -15,7 +15,49 @@
       
     
     </div>
+</div>
 
+<div class="row">
+    <div class="col-md-12">
+    
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title-block">
+                    <h3 class="title"> Additional Files </h3>
+                </div>
+                <!-- Nav tabs -->
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a href="" class="nav-link active" data-target="#home-pills" aria-controls="home-pills" data-toggle="tab" role="tab" aria-expanded="true">Uploaded files</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link" data-target="#form-pills" aria-controls="form-pills" data-toggle="tab" role="tab" aria-expanded="false">New file</a>
+                    </li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="tab-pane fade in active show" id="home-pills" aria-expanded="true">
+                        {{ vystup_souboru | raw }}
+                    </div>
+                    <div class="tab-pane fade" id="form-pills" aria-expanded="false">
+                        <form method="post" action="{{ path_for('stor.uploader') }}" enctype="multipart/form-data">
+                            <label>Select file to upload:</label>
+                            <input type="file" name="file" />
+                            <input type="hidden" name="upload_type" value="general">
+                            <input type="hidden" name="actual_dir" value="costs/{{ cost_id }}">
+                            <input type="hidden" name="return_url" value="{{ path_for('accounting.editcostform') }}{{ cost_id }}">
+                            <button type="submit">Upload</button>
+                            {{ csrf.field | raw }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-block -->
+        </div>
+    
+    </div>
+    
+    
 </div>
 
 {% endblock %}

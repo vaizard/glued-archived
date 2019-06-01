@@ -5,14 +5,14 @@
 {{ additional_javascript | raw }}
 
 <div class="title-block">
-    <h3 class="title"> Costs </h3>
+    <h3 class="title"> Accounting Groups </h3>
 </div>
 
 <div class="col-md-12">
     <div class="card">
         <div class="card-block">
             <div class="card-title-block">
-                <h3 class="title">Existing costs<a href="{{ path_for('accounting.addcostform') }}" class="pull-right" style="margin: 0 20px;">add new cost</a><a href="{{ path_for('accounting.groups') }}" class="pull-right" style="margin: 0 20px;">manage groups</a></h3>
+                <h3 class="title">Existing definition ids</h3>
             </div>
             <section class="example">
                 <div class="table-responsive">
@@ -20,18 +20,14 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Invoice nr.</th>
-                                <th>Supplier</th>
-                                <th>Price+vat</th>
-                                <th>Project</th>
-                                <th>Expense type</th>
-                                <th>Ext</th>
-                                <th>Descr.</th>
+                                <th>Definition ID</th>
+                                <th>Definition Name</th>
+                                <th>Number of groups</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{ costs_output | raw }}
+                            {{ groups_output | raw }}
                         </tbody>
                     </table>
                 </div>

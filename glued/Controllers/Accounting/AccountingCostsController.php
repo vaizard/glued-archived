@@ -153,6 +153,20 @@ class AccountingCostsController extends Controller
     }
 }
         ';
+        
+        // pridame do schematu vlastni enum optiony
+        $accounting_groups_array = '';
+        $this->container->db->where("c_definition_id", 1);
+        $this->container->db->orderBy("c_group_number","asc");
+        $groups = $this->container->db->get('t_accounting_account_groups');
+        if (count($groups) > 0) {
+            foreach ($groups as $data) {
+                $accounting_groups_array[] = '"'.$data['c_group_number'].' - '.$data['c_group_description'].'"';
+            }
+        }
+        //$json_schema_output = str_replace('["void"]', '['.implode(',', $accounting_groups_array).']', $json_schema_output);
+        
+        
         //$this->container['settings']['glued']['hostname']
         //$this->container->settings->glued->hostname
         // vnitrek onsubmit funkce
@@ -229,8 +243,7 @@ class AccountingCostsController extends Controller
               "xr",
               "inv_curr",
               "managerial_acc",
-              "financial_acc",
-              "files");
+              "financial_acc");
         
         // presunem to
         foreach ($left_keys as $key) {
@@ -248,6 +261,18 @@ class AccountingCostsController extends Controller
         
         // prevedem to zpet na json retezec
         $json_formdata_output_upravena = json_encode($formdata);
+        
+        // pridame do schematu vlastni enum optiony, ted se nepouziva
+        $accounting_groups_array = '';
+        $this->container->db->where("c_definition_id", 1);
+        $this->container->db->orderBy("c_group_number","asc");
+        $groups = $this->container->db->get('t_accounting_account_groups');
+        if (count($groups) > 0) {
+            foreach ($groups as $data) {
+                $accounting_groups_array[] = '"'.$data['c_group_number'].' - '.$data['c_group_description'].'"';
+            }
+        }
+        //$json_schema_output = str_replace('["void"]', '['.implode(',', $accounting_groups_array).']', $json_schema_output);
         
         // vnitrek onsubmit funkce
         //         alert('xhr status: ' + xhr.status + ', status: ' + status + ', err: ' + err)
@@ -271,6 +296,33 @@ class AccountingCostsController extends Controller
     });
         ';
         
+        // nahrajem si soubory
+        $vystup_souboru = '';
+        $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
+        $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
+        $this->container->db->where("c_inherit_table", "t_accounting_received");
+        $this->container->db->where("c_inherit_object", $args['id']);
+        $this->container->db->orderBy("lin.c_filename","asc");
+        $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
+        if (count($files) > 0) {
+            foreach ($files as $filedata) {
+                $adresa = $this->container->router->pathFor('stor.serve.file', ['id' => $filedata['c_uid'], 'filename' => $filedata['c_filename']]);
+                $vystup_souboru .= '
+                <div>
+                    <a href="'.$adresa.'" class="">
+                        '.(in_array($filedata['mime'], array('image/jpeg', 'image/png'))?'<img src="'.$adresa.'" width="300" />':'').'<br />
+                        '.$filedata['c_filename'].'
+                        <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#file_uid\').val('.$filedata['c_uid'].');">
+                            <i class="fa fa-trash-o "></i>
+                        </a>
+                    </a>
+                </div>
+                ';
+            }
+        }
+        else {
+            $vystup_souboru .= '<div>no files uploaded</div>';
+        }
         
         return $this->container->view->render($response, 'accounting/editcost.twig', array(
             'form_output' => $form_output,
@@ -279,8 +331,108 @@ class AccountingCostsController extends Controller
             'json_formdata_output' => $json_formdata_output_upravena,
             'json_onsubmit_output' => $json_onsubmit_output,
             'cost_id' => $args['id'],
+            'vystup_souboru' => $vystup_souboru,
             'json_formdata_render_custom_array' => '1'
         ));
     }
+    
+    // manage groups gui, list all definitions
+    public function getDefinitions($request, $response)
+    {
+        $groups_output = '';
+        $sloupce = array("c_definition_id", "COUNT(*) as pocet");
+        $this->container->db->groupBy("c_definition_id");
+        $this->container->db->orderBy("c_definition_id","asc");
+        $groups = $this->container->db->get('t_accounting_account_groups', null, $sloupce);
+        if (count($groups) > 0) {
+            foreach ($groups as $data) {
+                // musime si nacist aspon jeden full radek, kvuli c_definition_name
+                $this->container->db->where("c_definition_id", $data['c_definition_id']);
+                $data1 = $this->container->db->getOne('t_accounting_account_groups');
+                
+                $groups_output .= '
+                    <tr>
+                        <th scope="row"></th>
+                        <td>'.$data['c_definition_id'].'</td>
+                        <td>'.$data1['c_definition_name'].'</td>
+                        <td>'.$data['pocet'].'</td>
+                        <td>
+                            <a href="'.$this->container->router->pathFor('accounting.list.definition', ['id' => $data['c_definition_id']]).'">list</a>
+                        </td>
+                    </tr>
+                ';
+            }
+        }
+        else {
+            $groups_output .= '
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="4">no ids at the moment</td>
+                </tr>
+            ';
+        }
+        
+        
+        $additional_javascript = '
+    <script>
+
+    </script>
+        ';
+        
+        return $this->container->view->render($response, 'accounting/groups.twig', array(
+            'groups_output' => $groups_output,
+            'additional_javascript' => $additional_javascript,
+            'ui_menu_active' => 'accounting.costs'
+        ));
+    }
+    
+    // list groups in one definition
+    public function listDefinition($request, $response, $args)
+    {
+        $groups_output = '';
+        $this->container->db->where("c_definition_id", $args['id']);
+        $this->container->db->orderBy("c_group_number","asc");
+        $groups = $this->container->db->get('t_accounting_account_groups');
+        if (count($groups) > 0) {
+            foreach ($groups as $data) {
+                $groups_output .= '
+                    <tr>
+                        <th scope="row"></th>
+                        <td>'.$data['c_definition_id'].'</td>
+                        <td>'.$data['c_definition_name'].'</td>
+                        <td>'.$data['c_group_number'].'</td>
+                        <td>'.$data['c_group_description'].'</td>
+                        <td>
+                            <a href="'.$this->container->router->pathFor('accounting.list.definition', ['id' => $data['c_definition_id']]).'">edit</a>
+                        </td>
+                    </tr>
+                ';
+            }
+        }
+        else {
+            $groups_output .= '
+                <tr>
+                    <th scope="row"></th>
+                    <td colspan="4">no ids at the moment</td>
+                </tr>
+            ';
+        }
+        
+        
+        $additional_javascript = '
+    <script>
+
+    </script>
+        ';
+        
+        return $this->container->view->render($response, 'accounting/definition.twig', array(
+            'definition' => $args['id'],
+            'groups_output' => $groups_output,
+            'additional_javascript' => $additional_javascript,
+            'ui_menu_active' => 'accounting.costs'
+        ));
+    }
+    
+    
     
 }

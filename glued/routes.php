@@ -40,6 +40,8 @@ $app->group('', function () {
   $this->get('/upload', 'UploadController:get')->setName('upload');
   $this->post('/upload', 'UploadController:post')->setName('upload');
   $this->get('/accounting/costs', 'AccountingCostsController:getCosts')->setName('accounting.costs');
+  $this->get('/accounting/account-groups', 'AccountingCostsController:getDefinitions')->setName('accounting.groups');
+  $this->get('/accounting/account-definition/{id}', 'AccountingCostsController:listDefinition')->setName('accounting.list.definition');
   $this->get('/contacts/main', 'ContactsController:contactsMain')->setName('contacts.main');
   
   $this->get('/permissions/my', 'PermissionsController:getMyAcl')->setName('acl.my');
@@ -90,6 +92,10 @@ $app->group('', function () {
   $this->post('/import/data/step2', 'ImportDataController:importFormStep2')->setName('import.data.step2');
   $this->post('/import/data/result', 'ImportDataController:importFormResult')->setName('import.data.result');
   
+  // edit cost form, musi byt tu, kvuli uploadu souboru
+  $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
+  $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
+  
 })->add(new AuthMiddleware($container))->add(new \Glued\Middleware\Forms\CsrfViewMiddleware($container))->add($container->csrf);
 
 
@@ -131,8 +137,8 @@ $app->group('', function () {
 $app->group('', function () {
   
   // strankove veci (vraci html), json schema formy bud pro novy nebo pro editaci
-  $this->get('/accounting/costs/new', 'AccountingCostsController:addCostForm')->setName('accounting.addcostform');
-  $this->get('/accounting/costs/[{id}]', 'AccountingCostsController:editCostForm')->setName('accounting.editcostform');
+  
+  
   $this->get('/contacts/new', 'ContactsController:addContactForm')->setName('contacts.addcontactform');
   $this->get('/contacts/[{id}]', 'ContactsController:editContactForm')->setName('contacts.editcontactform');
   $this->get('/vectors/new', 'VectorsController:addVectorForm')->setName('vectors.addvectorform');

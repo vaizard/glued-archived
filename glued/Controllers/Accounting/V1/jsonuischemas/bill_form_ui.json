@@ -155,8 +155,7 @@
               "xr",          
               "inv_curr",                     
               "managerial_acc",                  
-              "financial_acc",          
-              "files"              
+              "financial_acc"             
             ],
             acc_total_novat: {
               classNames: "col-md-4 pull-left",
@@ -224,33 +223,24 @@
                 classNames: "col-md-12 pull-left disable-bottomized",
                 "items": {
                   "ui:order": [
-                    "pixel_id",
-                    "acc_group",
+                    "pixel_id",                    
                     "price-novat",
                     "price-fract",
+                    "acc_group",
                     "note",
                     "*"                  
                   ],                   
                   "pixel_id": {
-                    classNames: "col-md-3 pull-left",
+                    classNames: "col-md-4 pull-left",
                     "ui:widget": "nrGroupWidget",
                     "ui:placeholder": "Project id / name",
                     "ui:options": {
                       label: false,
                       "textik": ""
                     }
-                  },
-                  "acc_group": {
-                    classNames: "col-md-3 pull-left",
-                    "ui:widget": "nrGroupWidget",
-                    "ui:placeholder": "acc group",
-                    "ui:options": {
-                      label: false,
-                      "textik": ""
-                    }
-                  },                  
+                  },                
                   "price-novat": {
-                    classNames: "col-md-3 pull-left",
+                    classNames: "col-md-4 pull-left",
                     "ui:widget": "nrGroupWidget",
                     "ui:placeholder": "Cost",
                     "ui:options": {
@@ -259,7 +249,7 @@
                     }
                   },
                   "price-fract": {
-                    classNames: "col-md-3 pull-left",
+                    classNames: "col-md-4 pull-left",
                     "ui:widget": "nrGroupWidget",
                     "ui:placeholder": "Cost %",
                     "ui:options": {
@@ -267,6 +257,9 @@
                       "textik": ""
                     }
                   },
+                  "acc_group": {
+                    classNames: "col-md-12 pull-left"                                   
+                  },                    
                   "note": {
                     classNames: "col-md-12 pull-left",
                     "ui:widget": "nrGroupWidget",
@@ -335,10 +328,7 @@
                     }                    
                   }                                                                                  
                 }                              
-            },
-            "files": {
-                classNames: "col-md-12 pull-left"                
-            }                     
+            }                    
         }, 
         "creator": {
           "ui:widget": "hidden"
