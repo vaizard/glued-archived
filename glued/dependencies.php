@@ -78,6 +78,7 @@ $container['view'] = function ($container) {
     
     $view->getEnvironment()->addGlobal('flash', $container->flash);
     $view->getEnvironment()->addGlobal('public_path', $basePath);
+    $view->getEnvironment()->addGlobal('hostname', $container['settings']['glued']['hostname']);
     
     return $view;
 };

@@ -1,0 +1,22 @@
+<script>
+
+// obecna funkce, kterou vypiseme do ciloveho dom elementu soubory patrici zadanemu objektu
+function list_stor_files_basic(target_id, module, object_id) {
+    var dirname = module + "/" + object_id;
+    $.ajax({
+      url: "https://{{ hostname }}{{ path_for('stor.ajax.list.basic') }}",
+      dataType: "text",
+      type: "GET",
+      data: "dirname=" + dirname,
+      success: function(data) {
+        $("#" + target_id).html(data);
+        //alert("files listed");
+      },
+      error: function(xhr, status, err) {
+        alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+      }
+    });
+}
+
+
+</script>

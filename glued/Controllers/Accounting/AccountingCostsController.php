@@ -297,6 +297,7 @@ class AccountingCostsController extends Controller
         ';
         
         // nahrajem si soubory
+        /*
         $vystup_souboru = '';
         $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
         $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
@@ -310,9 +311,9 @@ class AccountingCostsController extends Controller
                 $vystup_souboru .= '
                 <div>
                     <a href="'.$adresa.'" class="">
-                        '.(in_array($filedata['mime'], array('image/jpeg', 'image/png'))?'<img src="'.$adresa.'" width="300" />':'').'<br />
+                        <br />
                         '.$filedata['c_filename'].'
-                        <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#file_uid\').val('.$filedata['c_uid'].');">
+                        <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#delete_file_uid\').val('.$filedata['c_uid'].');">
                             <i class="fa fa-trash-o "></i>
                         </a>
                     </a>
@@ -323,7 +324,33 @@ class AccountingCostsController extends Controller
         else {
             $vystup_souboru .= '<div>no files uploaded</div>';
         }
+        */
         
+        // js funkce ktera zajisti delete souboru a zavola pak nas callback
+        $additional_javascript = '
+            <script>
+            // funkce, kterou smazeme soubor ajaxem a obnovime vypis souboru podle zadaneho filtru
+            function delete_stor_file_ajax() {
+                var link_id = $("#delete_file_uid").val();
+                $.ajax({
+                  url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.ajax.delete').'",
+                  type: "POST",
+                  dataType: "text",
+                  data: { link_id: link_id },
+                  success: function(data) {
+                    // vypise znova soubory
+                    list_stor_files_basic("uploaded_files_output", "accounting-costs", "'.$args['id'].'");
+                  }
+                });
+            }
+            
+            // uvodni naplneni souboru
+            list_stor_files_basic("uploaded_files_output", "accounting-costs", "'.$args['id'].'");
+            
+            </script>
+        ';
+        
+        //             'vystup_souboru' => $vystup_souboru,
         return $this->container->view->render($response, 'accounting/editcost.twig', array(
             'form_output' => $form_output,
             'json_schema_output' => $json_schema_output,
@@ -331,8 +358,10 @@ class AccountingCostsController extends Controller
             'json_formdata_output' => $json_formdata_output_upravena,
             'json_onsubmit_output' => $json_onsubmit_output,
             'cost_id' => $args['id'],
-            'vystup_souboru' => $vystup_souboru,
-            'json_formdata_render_custom_array' => '1'
+
+            'json_formdata_render_custom_array' => '1',
+            'stor_delete_modal' => '1',
+            'additional_javascript' => $additional_javascript
         ));
     }
     

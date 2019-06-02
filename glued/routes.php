@@ -165,6 +165,8 @@ $app->group('', function () {
   $this->post('/api/v1/stor/delete', 'StorControllerApiV1:ajaxDelete')->setName('stor.ajax.delete');
   // editace nazvu souboru ajaxem
   $this->post('/api/v1/stor/update', 'StorControllerApiV1:ajaxUpdate')->setName('stor.ajax.update');
+  // vypis souboru ajaxem, pro jine moduly
+  $this->get('/api/v1/stor/list/basic', 'StorControllerApiV1:ajaxListFilesBasic')->setName('stor.ajax.list.basic');
   // update editace stor file (nazev) TODO nemel by tu byt put, kdyz je to update?
   $this->post('/stor/uploader/update', 'StorController:uploaderUpdate')->setName('stor.uploader.update');
   $this->post('/stor/uploader/copymove', 'StorController:uploaderCopyMove')->setName('stor.uploader.copy.move');

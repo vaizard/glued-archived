@@ -14,7 +14,7 @@ class Stor
        "assets"    => 'Assets',
        "consumables"    => 'Consumables',
        "parts"    => 'Parts',
-       "costs"    => 'Accounting costs',
+       "accounting-costs"    => 'Accounting costs',
        "helper"    => 'Helper'
     );
     
@@ -25,7 +25,7 @@ class Stor
        "assets"    => 't_assets_items',
        "consumables"    => 't_consumables_items',
        "parts"    => 't_parts_items',
-       "costs"    => 't_accounting_received',
+       "accounting-costs"    => 't_accounting_received',
        "helper"    => 't_helper'
     );
     

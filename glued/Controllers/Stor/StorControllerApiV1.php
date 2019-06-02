@@ -1168,4 +1168,61 @@ class StorControllerApiV1 extends Controller
         return $response;
     }
     
+    // jednoduchy vypis souboru ve storu pro dany objekt (tabulka, id radku), pouzite ve funkci, ktera vypisuje soubory v ruznych jinych modulech
+    public function ajaxListFilesBasic($request, $response) {
+        $vystup_souboru = '';
+        $mame_id = false;
+        
+        $raw_dirname = $request->getParam('dirname');
+        
+        // musi tam byt id
+        $dily = explode('/', $raw_dirname);
+        $dirname = $dily[0];
+        if (count($dily) > 1) {
+            $object_id = $dily[1];
+            $mame_id = true;
+        }
+        
+        if ($mame_id and isset($this->container->stor->app_dirs[$dirname])) {
+            // prava, TODO, jako v showFiles
+            
+            $object_tabulka = $this->container->stor->app_tables[$dirname];
+            
+            $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime", "obj.doc->>'$.data.ts_created' as ts_created");
+            $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
+            $this->container->db->where("c_inherit_table", $object_tabulka);
+            $this->container->db->where("c_inherit_object", $object_id);
+            $this->container->db->orderBy("lin.c_filename","asc");
+            $files = $this->container->db->get('t_stor_links lin', null, $sloupce);
+            if (count($files) > 0) {
+                foreach ($files as $filedata) {
+                    $adresa = $this->container->router->pathFor('stor.serve.file', ['id' => $filedata['c_uid'], 'filename' => $filedata['c_filename']]);
+                    $vystup_souboru .= '
+                    <div>
+                        <a href="'.$adresa.'" class="">
+                            <br />
+                            '.$filedata['c_filename'].'
+                            <a class="remove" href="#" data-toggle="modal" data-target="#confirm-modal" onclick="$(\'#delete_file_uid\').val('.$filedata['c_uid'].');">
+                                <i class="fa fa-trash-o "></i>
+                            </a>
+                        </a>
+                    </div>
+                    ';
+                }
+            }
+            else {
+                $vystup_souboru .= '<div>no files uploaded</div>';
+            }
+        }
+        else {
+            $vystup_souboru .= '<div>bad syntax</div>';
+        }
+        
+        // protoze je to ajax, tak vystup nebudeme strkat do view ale rovnou ho vytiskneme
+        
+        $response->getBody()->write($vystup_souboru);
+        return $response;
+    }
+    
+    
 }
