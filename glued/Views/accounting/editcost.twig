@@ -46,7 +46,7 @@
                             <label>Select file to upload:</label>
                             <input type="file" name="file" />
                             <input type="hidden" name="upload_type" value="general">
-                            <input type="hidden" name="actual_dir" value="costs/{{ cost_id }}">
+                            <input type="hidden" name="actual_dir" value="accounting-costs/{{ cost_id }}">
                             <input type="hidden" name="return_url" value="{{ path_for('accounting.editcostform') }}{{ cost_id }}">
                             <button type="submit">Upload</button>
                             {{ csrf.field | raw }}

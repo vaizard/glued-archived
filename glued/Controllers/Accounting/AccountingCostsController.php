@@ -339,32 +339,13 @@ class AccountingCostsController extends Controller
                   data: { link_id: link_id },
                   success: function(data) {
                     // vypise znova soubory
-                    list_stor_files_basic("uploaded_files_output", "costs", "'.$args['id'].'");
-                  }
-                });
-            }
-            
-            // obecna funkce, kterou vypiseme do ciloveho dom elementu soubory patrici zadanemu objektu
-            // TODO, bude v globalnim js, aby ji mohly pouzit vsecky moduly
-            function list_stor_files_basic(target_id, module, object_id) {
-                var dirname = module + "/" + object_id;
-                $.ajax({
-                  url: "https://'.$this->container['settings']['glued']['hostname'].$this->container->router->pathFor('stor.ajax.list.basic').'",
-                  dataType: "text",
-                  type: "GET",
-                  data: "dirname=" + dirname,
-                  success: function(data) {
-                    $("#" + target_id).html(data);
-                    //alert("files listed");
-                  },
-                  error: function(xhr, status, err) {
-                    alert("ERROR: xhr status: " + xhr.status + ", status: " + status + ", err: " + err);
+                    list_stor_files_basic("uploaded_files_output", "accounting-costs", "'.$args['id'].'");
                   }
                 });
             }
             
             // uvodni naplneni souboru
-            list_stor_files_basic("uploaded_files_output", "costs", "'.$args['id'].'");
+            list_stor_files_basic("uploaded_files_output", "accounting-costs", "'.$args['id'].'");
             
             </script>
         ';
