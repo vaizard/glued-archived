@@ -551,20 +551,25 @@ class StorController extends Controller
                 var short_id = $(this).data("id");
                 var short_text = $(this).data("text");
                 
-                // option se ma pridat, jen pokud uz tam neni, a vyvolame event change
-                if ($("#stor-files-select2-filter").find("option[value=\'" + short_id + "\']").length) {
-                    $("#stor-files-select2-filter").val(short_id).trigger("change");
-                } else {
-                    var option = new Option(short_text, short_id, false, true);
-                    $("#stor-files-select2-filter").append(option).trigger("change");
-                }
-                
-                $("#stor-files-select2-filter").trigger({
-                    type: "select2:select",
-                    params: {
-                        data: {"id":short_id, "text":short_text}
+                if (short_id != "") {
+                    // option se ma pridat, jen pokud uz tam neni, a vyvolame event change
+                    if ($("#stor-files-select2-filter").find("option[value=\'" + short_id + "\']").length) {
+                        $("#stor-files-select2-filter").val(short_id).trigger("change");
+                    } else {
+                        var option = new Option(short_text, short_id, false, true);
+                        $("#stor-files-select2-filter").append(option).trigger("change");
                     }
-                });
+                    
+                    $("#stor-files-select2-filter").trigger({
+                        type: "select2:select",
+                        params: {
+                            data: {"id":short_id, "text":short_text}
+                        }
+                    });
+                }
+                else {
+                    $("#stor-files-select2-filter").trigger("change");
+                }
             });
             
             // dalsi zkratky- pokud by bylo treba nastavit vice filtru naraz, zatim neni treba
