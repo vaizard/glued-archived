@@ -33,7 +33,8 @@ class Permissions
        "t_consumables_items",
        "t_parts_items",
        "t_wiki",
-       "t_contacts"
+       "t_contacts",
+       "t_accounting_costs"
     );
 
     private $statuses = array(
