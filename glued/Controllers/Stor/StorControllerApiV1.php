@@ -8,7 +8,7 @@ use Glued\Classes\Auth;
 class StorControllerApiV1 extends Controller
 {
     
-    // funkce, ktera vraci prvni radek s dvojteckou
+    // funkce, ktera vraci prvni radek s dvojteckou, patri do uploaderu
     // davam to do samostatne funkce, protoze to bude pouzite 4x v showFiles a bude to tak prehlednejsi
     private function firstRowUplink($target) {
         return '
@@ -39,6 +39,39 @@ class StorControllerApiV1 extends Controller
                         </li>
             ';
     }
+    
+    // funkce, ktera vraci prvni radek s dvojteckou, patri do browseru
+    // davam to do samostatne funkce, protoze to bude pouzite 4x v showFiles a bude to tak prehlednejsi
+    private function firstRowUplinkBrowser($dataID, $dataText) {
+        return '
+                        <li class="item">
+                            <div class="item-row">
+                                <div class="item-col fixed">
+                                    <i class="fa fa-folder-open-o fa-2x"></i>
+                                </div>
+                                <div class="item-col fixed pull-left item-col-title">
+                                    <div class="item-heading">Name</div>
+                                    <div>
+                                        <a href="" class="stor-shortcuts" data-id="'.$dataID.'" data-text="'.$dataText.'">
+                                            <h4 class="item-title"> .. </h4>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="item-col">
+                                </div>
+                                <div class="item-col">
+                                </div>
+                                <div class="item-col">
+                                </div>
+                                <div class="item-col item-col-date">
+                                </div>
+                                <div class="item-col fixed item-col-actions-dropdown">
+                                </div>
+                            </div>
+                        </li>
+            ';
+    }
+    
     
     // fukce co vypise prehled souboru v adresari
     public function showFiles($request, $response)
@@ -833,12 +866,15 @@ class StorControllerApiV1 extends Controller
             
             // pokud je tam apps, vypiseme jen apps
             if ($je_tam_apps) {
+                // zpet do rootu
+                $vystup .= $this->firstRowUplinkBrowser('', '');
                 foreach ($this->container->stor->app_dirs as $dir => $description) {
                     if (!isset($this->container->stor->app_tables[$dir])) { continue; }
                     $vystup .= '
                         <li class="item">
                             <div class="item-row">
                                 <div class="item-col fixed">
+                                    <i class="fa fa-folder-o fa-2x"></i>
                                 </div>
                                 <div class="item-col fixed pull-left item-col-title">
                                     <div class="item-heading">Name</div>
@@ -863,7 +899,9 @@ class StorControllerApiV1 extends Controller
                     ';
                 }
             }
-            else if ($jsou_tam_objekty) {
+            else if ($jsou_tam_objekty) {   // to znamena ze jsme v jedne app a vypisujeme jeji objekty
+                // nejdriv zpet do app
+                $vystup .= $this->firstRowUplinkBrowser('//', '//apps');
                 // nacteme idecka
                 $cols = Array("c_uid", "stor_name");
                 $this->container->db->orderBy("c_uid","asc");
@@ -900,7 +938,8 @@ class StorControllerApiV1 extends Controller
                     }
                 }
             }
-            else {
+            else {  // vypis souboru v objektu nebo obecny vypis souboru
+                
                 // krome tagovych muzeme udelat vyber jednim sql dotazem nad links tabulkou
                 $sloupce = array("lin.c_uid", "lin.c_owner", "lin.c_filename", "lin.c_inherit_table", "lin.c_inherit_object", "lin.c_ts_created", "obj.sha512", "obj.doc->>'$.data.size' as size", "obj.doc->>'$.data.mime' as mime");
                 $this->container->db->join("t_stor_objects obj", "obj.sha512=lin.c_sha512", "LEFT");
@@ -914,6 +953,8 @@ class StorControllerApiV1 extends Controller
                         $bude_uploader = true;
                         $uploader_path = $casti[1].'/'.$casti[2];
                     }
+                    // jsme v lomitkovem filtru, takze mame nejakou app, pridame prvni radek ktery do ni povede zpet
+                    $vystup .= $this->firstRowUplinkBrowser('/'.$casti[1].'/', '/'.$casti[1].'/');
                 }
                 if (count($pole_useru) > 0) {
                     $this->container->db->where("c_owner", $pole_useru[0]);
@@ -1038,13 +1079,14 @@ class StorControllerApiV1 extends Controller
                 }
             }
         }
-        else {
+        else {  // jsme v zakladnim vyberu my files a app
             $your_user_id = $this->container->auth_user->user_id;
             $your_screenname = $this->container->auth->user_screenname($your_user_id);
             $vystup .= '
                 <li class="item">
                     <div class="item-row">
                         <div class="item-col fixed">
+                            <i class="fa fa-folder-o fa-2x"></i>
                         </div>
                         <div class="item-col fixed pull-left item-col-title">
                             <div class="item-heading">Name</div>
@@ -1069,6 +1111,7 @@ class StorControllerApiV1 extends Controller
                 <li class="item">
                     <div class="item-row">
                         <div class="item-col fixed">
+                            <i class="fa fa-folder-o fa-2x"></i>
                         </div>
                         <div class="item-col fixed pull-left item-col-title">
                             <div class="item-heading">Name</div>

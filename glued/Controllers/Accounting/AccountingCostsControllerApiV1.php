@@ -29,10 +29,10 @@ class AccountingCostsControllerApiV1 extends Controller
         $data = Array ("c_owner" => $user_id, "c_group" => 2, "c_unixperms" => 500,
                        "c_data" => $senddata_upravena
         );
-        $insert = $this->container->db->insert('t_accounting_received', $data);
+        $insert = $this->container->db->insert('t_accounting_costs', $data);
         if ($insert) {
             // prepiseme creator, dt_created, _id
-            $this->container->db->rawQuery("UPDATE t_accounting_received SET c_data = JSON_SET(c_data, '$.data._id', ?, '$.data.creator', ?, '$.data.dt_created', ?) WHERE c_uid = ? ", Array (strval($insert), strval($user_id), date("Y-m-d H:i:s"), $insert));
+            $this->container->db->rawQuery("UPDATE t_accounting_costs SET c_data = JSON_SET(c_data, '$.data._id', ?, '$.data.creator', ?, '$.data.dt_created', ?) WHERE c_uid = ? ", Array (strval($insert), strval($user_id), date("Y-m-d H:i:s"), $insert));
             
             if ($this->container->db->getLastErrno() === 0) {
                 $response->getBody()->write($senddata_upravena);
@@ -68,7 +68,7 @@ class AccountingCostsControllerApiV1 extends Controller
         $senddata_upravena = json_encode($send_data_object);
         
         $this->container->db->where('c_uid', $args['id']);
-        $update = $this->container->db->update('t_accounting_received', Array ( 'c_data' => $senddata_upravena ));
+        $update = $this->container->db->update('t_accounting_costs', Array ( 'c_data' => $senddata_upravena ));
         
         // vratime prosty text
        $response->getBody()->write($senddata_upravena);
@@ -81,7 +81,7 @@ class AccountingCostsControllerApiV1 extends Controller
     {
         
         $this->container->db->where('c_uid', $args['id']);
-        $delete = $this->container->db->delete('t_accounting_received');
+        $delete = $this->container->db->delete('t_accounting_costs');
         
         // vratime prosty text
        $response->getBody()->write('ok');

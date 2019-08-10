@@ -12,7 +12,7 @@ class AccountingCostsController extends Controller
         $costs_output = '';
         $sloupce = array("c_uid", "c_data", "c_data->>'$.data.inv_nr' as inv_nr", "c_data->>'$.data.supplier.name' as name", "c_data->>'$.data.acc_total_vat' as acc_total_vat", "c_data->>'$.data.acc_curr' as acc_curr");
         $this->container->db->orderBy("c_uid","asc");
-        $bills = $this->container->db->get('t_accounting_received', null, $sloupce);
+        $bills = $this->container->db->get('t_accounting_costs', null, $sloupce);
         if (count($bills) > 0) {
             foreach ($bills as $data) {
                 // dekodujeme si data
@@ -102,8 +102,8 @@ class AccountingCostsController extends Controller
         ';
         
         // pripravim obsah modalu pro tabulku platby_mzdy
-        $modal_acl_table = $this->container->permissions->modal_output_rights('accounting_accepted', 'table');
-        $modal_acl_global = $this->container->permissions->modal_output_rights('accounting_accepted', 'global');
+        $modal_acl_table = $this->container->permissions->modal_output_rights('t_accounting_costs', 'table');
+        $modal_acl_global = $this->container->permissions->modal_output_rights('t_accounting_costs', 'global');
         
         // nacteme si mozne akce, TODO spis dat do ajaxu primo do formu
         $action_options = '';
@@ -115,7 +115,7 @@ class AccountingCostsController extends Controller
         }
         
         return $this->container->view->render($response, 'accounting/costs.twig', array(
-            'related_table' => 'accounting_accepted',
+            'related_table' => 't_accounting_costs',
             'return_modal_form_uri' => $this->container->router->pathFor('accounting.costs'),
             'action_options' => $action_options,
             'modal_acl_table' => $modal_acl_table,
@@ -206,7 +206,7 @@ class AccountingCostsController extends Controller
     {
         
         $this->container->db->where("c_uid", $args['id']);
-        $data = $this->container->db->getOne('t_accounting_received');
+        $data = $this->container->db->getOne('t_accounting_costs');
         
         $form_output = '';
         
