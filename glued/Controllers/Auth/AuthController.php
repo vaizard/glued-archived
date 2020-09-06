@@ -138,7 +138,13 @@ class AuthController extends Controller
     // responds to the settings (with forms for change password, screenname and email)
     public function getSettings($request, $response)
     {
-        return $this->container->view->render($response, 'auth/settings.twig');
+        // zjistime si jazyky
+        $vystup = '
+        <div>server accept language: '.$_SERVER['HTTP_ACCEPT_LANGUAGE'].'</div>
+        <div>locale_accept_from_http: '.locale_accept_from_http($_SERVER['HTTP_ACCEPT_LANGUAGE']).'</div>
+        ';
+        
+        return $this->container->view->render($response, 'auth/settings.twig', array('pomocny_vystup' => $vystup));
     }
 
 
@@ -226,8 +232,9 @@ class AuthController extends Controller
             $update = $this->container->db->update('t_authentication', Array ( 'c_username' => $email ));
             
             $name = $request->getParam('name');
+            $language = $request->getParam('language');
             $this->container->db->where('c_uid', $change_user_id);
-            $update2 = $this->container->db->update('t_users', Array ( 'c_screenname' => $name ));
+            $update2 = $this->container->db->update('t_users', Array ( 'c_screenname' => $name, 'c_language' => $language ));
             
             if (!$update) {
                 $this->container->logger->warn("Email and Name change failed. DB error.");
